@@ -47,4 +47,5 @@ jobs:
         with:
           path: '.'
       - name: Pages 배포 완료
-        id:
+        id: deployment
+        uses: actions/deploy-pages@v4
