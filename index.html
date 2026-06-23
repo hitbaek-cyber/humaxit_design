@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로아이 기획 허브</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f13; --surface: #18181f; --border: rgba(255,255,255,0.07);
+    --accent: #6c63ff; --accent2: #a78bfa;
+    --text: #e8e8f0; --muted: #6b6b80;
+    --tag-bg: rgba(108,99,255,0.12); --tag-text: #a78bfa;
+  }
+  body { font-family: 'Apple SD Gothic Neo', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  header { padding: 48px 48px 0; max-width: 1200px; margin: 0 auto; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--accent2); text-transform: uppercase; margin-bottom: 16px; }
+  h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; color: #fff; }
+  h1 span { background: linear-gradient(120deg, #6c63ff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { margin-top: 12px; font-size: 15px; color: var(--muted); line-height: 1.6; }
+  .stats { max-width: 1200px; margin: 36px auto 0; padding: 0 48px 32px; display: flex; gap: 32px; border-bottom: 1px solid var(--border); }
+  .stat-num { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.03em; display: block; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .filter-bar { max-width: 1200px; margin: 28px auto 0; padding: 0 48px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .filter-btn:hover, .filter-btn.active { background: var(--tag-bg); border-color: var(--accent); color: var(--accent2); }
+  .grid { max-width: 1200px; margin: 24px auto 80px; padding: 0 48px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-3px); border-color: rgba(108,99,255,0.4); box-shadow: 0 12px 40px rgba(108,99,255,0.12); }
+  .card-accent { height: 3px; background: linear-gradient(90deg, #6c63ff, #a78bfa); }
+  .card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .card-date { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+  .card-title { font-size: 17px; font-weight: 600; line-height: 1.35; color: #fff; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 4px; }
+  .tag { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-text); border: 1px solid rgba(108,99,255,0.2); }
+  .card-footer { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .screen-count { font-size: 12px; color: var(--muted); }
+  .screen-count strong { color: var(--text); font-weight: 600; }
+  .open-btn { font-size: 12px; font-weight: 600; color: var(--accent2); display: flex; align-items: center; gap: 4px; }
+  .open-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.15s; }
+  .card:hover .open-btn svg { transform: translate(2px, -2px); }
+  .card.hidden { display: none; }
+  @media (max-width: 640px) { header, .filter-bar, .grid, .stats { padding-left: 20px; padding-right: 20px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <p class="eyebrow">로아이 · 기획 문서 허브</p>
+  <h1>PRD <span>Design</span> Archive</h1>
+  <p class="subtitle">Axure 기획 화면을 버전별로 확인할 수 있는 허브입니다.</p>
+</header>
+
+<div class="stats">
+  <div><span class="stat-num">8</span><span class="stat-label">총 프로젝트</span></div>
+  <div><span class="stat-num">68</span><span class="stat-label">총 화면 수</span></div>
+  <div><span class="stat-num">2024—2026</span><span class="stat-label">기간</span></div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all',this)">전체</button>
+  <button class="filter-btn" onclick="filter('AI검토',this)">AI 검토</button>
+  <button class="filter-btn" onclick="filter('UI개선',this)">UI 개선</button>
+  <button class="filter-btn" onclick="filter('챗봇',this)">챗봇</button>
+  <button class="filter-btn" onclick="filter('기능개선',this)">기능 개선</button>
+  <button class="filter-btn" onclick="filter('분석',this)">분석</button>
+</div>
+
+<div class="grid" id="grid">
+
+  <a class="card" href="./ai-improve-20260401/start_with_pages.html" target="_blank" data-tags="기능개선">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 기능 개선</h2>
+        <span class="card-date">2026.04.01</span>
+      </div>
+      <div class="card-tags"><span class="tag">기능개선</span><span class="tag">최신</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>6</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./ai-clause-learn-20260313/start_with_pages.html" target="_blank" data-tags="AI검토 기능개선">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 조항별 학습 기능 개선</h2>
+        <span class="card-date">2026.03.13</span>
+      </div>
+      <div class="card-tags"><span class="tag">AI검토</span><span class="tag">기능개선</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>8</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./ai-review-fact-20251209/start_with_pages.html" target="_blank" data-tags="AI검토">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 검토 사실관계 화면기획</h2>
+        <span class="card-date">2025.12.09</span>
+      </div>
+      <div class="card-tags"><span class="tag">AI검토</span><span class="tag">사실관계</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>14</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./ai-review-ui-20250422/start_with_pages.html" target="_blank" data-tags="AI검토 UI개선">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 검토 기능 UI 개선</h2>
+        <span class="card-date">2025.04.22</span>
+      </div>
+      <div class="card-tags"><span class="tag">AI검토</span><span class="tag">UI개선</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>30</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./ai-chatbot-20250331/start_with_pages.html" target="_blank" data-tags="챗봇">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 챗봇 법률판례용</h2>
+        <span class="card-date">2025.03.31</span>
+      </div>
+      <div class="card-tags"><span class="tag">챗봇</span><span class="tag">법률판례</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>7</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./ai-review-20241226/start_with_pages.html" target="_blank" data-tags="AI검토">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">AI 검토 화면기획</h2>
+        <span class="card-date">2024.12.26</span>
+      </div>
+      <div class="card-tags"><span class="tag">AI검토</span><span class="tag">초기버전</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>10</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./competitor-alibi/start_with_pages.html" target="_blank" data-tags="분석">
+    <div class="card-accent" style="background:linear-gradient(90deg,#a78bfa,#818cf8)"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">유사 서비스 분석 — 앨리비</h2>
+        <span class="card-date">—</span>
+      </div>
+      <div class="card-tags"><span class="tag">분석</span><span class="tag">경쟁사</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>12</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+  <a class="card" href="./homepage-ai/start_with_pages.html" target="_blank" data-tags="홈페이지">
+    <div class="card-accent" style="background:linear-gradient(90deg,#818cf8,#6366f1)"></div>
+    <div class="card-body">
+      <div class="card-header">
+        <h2 class="card-title">홈페이지 기획 — AI 기능</h2>
+        <span class="card-date">—</span>
+      </div>
+      <div class="card-tags"><span class="tag">홈페이지</span></div>
+    </div>
+    <div class="card-footer">
+      <span class="screen-count"><strong>5</strong>개 화면</span>
+      <span class="open-btn">열기 <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+    </div>
+  </a>
+
+</div>
+
+<script>
+function filter(kw, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    c.classList.toggle('hidden', kw !== 'all' && !(c.dataset.tags||'').includes(kw));
+  });
+}
+</script>
+</body>
+</html>
