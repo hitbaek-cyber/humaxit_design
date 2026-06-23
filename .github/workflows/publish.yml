@@ -1,0 +1,45 @@
+name: PRD 자동 배포
+on:
+  push:
+    branches: [ main ]
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: CHANGELOG 자동 업데이트
+        run: |
+          DATE=$(date '+%Y-%m-%d %H:%M')
+          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -v "CHANGELOG.md" | grep -v ".github/" | head -20)
+          if [ -n "$CHANGED" ]; then
+            COMMIT_MSG=$(git log -1 --pretty=%s)
+            NEW_ENTRY="## [$DATE] $COMMIT_MSG\n\n### 변경된 파일\n"
+            while IFS= read -r file; do
+              NEW_ENTRY="$NEW_ENTRY- \`$file\`\n"
+            done <<< "$CHANGED"
+            NEW_ENTRY="$NEW_ENTRY\n---\n\n"
+            if [ -f CHANGELOG.md ]; then
+              EXISTING=$(cat CHANGELOG.md)
+              printf "%b%s" "$NEW_ENTRY" "$EXISTING" > CHANGELOG.md
+            else
+              printf "# 변경 이력\n\n%b" "$NEW_ENTRY" > CHANGELOG.md
+            fi
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add CHANGELOG.md
+            git diff --staged --quiet || git commit -m "docs: CHANGELOG 자동 업데이트 [$DATE]"
+            git push
+          fi
+      - name: GitHub Pages 배포
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Pages 배포 완료
+        uses: actions/deploy-pages@v4
