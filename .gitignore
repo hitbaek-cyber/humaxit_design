@@ -1,0 +1,9 @@
+# 로컬 Claude 설정 (토큰·개인정보 포함 가능)
+.claude/settings.local.json
+
+# Node.js
+VIEWER/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
