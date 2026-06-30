@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>화면흐름 LAW 전체 v1 | Law.ai (DL이앤씨)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
+:root {
+  --law-font-family-base: 'Pretendard', sans-serif;
+  --law-color-primary:        #2151EC;
+  --law-color-primary-active: #1739A5;
+  --law-color-warning:        #F0AF23;
+  --law-bg-body:               #F2F4F6;
+  --law-bg-table-header:        #F1F4F9;
+  --law-text-heading:          #11152A;
+  --law-text-body:             #2B2F3A;
+  --law-text-muted:            #626F86;
+  --law-border-color:          #CFD5E1;
+  --law-card-bg:               #FFFFFF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--law-font-family-base); background: var(--law-bg-body); color: var(--law-text-body); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+
+.sidebar { width: 240px; background: var(--law-card-bg); border-right: 1px solid var(--law-border-color); flex-shrink: 0; overflow-y: auto; padding: 20px 0; }
+.sidebar-title { padding: 0 20px 12px; font-size: 12px; font-weight: 700; color: var(--law-color-primary); letter-spacing: .04em; }
+.sidebar-meta { padding: 0 20px 16px; font-size: 11px; color: var(--law-text-muted); border-bottom: 1px solid var(--law-border-color); margin-bottom: 8px; }
+.nav-item { padding: 9px 20px; font-size: 13px; color: var(--law-text-muted); cursor: pointer; border-left: 3px solid transparent; }
+.nav-item:hover { background: var(--law-bg-table-header); color: var(--law-text-heading); }
+.nav-item.active { color: var(--law-color-primary); border-left-color: var(--law-color-primary); background: var(--law-bg-table-header); font-weight: 600; }
+
+.main { flex: 1; overflow-y: auto; padding: 40px 56px; }
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.badge-draft { background: rgba(240,175,35,.12); color: #92670B; }
+.badge-must { background: rgba(234,84,85,.1); color: #C7262A; }
+.badge-review { background: rgba(33,81,236,.1); color: var(--law-color-primary-active); }
+
+h1 { font-size: 24px; color: var(--law-text-heading); margin-bottom: 6px; }
+.meta-line { font-size: 12px; color: var(--law-text-muted); margin-bottom: 24px; }
+h2 { font-size: 18px; color: var(--law-text-heading); margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--law-color-primary); display: inline-block; }
+h3 { font-size: 15px; color: var(--law-text-heading); margin: 20px 0 10px; }
+p { line-height: 1.7; margin-bottom: 12px; }
+a { color: var(--law-color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+th { background: var(--law-bg-table-header); color: var(--law-text-heading); text-align: left; padding: 10px 12px; border: 1px solid var(--law-border-color); font-weight: 600; }
+td { padding: 10px 12px; border: 1px solid var(--law-border-color); vertical-align: top; }
+
+.warn-box { background: rgba(240,175,35,.08); border: 1px solid rgba(240,175,35,.4); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #7D5800; }
+
+.mermaid-box { background: var(--law-card-bg); border: 1px solid var(--law-border-color); border-radius: 10px; padding: 24px; margin-bottom: 24px; overflow-x: auto; }
+
+.related-box { margin-top: 32px; padding: 18px 20px; background: var(--law-card-bg); border: 1px solid var(--law-border-color); border-radius: 10px; }
+.related-box h3 { margin-top: 0; font-size: 13px; color: var(--law-text-muted); text-transform: uppercase; letter-spacing: .03em; }
+.related-box ul { list-style: none; }
+.related-box li { padding: 6px 0; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-title">Law.ai (DL이앤씨) · 화면흐름도</div>
+  <div class="sidebar-meta">2026-06-30 · 🟡 초안</div>
+  <div class="nav-item active" onclick="nav('s1', this)">1. 개요</div>
+  <div class="nav-item" onclick="nav('s2', this)">2. 전체 흐름</div>
+  <div class="nav-item" onclick="nav('s3', this)">3. SCR-LAW-001 상세</div>
+  <div class="nav-item" onclick="nav('s4', this)">4. 역할별 접근</div>
+  <div class="nav-item" onclick="nav('s5', this)">5. 화면 목록</div>
+  <div class="nav-item" onclick="nav('s6', this)">6. 에러/예외 통합</div>
+  <div style="height:12px"></div>
+  <div class="nav-item" onclick="window.open('../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html')" style="color:var(--law-color-primary)">↗ SCR-LAW-001 법률자문 AI코멘트</div>
+</aside>
+
+<main class="main" id="docContent">
+
+<section id="s1">
+  <div style="margin-bottom:10px"><span class="badge badge-draft">🟡 초안</span></div>
+  <h1>Law.ai (DL이앤씨) — 전체 화면흐름도 v1</h1>
+  <div class="meta-line">v1 &nbsp;|&nbsp; 2026-06-30 &nbsp;|&nbsp; 작성자 백교민</div>
+
+  <div class="warn-box">⚠️ 본 흐름도는 지금까지 확인된 요구사항(코멘트 추가 UX 개선, AI 코멘트 자동 생성)을 기반으로 추정 작성되었습니다. 실제 화면 동작과 차이가 있을 수 있어 검증이 필요합니다.</div>
+
+  <h2>1. 개요</h2>
+  <table>
+    <tr><th width="140">대상 기능</th><td>법률자문 상세 조회 — 코멘트 추가 / AI 코멘트 자동 생성</td></tr>
+    <tr><th>진입점</th><td>법률자문 요청 등록 또는 법률자문 조회 목록에서 건 클릭</td></tr>
+    <tr><th>종료점</th><td>코멘트 저장 완료 / 상세 조회 화면 닫기</td></tr>
+    <tr><th>관련 사용자</th><td>자문 요청자, 법무 담당자</td></tr>
+  </table>
+</section>
+
+<section id="s2">
+  <h2>2. 전체 흐름</h2>
+  <div class="mermaid-box">
+<pre class="mermaid">
+flowchart TD
+    A([법률자문 메뉴 진입]) --> B{진입 경로}
+    B -->|요청 등록 후 저장| C[법률자문 상세 조회]
+    B -->|조회 목록에서 건 클릭| C
+
+    C --> D[자문 요청 내용 + 코멘트 영역\n동시 노출]
+    D --> E{코멘트 추가 클릭}
+    E --> F[코멘트 작성 패널 오픈\n자문 내용 가림 없이 동시 열람]
+    F --> G{AI 코멘트 생성 버튼 클릭?}
+    G -->|예| H[AI가 요청 제목/본문/첨부/\n이전 코멘트 이력/수신자 정보 기반 초안 생성]
+    H --> I[리치텍스트 에디터에\n생성된 초안 자동 입력]
+    I --> J[사용자가 초안 검토·수정]
+    G -->|아니오| J
+    J --> K{저장}
+    K -->|저장| L[코멘트 등록 완료\n상세 화면 갱신]
+    K -->|취소| D
+    L --> M([종료 또는 다른 자문 건 이동])
+</pre>
+  </div>
+</section>
+
+<section id="s3">
+  <h2>3. SCR-LAW-001 — 법률자문 AI코멘트</h2>
+  <table>
+    <tr><th width="140">진입 조건</th><td>GNB &gt; 법률자문 &gt; 법률자문 조회 &gt; 상세</td></tr>
+    <tr><th>화면 목적</th><td>법률자문 상세 내용을 열람하며 동시에 코멘트를 작성, AI를 통한 코멘트 자동 생성</td></tr>
+  </table>
+
+  <div class="mermaid-box">
+<pre class="mermaid">
+flowchart TD
+    S1([SCR-LAW-001 진입]) --> S2[자문 요청 내용 영역 표시\n제목/본문/첨부/수신자]
+    S2 --> S3{코멘트 추가 클릭}
+    S3 --> S4[코멘트 작성 패널 오픈\n자문 내용 영역과 동시 노출]
+    S4 --> S5{AI 코멘트 생성 클릭?}
+    S5 -->|예| S6[AI 초안 생성 요청]
+    S6 --> S7{생성 결과}
+    S7 -->|성공| S8[에디터에 초안 자동 입력]
+    S7 -->|실패/오류| S9[오류 안내 + 수동 작성 유도]
+    S8 --> S10[사용자 검토·수정]
+    S9 --> S10
+    S5 -->|아니오| S10
+    S10 --> S11{저장 확인}
+    S11 -->|저장| S12[코멘트 등록 완료\n목록/이력 갱신]
+    S11 -->|취소| S4
+    S12 --> S13([종료 또는 다른 메뉴 이동])
+</pre>
+  </div>
+
+  <h3>가능한 액션</h3>
+  <table>
+    <tr><th>사용자 액션</th><th>다음 화면/상태</th><th>조건</th></tr>
+    <tr><td>코멘트 추가 클릭</td><td>코멘트 작성 패널 오픈 (자문 내용 가리지 않음)</td><td>—</td></tr>
+    <tr><td>AI 코멘트 생성 클릭</td><td>AI 초안 생성 → 에디터 자동 입력</td><td>자문 요청 내용 존재 시</td></tr>
+    <tr><td>초안 수정</td><td>에디터 내용 갱신</td><td>—</td></tr>
+    <tr><td>저장</td><td>코멘트 등록 완료</td><td>필수 입력값 충족 시</td></tr>
+    <tr><td>취소</td><td>코멘트 작성 패널 닫힘</td><td>—</td></tr>
+  </table>
+
+  <h3>에러/예외</h3>
+  <table>
+    <tr><th>케이스</th><th>처리</th></tr>
+    <tr><td>AI 생성 실패</td><td>오류 안내 메시지 + 수동 작성으로 전환</td></tr>
+    <tr><td>필수값 미입력 후 저장 시도</td><td>인라인 오류 표시</td></tr>
+  </table>
+</section>
+
+<section id="s4">
+  <h2>4. 역할별 접근 가능 화면</h2>
+  <table>
+    <tr><th>화면</th><th>자문 요청자</th><th>법무 담당자</th></tr>
+    <tr><td>SCR-LAW-001 법률자문 AI코멘트</td><td>읽기+코멘트 작성 (권한 미정)</td><td>읽기+코멘트 작성 (권한 미정)</td></tr>
+  </table>
+  <p style="font-size:12px;color:var(--law-text-muted)">접근 권한은 아직 미정 상태로, 향후 역할별 열람·작성 권한 확정 필요 (Open Issue #1 참고).</p>
+</section>
+
+<section id="s5">
+  <h2>5. 화면 목록</h2>
+  <table>
+    <tr><th>화면 ID</th><th>화면명</th><th>유형</th><th>우선순위</th><th>상태</th></tr>
+    <tr><td>SCR-LAW-001</td><td>법률자문 AI코멘트</td><td>법률자문 조회</td><td><span class="badge badge-must">Must</span></td><td><span class="badge badge-review">🔵 검토 중</span></td></tr>
+  </table>
+</section>
+
+<section id="s6">
+  <h2>6. 에러/예외 흐름 통합</h2>
+  <table>
+    <tr><th>케이스</th><th>발생 조건</th><th>처리 방식</th></tr>
+    <tr><td>AI 코멘트 생성 실패</td><td>AI 호출 오류/타임아웃</td><td>오류 안내 + 수동 작성 전환</td></tr>
+    <tr><td>필수값 미입력</td><td>코멘트 저장 시도</td><td>인라인 오류 표시</td></tr>
+  </table>
+
+  <div class="related-box">
+    <h3>관련 문서</h3>
+    <ul>
+      <li>📄 <a href="../01_PRD/PRD_v1_전체개요.html" target="_blank">PRD v1 전체개요.html</a></li>
+      <li>🖥️ <a href="../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html" target="_blank">SCR-LAW-001 법률자문 AI코멘트.html</a></li>
+      <li>🕘 <a href="../04_히스토리/결정로그.md">결정로그.md</a></li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { primaryColor: '#EEF1FA', primaryBorderColor: '#2151EC', primaryTextColor: '#11152A', lineColor: '#9EA7B8', fontFamily: 'Pretendard, sans-serif' } });
+function nav(sectionId, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(sectionId).scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

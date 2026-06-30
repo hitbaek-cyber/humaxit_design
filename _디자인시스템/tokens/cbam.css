@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════
+   CBAM_SaaS 프로젝트 전용 디자인 토큰
+   사용법: base.css 또는 _템플릿/* 보다 먼저 이 파일을 import
+
+   3가지 변수 체계를 모두 별칭으로 제공합니다:
+     1) --color-*   (base.css / 기획화면 템플릿 체계)
+     2) --primary 등 (PRD·화면흐름도 템플릿 체계)
+     3) --humax-*   (히스토리뷰어 템플릿 체계)
+═══════════════════════════════════════════════════ */
+:root {
+  /* ── 1) base.css 체계 ── */
+  --color-primary:    #0561A4; --rgb-primary:    5,97,164;
+  --color-secondary:  #415AA9; --rgb-secondary:  65,90,169;
+  --color-success:    #006B56; --rgb-success:    0,107,86;
+  --color-danger:     #FF5812; --rgb-danger:     255,88,18;
+  --color-warning:    #CEA331; --rgb-warning:    206,163,49;
+  --color-info:       #73777F; --rgb-info:       115,119,127;
+  --color-dark:       #001B3D; --rgb-dark:       0,27,61;
+  --color-primary-active:   #1739A5;
+  --color-secondary-active: #75797E;
+  --color-danger-active:    #B12A30;
+  --bg-body:      #F2F4F6;
+  --bg-card:      #FFFFFF;
+  --bg-header:    #F6F7FB;
+  --color-border: #DFE2EB;
+  --color-border-dark: #CED4DA;
+  --color-label-bg: #F9FAFB;
+  --text-base:    #000000;
+  --text-muted:   #626F86;
+  --font-family-base: 'NotoSansKR','Noto Sans KR','Segoe UI',sans-serif;
+  --z-dropdown:   1000;
+  --z-tooltip:    1002;
+  --z-date-pop:   2500;
+  --z-calendar:   2600;
+  --z-modal:      3000;
+  --z-toast:      4000;
+
+  /* ── 2) PRD/화면흐름도 템플릿 체계 (별칭) ── */
+  --primary:      #0561A4;
+  --primary-h:    #044E8A;
+  --primary-lt:   #E8F1FB;
+  --secondary:    #415AA9;
+  --success:      #006B56;
+  --warning:      #CEA331;
+  --danger:       #FF5812;
+  --dark:         #001B3D;
+  --bg:           #F3F6F9;
+  --text:         #43474E;
+  /* --text-muted, --border, --card-bg, --header-bg, --rgb-* 는 위 1)과 공유 */
+  --border:       #DFE2EB;
+  --card-bg:      #FFFFFF;
+  --header-bg:    #F8F9FC;
+
+  /* ── 3) 히스토리뷰어 템플릿 체계 (별칭) ── */
+  --humax-primary:   #0561A4;
+  --humax-secondary: #415AA9;
+  --humax-success:   #006B56;
+  --humax-warning:   #CEA331;
+  --humax-danger:    #FF5812;
+  --humax-bg:        #F3F6F9;
+  --humax-text:      #43474E;
+  --humax-border:    #DEE2E6;
+}

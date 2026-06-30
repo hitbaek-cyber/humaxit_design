@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>기획화면 뷰어</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --topbar-h: 48px;
+      --sidebar-w: 272px;
+      --sb-bg: #16181d;
+      --sb-hover: #1f2229;
+      --sb-active-bg: rgba(59,130,246,.13);
+      --sb-active-border: #3b82f6;
+      --sb-text: #b0b7c3;
+      --sb-muted: #4b5563;
+      --sb-heading: #6b7280;
+      --transition: .2s cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: 'Outfit','Noto Sans KR',sans-serif; overflow: hidden; background: #f1f5f9; }
+
+    /* ── Topbar ── */
+    #topbar {
+      position: fixed; inset: 0 0 auto 0;
+      height: var(--topbar-h);
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 14px 0 10px;
+      z-index: 200;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 7px;
+      font-weight: 700; font-size: 14px; color: #111827;
+      white-space: nowrap; padding: 0 6px;
+    }
+    .brand i { color: #3b82f6; font-size: 17px; }
+    .sep { width: 1px; height: 18px; background: #e5e7eb; flex-shrink: 0; }
+    #screen-title {
+      flex: 1; font-size: 12.5px; color: #6b7280;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      min-width: 0;
+    }
+    #screen-title b { color: #374151; font-weight: 600; }
+
+    /* URL 칩 */
+    #url-chip {
+      display: none; align-items: center; gap: 5px;
+      background: #f3f4f6; border: 1px solid #e5e7eb;
+      border-radius: 6px; padding: 4px 10px;
+      font-size: 11.5px; color: #6b7280; white-space: nowrap;
+      max-width: 320px; overflow: hidden; text-overflow: ellipsis;
+      cursor: pointer; transition: background .12s;
+      user-select: all;
+      flex-shrink: 0;
+    }
+    #url-chip:hover { background: #e5e7eb; color: #374151; }
+    #url-chip i { flex-shrink: 0; }
+    #copy-toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; font-size: 12px;
+      padding: 7px 16px; border-radius: 8px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+      z-index: 9999;
+    }
+    #copy-toast.show { opacity: 1; }
+
+    .tbtn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      cursor: pointer; border: 1px solid #e5e7eb; background: #fff; color: #374151;
+      white-space: nowrap; transition: background .1s, border-color .1s;
+      flex-shrink: 0; text-decoration: none;
+    }
+    .tbtn:hover { background: #f3f4f6; border-color: #d1d5db; color: #111827; }
+    .tbtn.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    .tbtn.primary:hover { background: #2563eb; }
+    #btn-newtab { display: none; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: fixed; inset: var(--topbar-h) auto 0 0;
+      width: var(--sidebar-w);
+      background: var(--sb-bg);
+      overflow-y: auto; overflow-x: hidden;
+      z-index: 100;
+      transition: width var(--transition), transform var(--transition);
+      display: flex; flex-direction: column;
+    }
+    #sidebar.collapsed {
+      width: 0;
+      transform: translateX(-8px);
+    }
+    #sidebar::-webkit-scrollbar { width: 3px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #2d3140; border-radius: 2px; }
+
+    .sidebar-search {
+      padding: 12px 12px 6px;
+      position: sticky; top: 0;
+      background: var(--sb-bg); z-index: 10;
+      position: relative;
+    }
+    .sidebar-search input {
+      width: 100%; background: #1f2229; border: 1px solid #2d3140;
+      border-radius: 6px; color: #d1d5db; font-size: 12px;
+      padding: 6px 10px 6px 30px; outline: none;
+      transition: border-color .15s;
+    }
+    .sidebar-search input:focus { border-color: #3b82f6; }
+    .sidebar-search input::placeholder { color: #4b5563; }
+    .search-icon {
+      position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+      color: #4b5563; font-size: 13px; pointer-events: none;
+    }
+
+    .project-group { margin: 4px 0; }
+    .project-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px 6px;
+      cursor: pointer; user-select: none;
+      color: var(--sb-heading);
+      font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .project-header:hover { color: #9ca3af; }
+    .project-header .ph-left { display: flex; align-items: center; gap: 6px; }
+    .project-header .ph-arrow { font-size: 10px; transition: transform .2s; }
+    .project-header.collapsed .ph-arrow { transform: rotate(-90deg); }
+    .badge-cnt {
+      background: #1f2229; color: #6b7280; font-size: 10px;
+      padding: 1px 6px; border-radius: 10px; font-weight: 500;
+    }
+
+    .screen-list { list-style: none; padding: 0; margin: 0 0 4px; }
+    .screen-list.collapsed { display: none; }
+    .screen-item a {
+      display: flex; align-items: center;
+      padding: 7px 14px 7px 18px;
+      color: var(--sb-text); text-decoration: none;
+      font-size: 12.5px; gap: 8px;
+      border-left: 2px solid transparent;
+      transition: background .1s, border-color .1s, color .1s;
+    }
+    .screen-item a:hover { background: var(--sb-hover); color: #e5e7eb; }
+    .screen-item a.active {
+      background: var(--sb-active-bg);
+      border-left-color: var(--sb-active-border);
+      color: #93c5fd;
+    }
+    .scr-id {
+      font-size: 10px; font-family: 'Courier New',monospace;
+      color: var(--sb-muted); flex-shrink: 0; min-width: 72px;
+    }
+    .screen-item a.active .scr-id { color: #60a5fa; }
+    .scr-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 12px 14px;
+      border-top: 1px solid #1f2229;
+      font-size: 11px; color: var(--sb-muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── Main ── */
+    #main {
+      position: fixed;
+      top: var(--topbar-h); left: var(--sidebar-w); right: 0; bottom: 0;
+      display: flex; flex-direction: column;
+      transition: left var(--transition);
+    }
+    #main.expanded { left: 0; }
+
+    #empty-state {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: #9ca3af; gap: 12px; background: #f8fafc;
+    }
+    #empty-state i { font-size: 52px; opacity: .25; }
+    #empty-state p { font-size: 13px; margin: 0; }
+
+    #frame-loading {
+      flex: 1; display: none;
+      align-items: center; justify-content: center;
+      background: #f8fafc;
+    }
+
+    #viewer-frame {
+      flex: 1; border: none; background: #fff; display: none;
+    }
+
+    /* Placeholders */
+    .nav-placeholder {
+      padding: 20px 14px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .ph-bar {
+      height: 10px; background: #1f2229; border-radius: 4px;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:.4} 50%{opacity:.8} }
+
+    .no-results {
+      padding: 20px 14px; font-size: 12px;
+      color: var(--sb-muted); text-align: center; display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header id="topbar">
+  <button class="tbtn" id="btn-toggle" onclick="toggleSidebar()" title="메뉴 숨기기 / 보이기">
+    <i class="bi bi-layout-sidebar" id="toggle-icon"></i>
+  </button>
+  <div class="brand">
+    <i class="bi bi-layers-fill"></i>기획화면 뷰어
+  </div>
+  <div class="sep"></div>
+  <div id="screen-title">화면을 선택하세요</div>
+
+  <!-- URL 칩 (클릭 시 복사) -->
+  <div id="url-chip" onclick="copyUrl()" title="클릭하여 링크 복사">
+    <i class="bi bi-link-45deg"></i>
+    <span id="url-text"></span>
+    <i class="bi bi-clipboard" style="opacity:.5;font-size:11px"></i>
+  </div>
+
+  <a id="btn-newtab" class="tbtn primary" href="#" target="_blank" rel="noopener">
+    <i class="bi bi-box-arrow-up-right"></i> 새 탭
+  </a>
+  <button class="tbtn" onclick="loadScreens()" title="목록 새로고침">
+    <i class="bi bi-arrow-clockwise"></i>
+  </button>
+</header>
+
+<!-- ── Sidebar ── -->
+<nav id="sidebar">
+  <div class="sidebar-search">
+    <i class="bi bi-search search-icon"></i>
+    <input type="text" id="search-input" placeholder="화면 검색..." oninput="filterScreens(this.value)">
+  </div>
+  <div id="nav-loading" class="nav-placeholder">
+    <div class="ph-bar" style="width:60%"></div>
+    <div class="ph-bar" style="width:90%;margin-left:16px"></div>
+    <div class="ph-bar" style="width:80%;margin-left:16px"></div>
+    <div class="ph-bar" style="width:85%;margin-left:16px"></div>
+    <div class="ph-bar" style="width:55%;margin-top:8px"></div>
+    <div class="ph-bar" style="width:90%;margin-left:16px"></div>
+    <div class="ph-bar" style="width:75%;margin-left:16px"></div>
+  </div>
+  <div id="nav-content" style="display:none"></div>
+  <div class="no-results" id="no-results">검색 결과가 없습니다.</div>
+  <div class="sidebar-footer">
+    <i class="bi bi-info-circle"></i>
+    <span id="total-count">—</span>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main id="main">
+  <div id="empty-state">
+    <i class="bi bi-window-sidebar"></i>
+    <p>좌측 목록에서 화면을 선택하세요</p>
+  </div>
+  <div id="frame-loading">
+    <div class="spinner-border text-secondary" style="width:28px;height:28px" role="status"></div>
+  </div>
+  <iframe id="viewer-frame" title="기획화면 미리보기"></iframe>
+</main>
+
+<div id="copy-toast">링크가 복사되었습니다 ✓</div>
+
+<script>
+  let allProjects = [];
+  let sidebarVisible = true;
+
+  // ── 데이터 로드 ──────────────────────────────────────
+  async function loadScreens() {
+    const loading = document.getElementById('nav-loading');
+    const content = document.getElementById('nav-content');
+    loading.style.display = 'flex';
+    content.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/screens');
+      if (!res.ok) throw new Error(`서버 오류 ${res.status}`);
+      allProjects = await res.json();
+      renderNav(allProjects);
+
+      const total = allProjects.reduce((n, p) => n + p.screens.length, 0);
+      document.getElementById('total-count').textContent =
+        `${allProjects.length}개 프로젝트 · ${total}개 화면`;
+
+      // URL에 이미 경로가 있으면 자동 로드
+      restoreFromUrl();
+    } catch (e) {
+      loading.innerHTML = `<p style="color:#ef4444;font-size:12px;padding:16px">
+        <i class="bi bi-exclamation-triangle"></i> ${e.message}</p>`;
+      return;
+    }
+    loading.style.display = 'none';
+    content.style.display = 'block';
+  }
+
+  // ── 네비게이션 렌더 ──────────────────────────────────
+  function renderNav(projects) {
+    const content = document.getElementById('nav-content');
+    content.innerHTML = projects.map((p, pi) => `
+      <div class="project-group" data-pi="${pi}">
+        <div class="project-header" onclick="toggleGroup(this)">
+          <span class="ph-left">
+            <i class="bi bi-folder2-open" style="font-size:12px"></i>
+            ${esc(p.project)}
+          </span>
+          <span style="display:flex;align-items:center;gap:6px">
+            <span class="badge-cnt">${p.screens.length}</span>
+            <i class="bi bi-chevron-down ph-arrow"></i>
+          </span>
+        </div>
+        <ul class="screen-list" id="group-${pi}">
+          ${p.screens.map(s => `
+            <li class="screen-item"
+                data-name="${esc(s.name.toLowerCase())}"
+                data-id="${esc(s.id.toLowerCase())}">
+              <a href="${esc(makeUrl(p.project, s.filename))}"
+                 data-path="${esc(s.path)}"
+                 data-project="${esc(p.project)}"
+                 data-filename="${esc(s.filename)}"
+                 data-label="${esc(s.id + ' — ' + s.name)}"
+                 onclick="handleClick(event, this)">
+                <span class="scr-id">${esc(s.id)}</span>
+                <span class="scr-name" title="${esc(s.name)}">${esc(s.name)}</span>
+              </a>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+    `).join('');
+  }
+
+  // ── URL 생성 ─────────────────────────────────────────
+  function makeUrl(project, filename) {
+    const base = filename.replace('.html', '');
+    return `/${encodeURIComponent(project)}/${encodeURIComponent(base)}`;
+  }
+
+  // ── 클릭 핸들러 (SPA 방식으로 처리) ─────────────────
+  function handleClick(e, el) {
+    e.preventDefault();
+    const project  = el.dataset.project;
+    const filename = el.dataset.filename;
+    const url = makeUrl(project, filename);
+    history.pushState({ project, filename }, '', url);
+    activateScreen(el);
+  }
+
+  // ── 화면 활성화 (iframe 로드) ────────────────────────
+  function activateScreen(el) {
+    document.querySelectorAll('.screen-item a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+
+    const filePath = el.dataset.path;
+    const label    = el.dataset.label;
+    const project  = el.dataset.project;
+    const filename = el.dataset.filename;
+
+    // 제목
+    document.getElementById('screen-title').innerHTML = `<b>${esc(label)}</b>`;
+
+    // URL 칩
+    const fullUrl = location.origin + makeUrl(project, filename);
+    document.getElementById('url-text').textContent = fullUrl;
+    document.getElementById('url-chip').style.display = 'flex';
+
+    // 새 탭
+    const btnNew = document.getElementById('btn-newtab');
+    btnNew.href = filePath;
+    btnNew.style.display = '';
+
+    // iframe
+    const frame  = document.getElementById('viewer-frame');
+    const empty  = document.getElementById('empty-state');
+    const spin   = document.getElementById('frame-loading');
+
+    empty.style.display = 'none';
+    frame.style.display = 'none';
+    spin.style.display  = 'flex';
+
+    frame.onload = () => { spin.style.display = 'none'; frame.style.display = 'block'; };
+    frame.src = filePath;
+
+    // 해당 프로젝트 그룹이 접혀 있으면 펼침
+    const group = el.closest('.project-group');
+    const pi    = group.dataset.pi;
+    const list  = document.getElementById(`group-${pi}`);
+    const header = group.querySelector('.project-header');
+    list.classList.remove('collapsed');
+    header.classList.remove('collapsed');
+  }
+
+  // ── URL → 화면 복원 ──────────────────────────────────
+  function restoreFromUrl() {
+    const parts = decodeURIComponent(location.pathname).split('/').filter(Boolean);
+    if (parts.length < 2) return;
+    const project  = parts[0];
+    const basename = parts[1];
+
+    const link = document.querySelector(
+      `.screen-item a[data-project="${CSS.escape(project)}"][data-filename="${CSS.escape(basename + '.html')}"]`
+    );
+    if (link) activateScreen(link);
+  }
+
+  // 브라우저 뒤로/앞으로
+  window.addEventListener('popstate', () => {
+    const parts = decodeURIComponent(location.pathname).split('/').filter(Boolean);
+    if (parts.length < 2) return;
+    const link = document.querySelector(
+      `.screen-item a[data-project="${CSS.escape(parts[0])}"][data-filename="${CSS.escape(parts[1] + '.html')}"]`
+    );
+    if (link) activateScreen(link);
+  });
+
+  // ── 사이드바 토글 ────────────────────────────────────
+  function toggleSidebar() {
+    sidebarVisible = !sidebarVisible;
+    document.getElementById('sidebar').classList.toggle('collapsed', !sidebarVisible);
+    document.getElementById('main').classList.toggle('expanded', !sidebarVisible);
+    const icon = document.getElementById('toggle-icon');
+    icon.className = sidebarVisible ? 'bi bi-layout-sidebar' : 'bi bi-layout-sidebar-reverse';
+    document.getElementById('btn-toggle').title = sidebarVisible ? '메뉴 숨기기' : '메뉴 보이기';
+  }
+
+  // ── 검색 필터 ────────────────────────────────────────
+  function filterScreens(query) {
+    const q = query.toLowerCase().trim();
+    let count = 0;
+    document.querySelectorAll('.project-group').forEach(group => {
+      const pi    = group.dataset.pi;
+      const items = group.querySelectorAll('.screen-item');
+      let vis = 0;
+      items.forEach(item => {
+        const match = !q || item.dataset.name.includes(q) || item.dataset.id.includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) vis++;
+      });
+      group.style.display = vis > 0 ? '' : 'none';
+      if (vis > 0 && q) {
+        document.getElementById(`group-${pi}`).classList.remove('collapsed');
+        group.querySelector('.project-header').classList.remove('collapsed');
+      }
+      count += vis;
+    });
+    document.getElementById('no-results').style.display = (q && count === 0) ? 'block' : 'none';
+  }
+
+  // ── URL 복사 ─────────────────────────────────────────
+  function copyUrl() {
+    const url = document.getElementById('url-text').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const toast = document.getElementById('copy-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── 그룹 토글 ────────────────────────────────────────
+  function toggleGroup(header) {
+    const pi   = header.closest('.project-group').dataset.pi;
+    const list = document.getElementById(`group-${pi}`);
+    const col  = list.classList.toggle('collapsed');
+    header.classList.toggle('collapsed', col);
+  }
+
+  // ── 초기화 ───────────────────────────────────────────
+  loadScreens();
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -nE 'mermaid|\\\\\\\\\\\\\\\\n|<br|initialize|class=\"mermaid\"' projects/CBAM_SaaS/03_화면흐름도/화면흐름_CBAM전체_v1.html)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\jhlim4\\Desktop\\311_1.기획_tool\\projects\\CBAM_SaaS\\04_히스토리"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe",
+            "args": [
+              "-NoProfile",
+              "-ExecutionPolicy",
+              "Bypass",
+              "-File",
+              "c:\\Users\\jhlim4\\Desktop\\311_1.기획_tool\\.claude\\hooks\\plan-sync-reminder.ps1"
+            ],
+            "timeout": 10,
+            "statusMessage": "산출물 동기화 체크리스트 점검"
+          }
+        ]
+      }
+    ]
+  }
+}

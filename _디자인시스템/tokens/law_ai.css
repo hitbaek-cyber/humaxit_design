@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════
+   Law_ai_DL 프로젝트 전용 디자인 토큰
+   출처: SCR-LAW-001_법률자문_ai코멘트.html 내 --law-* 변수 기준 매핑
+   사용법: base.css 또는 _템플릿/* 보다 먼저 이 파일을 import
+
+   3가지 변수 체계를 모두 별칭으로 제공합니다:
+     1) --color-*   (base.css / 기획화면 템플릿 체계)
+     2) --primary 등 (PRD·화면흐름도 템플릿 체계)
+     3) --humax-*   (히스토리뷰어 템플릿 체계 — 이름은 유지, 값만 프로젝트별 교체)
+═══════════════════════════════════════════════════ */
+:root {
+  /* ── 1) base.css 체계 ── */
+  --color-primary:    #2151EC; --rgb-primary:    33,81,236;
+  --color-secondary:  #82868B; --rgb-secondary:  130,134,139;
+  --color-success:    #1BC47D; --rgb-success:    27,196,125;
+  --color-danger:     #EA5455; --rgb-danger:     234,84,85;
+  --color-warning:    #F0AF23; --rgb-warning:    240,175,35;
+  --color-info:       #82868B; --rgb-info:       130,134,139;
+  --color-dark:       #11152A; --rgb-dark:       17,21,42;
+  --color-primary-active:   #1739A5;
+  --color-secondary-active: #626F86;
+  --color-danger-active:    #C7262A;
+  --bg-body:      #F2F4F6;
+  --bg-card:      #FFFFFF;
+  --bg-header:    #F1F4F9;
+  --color-border: #CFD5E1;
+  --color-border-dark: #9EA7B8;
+  --color-label-bg: #F1F4F9;
+  --text-base:    #11152A;
+  --text-muted:   #626F86;
+  --font-family-base: 'Pretendard', sans-serif;
+  --z-dropdown:   1000;
+  --z-tooltip:    1002;
+  --z-date-pop:   2500;
+  --z-calendar:   2600;
+  --z-modal:      3000;
+  --z-toast:      4000;
+
+  /* ── 2) PRD/화면흐름도 템플릿 체계 (별칭) ── */
+  --primary:      #2151EC;
+  --primary-h:    #1739A5;
+  --primary-lt:   #EEF1FA;
+  --secondary:    #82868B;
+  --success:      #1BC47D;
+  --warning:      #F0AF23;
+  --danger:       #EA5455;
+  --dark:         #11152A;
+  --bg:           #F2F4F6;
+  --text:         #2B2F3A;
+  --border:       #CFD5E1;
+  --card-bg:      #FFFFFF;
+  --header-bg:    #F1F4F9;
+
+  /* ── 3) 히스토리뷰어 템플릿 체계 (별칭) ── */
+  --humax-primary:   #2151EC;
+  --humax-secondary: #82868B;
+  --humax-success:   #1BC47D;
+  --humax-warning:   #F0AF23;
+  --humax-danger:    #EA5455;
+  --humax-bg:        #F2F4F6;
+  --humax-text:      #2B2F3A;
+  --humax-border:    #CFD5E1;
+}

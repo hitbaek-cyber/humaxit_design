@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 📌 사용법:
+     1) 이 파일을 projects/{프로젝트}/01_PRD/ 로 복사 → PRD_v{버전}_{개요명}.html 로 이름변경
+     2) 동명의 PRD_v{버전}_{개요명}.md 와 한 쌍으로 만들고 항상 동기화한다.
+     3) 아래 [[ ... ]] 플레이스홀더를 실제 내용으로 교체한다.
+     4) CSS 디자인 토큰(:root)과 하단 nav() 스크립트는 수정하지 않는다. -->
+<title>PRD v[[버전]] [[개요명]] | [[서비스명]]</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+<style>
+/* ── 디자인 토큰 ── */
+:root {
+  --primary:      #0561a4;
+  --primary-h:    #044e8a;
+  --primary-lt:   #e8f1fb;
+  --secondary:    #415aa9;
+  --success:      #006b56;
+  --warning:      #cea331;
+  --danger:       #ff5812;
+  --dark:         #001b3d;
+  --bg:           #f3f6f9;
+  --text:         #43474e;
+  --text-muted:   #73777f;
+  --border:       #dfe2eb;
+  --card-bg:      #ffffff;
+  --header-bg:    #f8f9fc;
+  --rgb-primary:  5,97,164;
+  --rgb-success:  0,107,86;
+  --rgb-warning:  206,163,49;
+  --rgb-danger:   255,88,18;
+  --rgb-secondary:65,90,169;
+  --rgb-dark:     0,27,61;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','Noto Sans KR',sans-serif; font-size: 13px; color: var(--text); background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── 앱 탭바 ── */
+.app-tab-bar { height: 44px; background: var(--dark); display: flex; align-items: center; padding: 0 16px; gap: 4px; flex-shrink: 0; justify-content: space-between; }
+.app-tab-bar-left { display: flex; align-items: center; gap: 4px; }
+.app-logo { font-size: 14px; font-weight: 700; color: #fff; margin-right: 12px; white-space: nowrap; letter-spacing: -.2px; }
+.app-logo span { color: #4fc3f7; }
+.app-logo small { font-size: 10px; color: rgba(255,255,255,.35); font-weight: 400; margin-left: 5px; }
+.app-tab { height: 30px; padding: 0 14px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; color: rgba(255,255,255,.5); background: transparent; transition: all .15s; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; }
+.app-tab:hover { background: rgba(255,255,255,.09); color: #fff; }
+.app-tab.active { background: rgba(var(--rgb-primary),.32); color: #fff; font-weight: 600; }
+.app-tab-bar-right { display: flex; align-items: center; gap: 6px; }
+.proto-link { height: 28px; padding: 0 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 4px; background: transparent; color: rgba(255,255,255,.65); font-size: 11px; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: all .15s; }
+.proto-link:hover { background: rgba(255,255,255,.09); color: #fff; }
+
+/* ── 레이아웃 ── */
+.app-body { flex: 1; display: flex; overflow: hidden; }
+
+/* ── 사이드바 ── */
+.doc-sidebar { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--bg); overflow-y: auto; display: flex; flex-direction: column; }
+.doc-sidebar-header { padding: 16px 16px 10px; border-bottom: 1px solid var(--border); }
+.doc-sidebar-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; }
+.doc-sidebar-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-top: 4px; line-height: 1.4; }
+.doc-sidebar-meta { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.doc-nav-section { padding: 10px 0 4px 12px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+.doc-nav-item { padding: 9px 16px; font-size: 12px; color: var(--text-muted); cursor: pointer; border-left: 2px solid transparent; transition: all .1s; display: flex; align-items: center; gap: 7px; }
+.doc-nav-item:hover { background: rgba(0,0,0,.03); color: var(--text); }
+.doc-nav-item.active { background: rgba(var(--rgb-primary),.07); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+.doc-nav-item .nav-icon { font-size: 14px; flex-shrink: 0; opacity: .6; }
+.doc-nav-divider { height: 1px; background: var(--border); margin: 6px 12px; }
+
+/* ── 본문 ── */
+.doc-content { flex: 1; overflow-y: auto; background: #fff; }
+.doc-section { display: none; padding: 36px 48px 60px; max-width: 900px; }
+.doc-section.active { display: block; }
+
+/* 섹션 헤더 */
+.section-hero { margin-bottom: 28px; }
+.status-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 14px; background: rgba(var(--rgb-primary),.05); border: 1px solid rgba(var(--rgb-primary),.14); border-radius: 6px; }
+.badge-status { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.badge-draft { background: rgba(206,163,49,.12); color: #8a6e00; }
+.badge-review { background: rgba(var(--rgb-primary),.12); color: var(--primary); }
+.badge-done { background: rgba(var(--rgb-success),.12); color: var(--success); }
+.status-meta { font-size: 12px; color: var(--text-muted); }
+.doc-h1 { font-size: 22px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.doc-h2 { font-size: 15px; font-weight: 700; color: var(--dark); margin: 32px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.doc-h2 .h2-icon { font-size: 16px; color: var(--primary); }
+.doc-h3 { font-size: 13px; font-weight: 700; color: var(--text); margin: 20px 0 10px; }
+.doc-p { font-size: 13px; line-height: 1.85; color: var(--text); margin-bottom: 10px; }
+.doc-meta { display: flex; gap: 24px; margin: 12px 0 28px; padding: 14px 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap; }
+.doc-meta-item { font-size: 12px; color: var(--text-muted); }
+.doc-meta-item strong { display: block; font-size: 13px; color: var(--text); margin-top: 3px; font-weight: 600; }
+
+/* 테이블 */
+.doc-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+.doc-table th { background: var(--header-bg); font-weight: 600; padding: 10px 14px; border: 1px solid var(--border); text-align: left; color: var(--text); font-size: 12px; }
+.doc-table td { padding: 10px 14px; border: 1px solid var(--border); vertical-align: top; line-height: 1.65; }
+.doc-table tr:hover td { background: #fafbfc; }
+.doc-table code { background: #f0f2f5; padding: 1px 6px; border-radius: 3px; font-size: 11px; font-family: 'Consolas','Courier New',monospace; color: #c7254e; }
+
+/* 기능 카드 */
+.feature-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.feature-card-header { padding: 12px 16px; background: var(--header-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.feature-id { display: inline-flex; align-items: center; height: 22px; padding: 0 10px; background: rgba(var(--rgb-primary),.1); color: var(--primary); border-radius: 4px; font-size: 11px; font-weight: 700; flex-shrink: 0; font-family: 'Consolas',monospace; }
+.feature-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+.feature-priority { margin-left: auto; }
+.feature-card-body { padding: 14px 16px; }
+.feature-row { display: flex; gap: 0; margin-bottom: 10px; font-size: 13px; }
+.feature-row:last-child { margin-bottom: 0; }
+.feature-label { width: 90px; flex-shrink: 0; font-weight: 700; color: var(--text-muted); font-size: 12px; padding-top: 1px; }
+.feature-value { flex: 1; color: var(--text); line-height: 1.65; }
+.feature-formula { background: #f0f2f5; border: 1px solid var(--border); border-radius: 5px; padding: 10px 14px; font-size: 12px; font-family: 'Consolas','Courier New',monospace; color: var(--dark); line-height: 1.7; margin-top: 4px; }
+.feature-link { color: var(--primary); text-decoration: none; font-size: 12px; }
+.feature-link:hover { text-decoration: underline; }
+
+/* 뱃지 */
+.badge { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.b-must { background: rgba(var(--rgb-danger),.1); color: var(--danger); }
+.b-should { background: rgba(var(--rgb-warning),.12); color: #8a6e00; }
+.b-could { background: rgba(var(--rgb-success),.1); color: var(--success); }
+.b-hidden { background: #f0f2f5; color: var(--text-muted); }
+.b-primary { background: rgba(var(--rgb-primary),.1); color: var(--primary); }
+.b-review { background: rgba(var(--rgb-secondary),.1); color: var(--secondary); }
+.b-todo { background: #f0f2f5; color: var(--text-muted); }
+
+/* 노트 박스 */
+.doc-note { background: #f0f9ff; border-left: 3px solid var(--primary); padding: 12px 16px; border-radius: 0 5px 5px 0; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+.doc-warn { background: #fffbea; border-left: 3px solid var(--warning); padding: 12px 16px; border-radius: 0 5px 5px 0; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+.doc-info { background: rgba(var(--rgb-primary),.04); border: 1px solid rgba(var(--rgb-primary),.14); border-radius: 6px; padding: 12px 16px; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+
+/* 목록 */
+.doc-ol { padding-left: 22px; margin: 8px 0 14px; }
+.doc-ol li { font-size: 13px; line-height: 1.85; color: var(--text); margin-bottom: 4px; }
+.doc-ul { padding-left: 20px; margin: 8px 0 14px; list-style: disc; }
+.doc-ul li { font-size: 13px; line-height: 1.85; color: var(--text); margin-bottom: 4px; }
+
+/* 제약사항 블록 */
+.constraint-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+.constraint-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.constraint-title i { font-size: 14px; }
+.constraint-list { list-style: none; }
+.constraint-list li { font-size: 13px; color: var(--text); padding: 5px 0 5px 16px; position: relative; border-bottom: 1px dashed var(--border); line-height: 1.65; }
+.constraint-list li:last-child { border-bottom: none; }
+.constraint-list li::before { content: '›'; position: absolute; left: 2px; color: var(--primary); font-weight: 700; }
+
+/* 이슈 테이블 */
+.issue-row-open { background: rgba(var(--rgb-primary),.03); }
+.issue-row-todo { background: #fafbfc; }
+.status-chip { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.chip-open { background: rgba(var(--rgb-primary),.1); color: var(--primary); }
+.chip-todo { background: #f0f2f5; color: var(--text-muted); }
+.chip-done { background: rgba(var(--rgb-success),.1); color: var(--success); }
+
+/* 화면 목록 카드 */
+.screen-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+.screen-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: #fff; transition: border-color .15s, box-shadow .15s; text-decoration: none; display: block; color: inherit; }
+.screen-card:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(var(--rgb-primary),.12); }
+.screen-card-id { font-size: 11px; font-weight: 700; color: var(--primary); font-family: 'Consolas',monospace; margin-bottom: 4px; }
+.screen-card-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.screen-card-type { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+.screen-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.screen-card-todo { opacity: .5; cursor: default; }
+.screen-card-todo:hover { border-color: var(--border); box-shadow: none; }
+
+/* 관련문서 링크 목록 */
+.link-list { list-style: none; }
+.link-list li { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.link-list li:last-child { border-bottom: none; }
+.link-list li i { font-size: 16px; color: var(--primary); flex-shrink: 0; }
+.link-list a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.link-list a:hover { text-decoration: underline; }
+.link-list .link-desc { color: var(--text-muted); font-size: 12px; margin-left: auto; }
+
+/* 변경이력 */
+.changelog-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.changelog-table th { background: var(--header-bg); padding: 9px 14px; border: 1px solid var(--border); font-size: 12px; font-weight: 600; text-align: left; }
+.changelog-table td { padding: 9px 14px; border: 1px solid var(--border); vertical-align: middle; }
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cdd1db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0b8c4; }
+</style>
+</head>
+<body>
+
+<!-- ══ 앱 탭바 ══ -->
+<div class="app-tab-bar">
+  <div class="app-tab-bar-left">
+    <span class="app-logo">[[서비스명]] <small>PRD</small></span>
+    <span class="app-tab active">📋 PRD v[[버전]]</span>
+  </div>
+  <div class="app-tab-bar-right">
+    <!-- 관련 화면 프로토타입 링크. 화면 추가 시 복제 -->
+    <a class="proto-link" href="../02_기획화면/SCR-[[프로젝트]]-001_[[화면명]].html" target="_blank"><i class='bx bx-desktop'></i> SCR-001</a>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ══ 사이드바 ══ -->
+<nav class="doc-sidebar">
+  <div class="doc-sidebar-header">
+    <div class="doc-sidebar-label">[[프로젝트명]] · PRD</div>
+    <div class="doc-sidebar-title">[[개요명]] v[[버전]]</div>
+    <div class="doc-sidebar-meta">YYYY-MM-DD · 🟡 초안</div>
+  </div>
+
+  <div class="doc-nav-section">문서 목차</div>
+  <div class="doc-nav-item active" onclick="nav('sec-overview', this)"><i class='bx bx-info-circle nav-icon'></i>1. 개요</div>
+  <div class="doc-nav-item" onclick="nav('sec-users', this)"><i class='bx bx-group nav-icon'></i>2. 사용자 및 역할</div>
+  <div class="doc-nav-item" onclick="nav('sec-features', this)"><i class='bx bx-list-check nav-icon'></i>3. 기능 요구사항</div>
+  <div class="doc-nav-item" onclick="nav('sec-nfr', this)"><i class='bx bx-shield-quarter nav-icon'></i>4. 비기능 요구사항</div>
+  <div class="doc-nav-item" onclick="nav('sec-data', this)"><i class='bx bx-data nav-icon'></i>5. 데이터 요구사항</div>
+  <div class="doc-nav-item" onclick="nav('sec-constraints', this)"><i class='bx bx-lock-alt nav-icon'></i>6. 제약사항 및 가정</div>
+  <div class="doc-nav-item" onclick="nav('sec-screens', this)"><i class='bx bx-layout nav-icon'></i>7. 화면 목록</div>
+  <div class="doc-nav-item" onclick="nav('sec-issues', this)"><i class='bx bx-error-circle nav-icon'></i>8. 오픈 이슈</div>
+  <div class="doc-nav-item" onclick="nav('sec-refs', this)"><i class='bx bx-link nav-icon'></i>9. 관련 문서</div>
+
+  <div class="doc-nav-divider"></div>
+  <div class="doc-nav-section">프로토타입</div>
+  <div class="doc-nav-item" onclick="window.open('../02_기획화면/SCR-[[프로젝트]]-001_[[화면명]].html')"><i class='bx bxs-circle nav-icon' style="color:#0561a4;opacity:1"></i>SCR-001 [[화면명]]</div>
+</nav>
+
+<!-- ══ 본문 ══ -->
+<div class="doc-content" id="docContent">
+
+  <!-- ① 개요 -->
+  <div class="doc-section active" id="sec-overview">
+    <div class="section-hero">
+      <div class="status-bar">
+        <span class="badge-status badge-draft">🟡 초안</span>
+        <span class="status-meta">v[[버전]] &nbsp;|&nbsp; YYYY-MM-DD &nbsp;|&nbsp; 작성자 [[작성자]]</span>
+      </div>
+      <h1 class="doc-h1">[[서비스명]] — PRD v[[버전]]</h1>
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>서비스</strong>[[서비스명]]</div>
+        <div class="doc-meta-item"><strong>문서 유형</strong>[[전체 개요 / 기능별]] PRD</div>
+        <div class="doc-meta-item"><strong>대상 화면</strong>SCR-[[프로젝트]]-001 …</div>
+        <div class="doc-meta-item"><strong>최종수정</strong>YYYY-MM-DD</div>
+      </div>
+    </div>
+
+    <h2 class="doc-h2"><i class='bx bx-history h2-icon'></i>변경 이력</h2>
+    <table class="changelog-table">
+      <thead><tr><th>버전</th><th>날짜</th><th>작성자</th><th>주요 변경 내용</th></tr></thead>
+      <tbody>
+        <tr><td>v1</td><td>YYYY-MM-DD</td><td>[[작성자]]</td><td>최초 작성</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="doc-h2"><i class='bx bx-globe h2-icon'></i>배경 및 목적</h2>
+    <p class="doc-p">[[이 서비스를 왜 만드는지, 어떤 문제를 해결하는지 작성합니다.]]</p>
+
+    <h2 class="doc-h2"><i class='bx bx-target-lock h2-icon'></i>목표</h2>
+    <table class="doc-table">
+      <thead><tr><th style="width:80px">구분</th><th>목표</th></tr></thead>
+      <tbody>
+        <tr><td><strong>정량</strong></td><td>[[예: 검색 소요시간 30초 이내, 처리 오류율 1% 미만]]</td></tr>
+        <tr><td><strong>정성</strong></td><td>[[예: 선제적 예산 수립 지원]]</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="doc-h2"><i class='bx bx-sitemap h2-icon'></i>범위 (Scope)</h2>
+    <table class="doc-table">
+      <thead><tr><th style="width:120px">구분</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td><strong>In Scope</strong></td><td>[[이번에 하는 것]]</td></tr>
+        <tr><td><strong>Out of Scope</strong></td><td>[[이번엔 안 하는 것]]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ② 사용자 및 역할 -->
+  <div class="doc-section" id="sec-users">
+    <h1 class="doc-h1">사용자 및 역할</h1>
+
+    <h2 class="doc-h2"><i class='bx bx-user-circle h2-icon'></i>사용자 유형</h2>
+    <table class="doc-table">
+      <thead><tr><th>역할</th><th>설명</th><th>주요 업무</th></tr></thead>
+      <tbody>
+        <tr><td><strong>[[역할]]</strong></td><td>[[설명]]</td><td>[[주요 업무]]</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="doc-h2"><i class='bx bx-story h2-icon'></i>사용자 스토리</h2>
+    <table class="doc-table">
+      <thead><tr><th style="width:60px">#</th><th style="width:120px">역할</th><th>사용자 스토리</th><th style="width:90px">우선순위</th></tr></thead>
+      <tbody>
+        <tr><td>US-01</td><td>[[역할]]</td><td>[[…하고 싶다]]</td><td><span class="badge b-must">🔴 Must</span></td></tr>
+        <tr><td>US-02</td><td>[[역할]]</td><td>[[…하고 싶다]]</td><td><span class="badge b-should">🟡 Should</span></td></tr>
+        <tr><td>US-03</td><td>[[역할]]</td><td>[[…하고 싶다]]</td><td><span class="badge b-could">🟢 Could</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ③ 기능 요구사항 -->
+  <div class="doc-section" id="sec-features">
+    <h1 class="doc-h1">기능 요구사항</h1>
+
+    <h2 class="doc-h2"><i class='bx bx-grid-alt h2-icon'></i>기능 목록</h2>
+    <div class="doc-note">ID는 프로젝트 코드를 포함한다. 예: <code>F-[[프로젝트]]-01</code></div>
+    <table class="doc-table">
+      <thead><tr><th style="width:110px">ID</th><th>기능명</th><th>설명</th><th style="width:80px">우선순위</th><th style="width:110px">관련 화면</th></tr></thead>
+      <tbody>
+        <tr><td><code>F-[[프로젝트]]-01</code></td><td>[[기능명]]</td><td>[[설명]]</td><td><span class="badge b-must">Must</span></td><td>SCR-[[프로젝트]]-001</td></tr>
+        <tr><td><code>F-[[프로젝트]]-02</code></td><td>[[기능명]]</td><td>[[설명]]</td><td><span class="badge b-should">Should</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="doc-h2"><i class='bx bx-detail h2-icon'></i>기능 상세</h2>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="feature-id">F-[[프로젝트]]-01</span>
+        <span class="feature-name">[[기능명]]</span>
+        <span class="feature-priority"><span class="badge b-must">Must</span></span>
+      </div>
+      <div class="feature-card-body">
+        <div class="feature-row"><span class="feature-label">설명</span><span class="feature-value">[[기능 설명]]</span></div>
+        <div class="feature-row"><span class="feature-label">입력값</span><span class="feature-value">[[입력값]]</span></div>
+        <div class="feature-row"><span class="feature-label">출력/결과</span><span class="feature-value">[[출력/결과]]</span></div>
+        <div class="feature-row"><span class="feature-label">예외 처리</span><span class="feature-value">[[예외 처리]]</span></div>
+        <div class="feature-row"><span class="feature-label">관련 화면</span><span class="feature-value"><a class="feature-link" href="../02_기획화면/SCR-[[프로젝트]]-001_[[화면명]].html" target="_blank">↗ SCR-[[프로젝트]]-001 [[화면명]]</a></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 비기능 요구사항 -->
+  <div class="doc-section" id="sec-nfr">
+    <h1 class="doc-h1">비기능 요구사항</h1>
+    <table class="doc-table">
+      <thead><tr><th style="width:140px">항목</th><th>요구사항</th></tr></thead>
+      <tbody>
+        <tr><td><strong>성능</strong></td><td>[[성능 요구사항]]</td></tr>
+        <tr><td><strong>보안</strong></td><td>[[보안 요구사항]]</td></tr>
+        <tr><td><strong>접근성</strong></td><td>WCAG 2.1 AA (색대비 4.5:1, 키보드 네비게이션, ARIA)</td></tr>
+        <tr><td><strong>브라우저 지원</strong></td><td>[[지원 브라우저]]</td></tr>
+        <tr><td><strong>다국어</strong></td><td>한국어·영어 (i18next + react-i18next)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ⑤ 데이터 요구사항 -->
+  <div class="doc-section" id="sec-data">
+    <h1 class="doc-h1">데이터 요구사항</h1>
+
+    <h2 class="doc-h2"><i class='bx bx-upload h2-icon'></i>입력 데이터</h2>
+    <table class="doc-table">
+      <thead><tr><th>필드명</th><th>타입</th><th style="width:50px;text-align:center">필수</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><code>[[field]]</code></td><td>[[타입]]</td><td style="text-align:center">✅</td><td>[[설명]]</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="doc-h2"><i class='bx bx-download h2-icon'></i>출력 데이터</h2>
+    <table class="doc-table">
+      <thead><tr><th>필드명</th><th>타입</th><th>단위</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><code>[[field]]</code></td><td>[[타입]]</td><td>[[단위]]</td><td>[[설명]]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ⑥ 제약사항 및 가정 -->
+  <div class="doc-section" id="sec-constraints">
+    <h1 class="doc-h1">제약사항 및 가정</h1>
+
+    <div class="constraint-block">
+      <div class="constraint-title"><i class='bx bx-lock'></i> 제약사항</div>
+      <ul class="constraint-list">
+        <li>[[제약사항]]</li>
+      </ul>
+    </div>
+
+    <div class="constraint-block">
+      <div class="constraint-title"><i class='bx bx-check-circle'></i> 가정</div>
+      <ul class="constraint-list">
+        <li>[[가정]]</li>
+      </ul>
+    </div>
+
+    <div class="constraint-block">
+      <div class="constraint-title"><i class='bx bx-git-branch'></i> 의존성</div>
+      <ul class="constraint-list">
+        <li>[[다른 기능·시스템에 의존하는 것]]</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ⑦ 화면 목록 -->
+  <div class="doc-section" id="sec-screens">
+    <h1 class="doc-h1">화면 목록</h1>
+    <div class="doc-info">총 <strong>[[N]]개</strong> 화면</div>
+    <div class="screen-grid">
+      <a class="screen-card" href="../02_기획화면/SCR-[[프로젝트]]-001_[[화면명]].html" target="_blank">
+        <div class="screen-card-id">SCR-[[프로젝트]]-001</div>
+        <div class="screen-card-name">[[화면명]]</div>
+        <div class="screen-card-type">[[화면 유형]]</div>
+        <div class="screen-card-footer">
+          <span class="badge b-todo">🟡 초안</span>
+          <span style="font-size:11px;color:var(--primary)">↗ 프로토타입 열기</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ⑧ 오픈 이슈 -->
+  <div class="doc-section" id="sec-issues">
+    <h1 class="doc-h1">오픈 이슈</h1>
+    <table class="doc-table">
+      <thead><tr><th style="width:36px">#</th><th>이슈 내용</th><th style="width:90px">담당</th><th style="width:100px">목표 해결일</th><th style="width:90px">상태</th></tr></thead>
+      <tbody>
+        <tr class="issue-row-open"><td>1</td><td>[[이슈 내용]]</td><td>[[담당]]</td><td>YYYY-MM-DD</td><td><span class="status-chip chip-open">🔵 확인 중</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ⑨ 관련 문서 -->
+  <div class="doc-section" id="sec-refs">
+    <h1 class="doc-h1">관련 문서</h1>
+    <ul class="link-list">
+      <li>
+        <i class='bx bx-desktop'></i>
+        <div>
+          <a href="../02_기획화면/SCR-[[프로젝트]]-001_[[화면명]].html" target="_blank">SCR-[[프로젝트]]-001 [[화면명]] 프로토타입</a>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">[[화면 설명]]</div>
+        </div>
+        <span class="link-desc">🟡 초안</span>
+      </li>
+      <li>
+        <i class='bx bx-file-blank'></i>
+        <div>
+          <a href="PRD_v[[버전]]_[[개요명]].md">PRD_v[[버전]]_[[개요명]].md</a>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">이 문서의 Markdown 원본</div>
+        </div>
+        <span class="link-desc">이 파일의 원본</span>
+      </li>
+      <li>
+        <i class='bx bx-git-branch'></i>
+        <div>
+          <a href="../03_화면흐름도/">화면흐름도</a>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">화면 전이·흐름 다이어그램</div>
+        </div>
+      </li>
+      <li>
+        <i class='bx bx-history'></i>
+        <div>
+          <a href="../04_히스토리/결정로그.md">결정로그.md</a>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">프로젝트 주요 의사결정 이력</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div><!-- /doc-content -->
+</div><!-- /app-body -->
+
+<script>
+function nav(sectionId, el) {
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.doc-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('docContent').scrollTop = 0;
+}
+</script>
+</body>
+</html>

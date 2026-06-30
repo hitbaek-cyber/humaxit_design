@@ -1,0 +1,353 @@
+/* ═══════════════════════════════════════════════════
+   _디자인시스템 / base.css
+   범용 컴포넌트 스타일 (프로젝트 무관, 색상은 변수로 외부 주입)
+   사용법: 이 파일보다 먼저 tokens/{project}.css를 import하여
+           :root 변수(--color-primary 등)를 먼저 선언할 것
+
+   예)
+   <link rel="stylesheet" href="../../_디자인시스템/tokens/law_ai.css">
+   <link rel="stylesheet" href="../../_디자인시스템/base.css">
+═══════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-family-base,'Segoe UI',sans-serif);font-size:13px;color:var(--text-base);background:var(--bg-body);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ═══════════════════════════════════════════════════
+   1. 앱 탭바 (공통)
+═══════════════════════════════════════════════════ */
+.app-tab-bar{height:44px;background:var(--color-dark);display:flex;align-items:center;padding:0 16px;gap:4px;flex-shrink:0;justify-content:space-between;}
+.app-tab-bar-left{display:flex;align-items:center;gap:4px;}
+.app-logo{font-size:14px;font-weight:700;color:#fff;margin-right:12px;white-space:nowrap;}
+.app-logo span{color:#4fc3f7;}
+.app-logo small{font-size:10px;color:rgba(255,255,255,.35);font-weight:400;margin-left:5px;}
+.app-tab{height:30px;padding:0 14px;border:none;border-radius:4px;font-size:12px;cursor:pointer;color:rgba(255,255,255,.5);background:transparent;transition:all .15s;font-family:inherit;}
+.app-tab:hover{background:rgba(255,255,255,.09);color:#fff;}
+.app-tab.active{background:rgba(var(--rgb-primary),.32);color:#fff;font-weight:600;}
+.app-tab-bar-right{display:flex;align-items:center;gap:8px;}
+.btn-notes-toggle{height:28px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:4px;background:transparent;color:rgba(255,255,255,.65);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-notes-toggle:hover{background:rgba(255,255,255,.09);color:#fff;}
+.btn-notes-toggle.active{background:rgba(var(--rgb-primary),.35);border-color:var(--color-primary);color:#fff;}
+
+/* ═══════════════════════════════════════════════════
+   2. 뷰 시스템 (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.app-body{flex:1;display:flex;overflow:hidden;}
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;}
+.view.proto-view.active{display:flex;flex-direction:column;overflow:hidden;height:100%;}
+.proto-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+@media print{.app-tab-bar,.view.proto-view{display:none!important;}.view.doc-view{display:flex!important;position:static;}}
+
+/* ═══════════════════════════════════════════════════
+   3. DOC VIEW (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.doc-view{flex-direction:row;background:#fff;}
+.doc-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--color-border);background:var(--bg-body);overflow-y:auto;display:flex;flex-direction:column;}
+.doc-sidebar-title{padding:14px 16px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--color-border);}
+.doc-nav-item{padding:10px 16px;font-size:13px;color:var(--text-muted);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.doc-nav-item:hover{background:rgba(0,0,0,.03);color:var(--text-base);}
+.doc-nav-item.active{background:rgba(var(--rgb-primary),.07);color:var(--color-primary);border-left-color:var(--color-primary);font-weight:600;}
+.doc-content{flex:1;overflow-y:auto;padding:36px 44px;}
+.doc-section{display:none;} .doc-section.active{display:block;}
+.doc-h1{font-size:20px;font-weight:700;color:var(--color-dark);margin-bottom:6px;}
+.doc-h2{font-size:15px;font-weight:700;color:var(--color-dark);margin:30px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--color-border);}
+.doc-h3{font-size:13px;font-weight:700;margin:18px 0 8px;}
+.doc-p{font-size:13px;line-height:1.85;margin-bottom:10px;}
+.doc-meta{display:flex;gap:24px;margin:12px 0 28px;padding:14px 18px;background:var(--bg-body);border:1px solid var(--color-border);border-radius:8px;flex-wrap:wrap;}
+.doc-meta-item{font-size:12px;color:var(--text-muted);}
+.doc-meta-item strong{display:block;font-size:13px;color:var(--text-base);margin-top:3px;}
+.doc-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+.doc-table th{background:var(--bg-header);font-weight:600;padding:10px 13px;border:1px solid var(--color-border);text-align:left;}
+.doc-table td{padding:10px 13px;border:1px solid var(--color-border);vertical-align:top;line-height:1.65;}
+.doc-table tr:hover td{background:#fafbfc;}
+.ph{background:#fffbea;border-bottom:1px dashed #f0c000;color:#7a6000;padding:0 3px;border-radius:2px;}
+.status-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(var(--rgb-primary),.05);border:1px solid rgba(var(--rgb-primary),.14);border-radius:6px;}
+.badge-doc{display:inline-flex;align-items:center;height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;}
+.badge-doc.primary{background:rgba(var(--rgb-primary),.12);color:var(--color-primary);}
+.badge-doc.warning{background:rgba(var(--rgb-warning),.12);color:#a07b00;}
+.doc-note{background:#f0f9ff;border-left:3px solid var(--color-primary);padding:12px 16px;border-radius:0 5px 5px 0;margin:14px 0;font-size:13px;line-height:1.7;}
+.doc-ul{padding-left:20px;margin:8px 0 12px;}
+.doc-ul li{font-size:13px;line-height:1.85;}
+
+/* ═══════════════════════════════════════════════════
+   4. 화면 서브탭 (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.screen-tab-bar{height:38px;background:var(--bg-body);border-bottom:1px solid var(--color-border);display:flex;align-items:center;padding:0 16px;gap:4px;flex-shrink:0;}
+.screen-tab{height:26px;padding:0 14px;border:1px solid transparent;border-radius:4px;font-size:12px;cursor:pointer;color:var(--text-muted);background:transparent;transition:all .15s;font-family:inherit;}
+.screen-tab:hover{background:#fff;border-color:var(--color-border);color:var(--text-base);}
+.screen-tab.active{background:#fff;border-color:var(--color-primary);color:var(--color-primary);font-weight:600;}
+
+/* ═══════════════════════════════════════════════════
+   5. 메뉴 트리 (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.proto-menu-tree{width:240px;background:var(--color-dark);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;}
+.proto-menu-tree-body{padding:6px 0 20px;flex:1;}
+.nav-d1-item{display:flex;align-items:center;gap:9px;padding:10px 14px 10px 16px;color:rgba(255,255,255,.65);font-size:13px;font-weight:500;cursor:pointer;user-select:none;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.04);}
+.nav-d1-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-d1-item.open{color:#fff;background:rgba(255,255,255,.04);}
+.nav-d1-item .d1-label{flex:1;}
+.nav-chevron{font-size:15px;flex-shrink:0;color:rgba(255,255,255,.3);transition:transform .2s;}
+.nav-d1-item.open>.nav-chevron{transform:rotate(90deg);color:rgba(255,255,255,.5);}
+.nav-d1-children{display:none;background:rgba(0,0,0,.15);}
+.nav-d1-children.open{display:block;}
+.nav-d2-item{display:flex;align-items:center;gap:8px;padding:9px 14px 9px 32px;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;cursor:pointer;user-select:none;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.03);}
+.nav-d2-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);}
+.nav-d2-item.active{color:#4fc3f7;font-weight:600;background:rgba(var(--rgb-primary),.18);}
+.nav-d2-children{display:none;}
+.nav-d2-children.open{display:block;}
+.nav-d3-item{display:block;padding:8px 14px 8px 48px;color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;cursor:pointer;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.02);}
+.nav-d3-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.75);}
+.nav-d3-item.active{color:#4fc3f7;font-weight:600;}
+.nav-d3-item.active::before{content:'▸ ';font-size:10px;}
+
+/* ═══════════════════════════════════════════════════
+   6. 프로토 뷰포트
+═══════════════════════════════════════════════════ */
+.proto-viewport{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.proto-screens-wrap{flex:1;overflow-y:auto;background:var(--bg-body);display:flex;flex-direction:column;}
+.proto-screen{display:none;}
+.proto-screen.active{display:flex;flex:1;flex-direction:column;}
+
+/* ═══════════════════════════════════════════════════
+   7. 탑바 (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.topbar{height:52px;background:#fff;border-bottom:1px solid var(--color-border);display:flex;align-items:center;padding:0 24px 0 0;gap:14px;flex-shrink:0;}
+.topbar-brand{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 16px;align-self:stretch;border-right:1px solid var(--color-border);width:240px;min-width:240px;flex-shrink:0;}
+.topbar-brand-name{font-size:13px;font-weight:700;color:var(--color-dark);}
+.topbar-brand-sub{font-size:10px;color:var(--text-muted);}
+.topbar-toggle{width:32px;height:32px;border:none;background:none;color:var(--text-muted);font-size:20px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.topbar-toggle:hover{background:var(--bg-body);}
+.topbar-help{width:30px;height:30px;border:1px solid var(--color-border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-muted);cursor:pointer;font-weight:700;}
+.topbar-help:hover{border-color:var(--color-primary);color:var(--color-primary);}
+.topbar-user{display:flex;align-items:center;gap:8px;}
+.topbar-avatar{width:32px;height:32px;background:var(--color-secondary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;}
+.topbar-user-info{font-size:12px;line-height:1.4;}
+.topbar-user-info .name{font-weight:600;}
+.topbar-user-info .role{color:var(--text-muted);}
+.topbar-lang{font-size:12px;font-weight:600;color:var(--text-muted);}
+
+/* ═══════════════════════════════════════════════════
+   8. 레이아웃 — Layout_Rules.md 기준
+═══════════════════════════════════════════════════ */
+/* Menu Title Area (전체 화면 타입 공통) */
+.menu-title-area{height:56px;padding:0 24px;background:#fff;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.menu-title{font-size:16px;font-weight:700;color:var(--text-base);}
+.breadcrumb{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:5px;}
+.breadcrumb-sep{color:#b0b8c4;}
+.breadcrumb-cur{font-weight:600;color:var(--text-base);}
+/* Main Container */
+.main-container{padding:24px;flex:1;overflow-y:auto;}
+/* Section Card */
+.section-card{background:#fff;border:1px solid var(--color-border);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);margin-bottom:24px;overflow:hidden;}
+/* Card Title Area */
+.card-title-area{height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--color-border);}
+.card-title-area.h64{height:64px;} /* Type B-2, C */
+.card-title{font-size:16px;font-weight:700;color:var(--text-base);}
+.title-actions{display:flex;gap:8px;}
+/* Filter Area */
+.filter-area{padding:12px 24px;border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+/* Grid Control */
+.grid-control{padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
+.grid-info{font-size:13px;color:var(--text-muted);}
+.grid-info strong{color:var(--text-base);font-weight:700;}
+.grid-actions{display:flex;align-items:center;gap:8px;}
+/* Pagination */
+.pagination-wrapper{padding:24px;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.pagination-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:4px;}
+
+/* ═══════════════════════════════════════════════════
+   9. 버튼 — Design_Tokens.md § 3 기준 (38px 고정)
+═══════════════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;font-family:inherit;white-space:nowrap;}
+.btn-primary{background:var(--color-primary);color:#fff;}
+.btn-primary:hover{background:var(--color-primary-active);}
+.btn-dark{background:var(--color-dark);color:#fff;}
+.btn-dark:hover{opacity:.9;}
+.btn-outline{background:#fff;color:var(--text-base);border:1px solid var(--color-border);}
+.btn-outline:hover{background:var(--color-label-bg);}
+.btn-outline-primary{background:#fff;border:1px solid var(--color-primary);color:var(--color-primary);}
+.btn-outline-primary:hover{background:rgba(var(--rgb-primary),.08);}
+.btn-outline-danger{background:#fff;border:1px solid var(--color-danger);color:var(--color-danger);}
+.btn-outline-danger:hover{background:rgba(var(--rgb-danger),.06);}
+.btn-soft{background:rgba(var(--rgb-info),.12);color:var(--text-base);border:1px solid var(--color-border);}
+.btn-soft:hover{background:#DFE2EB;}
+.btn-soft-primary{background:rgba(var(--rgb-primary),.12);color:var(--color-primary);border:1px solid var(--color-border);}
+.btn-soft-primary:hover{background:rgba(var(--rgb-primary),.2);}
+/* Icon button */
+.btn-icon{width:38px;height:38px;border:none;background:transparent;border-radius:4px;font-size:16px;color:var(--color-info);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.btn-icon:hover{background:rgba(var(--rgb-info),.12);}
+.btn-icon.bordered{border:1px solid var(--color-info);background:#fff;margin-left:8px;}
+.btn-icon.bordered:hover{background:#F8F9FA;}
+.btn-icon.excel{background:#fff;border:1px solid var(--color-border-dark);}
+.btn-icon.excel:hover{background:#F8F9FA;}
+
+/* ═══════════════════════════════════════════════════
+   10. Custom Dropdown — Design_Tokens.md § 5 기준
+       ※ 필터 영역은 native <select> 사용 금지
+═══════════════════════════════════════════════════ */
+.custom-dropdown{position:relative;}
+.dropdown-trigger{height:38px;padding:0 12px;min-width:130px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid var(--color-border-dark);border-radius:4px;font-size:13px;cursor:pointer;user-select:none;font-family:inherit;color:var(--text-base);}
+.dropdown-trigger:hover{border-color:#9EA7B8;}
+.dropdown-trigger.open{border-color:var(--color-primary);}
+.trigger-text{flex:1;text-align:left;}
+.trigger-icon{font-size:11px;color:var(--text-muted);flex-shrink:0;}
+.dropdown-menu{display:none;position:absolute;top:42px;left:0;min-width:100%;background:#fff;border:1px solid #CFD5E1;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:var(--z-dropdown);overflow:hidden;}
+.dropdown-menu.open{display:block;}
+.dropdown-header{padding:12px 16px;background:#FAFBFC;border-bottom:1px solid #E8EBEF;font-size:12px;display:flex;justify-content:flex-end;}
+.dropdown-header a{color:var(--color-primary);text-decoration:none;font-weight:600;}
+.dropdown-item{padding:10px 16px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.dropdown-item:hover{background:#F8F9FA;}
+.dropdown-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--color-primary);}
+/* Date selector */
+.date-selector .trigger-icon{font-size:14px;}
+
+/* ═══════════════════════════════════════════════════
+   11. Search Input (필터용)
+═══════════════════════════════════════════════════ */
+.search-input-wrapper{position:relative;flex:1;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:15px;pointer-events:none;}
+.search-input{width:100%;height:38px;padding:0 12px 0 38px;border:1px solid var(--color-border-dark);border-radius:4px;font-size:13px;font-family:inherit;color:var(--text-base);outline:none;}
+.search-input:focus{border-color:var(--color-primary);}
+.search-input::placeholder{color:#9EA7B8;}
+
+/* ═══════════════════════════════════════════════════
+   12. Data Grid — Design_Tokens.md § 10 / Layout_Rules § 5
+═══════════════════════════════════════════════════ */
+.data-grid-wrapper{padding:0;} /* Type A: 0, Type B/C: 0 24px */
+.data-grid{width:100%;border-collapse:collapse;border-top:1px solid #CFD5E1;border-bottom:1px solid #CFD5E1;}
+/* Type A: 좌우 테두리 없음 */
+.data-grid.type-a{border-left:none;border-right:none;}
+.data-grid thead th{background:var(--bg-header);height:48px;font-size:13px;font-weight:700;padding:0 24px;border-bottom:1px solid #CFD5E1;text-align:center;vertical-align:middle;white-space:nowrap;}
+/* Type A 헤더: 세로줄 없음 */
+.data-grid.type-a thead th{border-left:none;border-right:none;}
+.data-grid thead th.sortable{cursor:pointer;user-select:none;}
+.data-grid thead th.sortable:hover{background:#EEF0F5;}
+.sort-icon{margin-left:4px;color:#b0b8c4;font-size:11px;vertical-align:middle;}
+.sort-icon.asc::after{content:'▲';color:var(--color-primary);}
+.sort-icon.desc::after{content:'▼';color:var(--color-primary);}
+.sort-icon.none::after{content:'⇅';}
+.data-grid tbody tr{border-bottom:1px solid #E8EBEF;cursor:pointer;}
+.data-grid tbody tr:last-child{border-bottom:none;}
+.data-grid tbody tr:hover td{background:#F8F9FA;}
+.data-grid tbody td{height:56px;font-size:13px;padding:0 24px;vertical-align:middle;text-align:left;}
+/* Type A 바디: 세로줄 없음 */
+.data-grid.type-a tbody td{border-left:none;border-right:none;}
+/* Type B/C 바디: 세로줄 있음 */
+.data-grid.type-bc tbody td{border-right:1px solid #E8EBEF;padding:0 8px;}
+.data-grid.type-bc tbody td:last-child{border-right:none;}
+/* 클릭 컬럼 */
+.td-link{color:var(--color-primary);font-weight:700;cursor:pointer;}
+.td-link:hover{text-decoration:underline;}
+
+/* ═══════════════════════════════════════════════════
+   13. 뱃지 — Design_Tokens.md § 4
+═══════════════════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}
+.badge-rect{border-radius:4px;}
+.b-primary{background:rgba(var(--rgb-primary),.12);color:var(--color-primary);}
+.b-success{background:rgba(var(--rgb-success),.12);color:var(--color-success);}
+.b-danger{background:rgba(var(--rgb-danger),.12);color:var(--color-danger);}
+.b-warning{background:rgba(var(--rgb-warning),.12);color:#7D5800;}
+.b-info{background:rgba(var(--rgb-info),.12);color:var(--color-info);}
+
+/* ═══════════════════════════════════════════════════
+   14. 페이지네이션 — Design_Tokens.md § 11
+═══════════════════════════════════════════════════ */
+.page-size-sel{height:38px;padding:0 12px;border:1px solid var(--color-border);border-radius:4px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer;}
+.page-btn{width:38px;height:38px;border:1px solid #D1D5DB;border-radius:4px;background:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;font-family:inherit;}
+.page-btn:hover:not(.active):not(:disabled){background:var(--bg-body);border-color:#9EA7B8;}
+.page-btn.active{background:var(--color-primary);color:#fff;font-weight:700;border-color:var(--color-primary);}
+.page-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ═══════════════════════════════════════════════════
+   15. 폼 컨트롤 — Design_Tokens.md § 12 (38px 고정)
+═══════════════════════════════════════════════════ */
+.form-group{margin-bottom:40px;}
+.form-label{font-size:13px;color:var(--text-base);margin-bottom:8px;display:block;}
+.required{color:var(--color-danger);margin-left:4px;vertical-align:middle;}
+.form-input{width:100%;height:38px;padding:0 12px;border:1px solid var(--color-border-dark);border-radius:4px;font-size:13px;font-family:inherit;color:var(--text-base);outline:none;}
+.form-input:focus{border-color:var(--color-primary);}
+.form-input::placeholder{color:#9EA7B8;}
+.form-select{height:38px;padding:0 12px;border:1px solid var(--color-border-dark);border-radius:4px;font-size:13px;font-family:inherit;color:var(--text-base);background:#fff;cursor:pointer;outline:none;}
+.form-select:focus{border-color:var(--color-primary);}
+.form-textarea{width:100%;min-height:120px;padding:12px;border:1px solid var(--color-border-dark);border-radius:4px;font-size:13px;font-family:inherit;color:var(--text-base);outline:none;resize:vertical;line-height:1.6;}
+.form-textarea:focus{border-color:var(--color-primary);}
+.form-textarea::placeholder{color:#9EA7B8;}
+.form-readonly{background:var(--color-label-bg);border:1px solid var(--color-border);border-radius:4px;height:38px;padding:0 12px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;cursor:not-allowed;user-select:none;}
+.form-helper-text{margin-top:8px;font-size:13px;color:var(--text-muted);line-height:150%;}
+.radio-group{display:flex;gap:20px;}
+.radio-label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;}
+.radio-label input[type=radio]{width:16px;height:16px;accent-color:var(--color-primary);cursor:pointer;}
+/* Page Header & Sub Title (Type B-2, C) */
+.page-header{height:56px;padding:0 24px;background:#fff;border-bottom:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.page-title{font-size:16px;font-weight:700;color:var(--text-base);}
+.sub-title{height:48px;padding:0 24px;background:#fff;border-bottom:1px solid var(--color-border);display:flex;align-items:center;gap:24px;flex-shrink:0;}
+.sub-title-item{display:flex;align-items:center;gap:8px;padding-right:24px;border-right:1px solid var(--color-border);}
+.sub-title-item:last-child{border-right:none;padding-right:0;}
+.sub-title-label{font-size:13px;color:var(--text-muted);}
+.sub-title-value{font-size:13px;color:var(--text-base);}
+
+/* ═══════════════════════════════════════════════════
+   16. Info Table — Design_Tokens.md § 9
+═══════════════════════════════════════════════════ */
+.info-table{width:100%;border-collapse:collapse;border:1px solid #CFD5E1;}
+.info-table tr{border-bottom:1px solid #CFD5E1;}
+.info-table tr:last-child{border-bottom:none;}
+.info-table th{width:160px;padding:14px 16px;background:var(--bg-header);font-size:13px;font-weight:700;color:var(--text-base);vertical-align:middle;white-space:nowrap;border-right:1px solid #CFD5E1;text-align:left;}
+.info-table td{padding:14px 16px;font-size:13px;color:var(--text-base);vertical-align:middle;}
+
+/* ═══════════════════════════════════════════════════
+   17. 모달 — Design_Tokens.md § 6
+═══════════════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:var(--z-modal);display:none;justify-content:center;align-items:center;}
+.modal-overlay.open{display:flex;}
+.modal-container{background:#fff;border-radius:8px;width:480px;max-width:92vw;box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.modal-container.lg{width:min(800px,92vw);}
+.modal-header{height:54px;padding:0 28px;border-bottom:1px solid #E8EBEF;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:16px;font-weight:700;color:var(--text-base);}
+.modal-close{width:32px;height:32px;border:none;background:transparent;font-size:24px;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:1;}
+.modal-close:hover{color:var(--text-base);}
+.modal-body{padding:28px;font-size:13px;line-height:1.75;max-height:calc(100vh - 300px);overflow-y:auto;}
+.modal-footer{padding:16px 28px;border-top:1px solid #E8EBEF;display:flex;justify-content:flex-end;gap:12px;}
+.modal-footer.wide{padding:21px 28px;}
+
+/* ═══════════════════════════════════════════════════
+   18. 컨텍스트 메뉴
+═══════════════════════════════════════════════════ */
+.ctx-menu{position:fixed;background:#fff;border:1px solid var(--color-border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.14);z-index:9000;overflow:hidden;min-width:158px;}
+.ctx-item{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text-base);}
+.ctx-item:hover{background:var(--bg-body);}
+.ctx-item.danger{color:var(--color-danger);}
+.ctx-sep{height:1px;background:var(--color-border);margin:3px 0;}
+
+/* ═══════════════════════════════════════════════════
+   19. Widget Notes Panel (공통 — 수정 금지)
+═══════════════════════════════════════════════════ */
+.lnb-desc-panel{width:0;min-width:0;overflow:hidden;border-left:1px solid var(--color-border);display:flex;flex-direction:column;flex-shrink:0;transition:width .22s ease,min-width .22s ease;background:#fff;}
+.lnb-desc-panel.open{width:280px;min-width:280px;}
+.lnb-desc-header{min-width:279px;height:46px;padding:0 14px;border-bottom:1px solid var(--color-border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-header);flex-shrink:0;}
+.lnb-desc-header-title{font-size:13px;font-weight:700;}
+.lnb-notes-list{min-width:279px;flex:1;overflow-y:auto;padding:10px;}
+.note-card{border:1px solid var(--color-border);border-radius:6px;overflow:hidden;background:#fff;margin-bottom:8px;}
+.note-card-header{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--bg-header);border-bottom:1px solid var(--color-border);gap:6px;}
+.note-num{width:20px;height:20px;background:#f5c842;color:#000;border-radius:4px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.note-card-name-wrap{flex:1;min-width:0;cursor:pointer;}
+.note-card-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.note-card-name-wrap:hover .note-card-name{text-decoration:underline dotted;}
+.note-name-input{width:100%;border:none;outline:none;font-size:12px;font-weight:600;background:transparent;border-bottom:1px solid var(--color-primary);padding:0;}
+.note-card-body{padding:8px 10px;font-size:12px;color:var(--text-base);line-height:1.65;min-height:30px;}
+.note-card-btn{width:22px;height:22px;border:none;background:transparent;border-radius:3px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);}
+.note-card-btn:hover{background:var(--color-border);}
+.note-badge-overlay{position:absolute;width:20px;height:20px;background:#f5c842;color:#000;border-radius:4px;font-size:11px;font-weight:800;z-index:500;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+.note-editor-wrap{border:1px solid var(--color-border);border-radius:4px;overflow:hidden;margin:8px 8px 0;}
+.note-editor-wrap:focus-within{border-color:var(--color-primary);}
+.note-editor-wrap.unsaved{border-color:#f59e0b;}
+.note-toolbar{display:flex;align-items:center;gap:1px;padding:4px 6px;border-bottom:1px solid var(--color-border);background:var(--bg-header);}
+.note-tb-btn{width:24px;height:24px;border:none;background:transparent;border-radius:3px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.note-tb-btn:hover{background:var(--color-border);}
+.note-tb-sep{width:1px;height:14px;background:var(--color-border);margin:0 3px;}
+.note-editor{min-height:80px;max-height:180px;overflow-y:auto;padding:8px;font-size:12px;line-height:1.7;outline:none;}
+.note-editor:empty::before{content:attr(data-placeholder);color:#b0b8c4;}
+.note-editor ul,.note-editor ol{padding-left:20px;margin:4px 0;}
+.note-editor ul{list-style:disc;}
+.note-editor ol{list-style:decimal;}
+.note-actions{display:flex;justify-content:flex-end;gap:6px;padding:6px 8px;}

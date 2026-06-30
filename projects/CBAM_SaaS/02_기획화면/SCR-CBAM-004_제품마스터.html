@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCR-CBAM-004 CBAM 제품 마스터 | CBAM 산정 플랫폼</title>
+<link rel="stylesheet" href="../../../_디자인시스템/cbam.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════ 앱 탭바 ══════════════════════════════ -->
+<div class="app-tab-bar">
+  <div class="app-tab-bar-left">
+    <span class="app-logo">Compli·<span>Law</span> <small>CBAM SaaS</small></span>
+    <button class="app-tab" onclick="switchView('doc')">📋 기획 문서</button>
+    <button class="app-tab active" onclick="switchView('proto')">🖥️ 프로토타입</button>
+  </div>
+  <div class="app-tab-bar-right">
+    <button class="btn-notes-toggle" id="noteToggleBtn" onclick="toggleNotes()">📝 Description</button>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ═══════════ DOC VIEW ═══════════ -->
+<div class="view doc-view" id="view-doc">
+  <nav class="doc-sidebar">
+    <div class="doc-sidebar-title">문서 목차</div>
+    <div class="doc-nav-item active" onclick="docNav('sec-overview',this)">1. 서비스 개요</div>
+    <div class="doc-nav-item" onclick="docNav('sec-ia',this)">2. 화면 목록 (IA)</div>
+    <div class="doc-nav-item" onclick="docNav('sec-spec',this)">3. 화면 기능 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-data',this)">4. 데이터 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-appendix',this)">5. 부록</div>
+  </nav>
+  <div class="doc-content">
+
+    <!-- 1. 서비스 개요 -->
+    <div class="doc-section active" id="sec-overview">
+      <div class="status-bar">
+        <span class="badge-doc warning">🟡 초안</span>
+        <span style="font-size:12px;color:var(--text-muted)">v0.1 &nbsp;|&nbsp; 2026-06-04 &nbsp;|&nbsp; 작성자 김혜신</span>
+      </div>
+      <h1 class="doc-h1">SCR-CBAM-004 CBAM 제품 마스터</h1>
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>서비스</strong>CBAM 산정 플랫폼 (Compli·Law)</div>
+        <div class="doc-meta-item"><strong>화면 ID</strong>SCR-CBAM-004</div>
+        <div class="doc-meta-item"><strong>화면 타입</strong>Type A (목록) + Type B-1 (등록)</div>
+        <div class="doc-meta-item"><strong>진입 경로</strong>GNB > CBAM > 기준정보 > CBAM 제품 마스터</div>
+        <div class="doc-meta-item"><strong>접근 권한</strong>관리자 / 일반 사용자</div>
+      </div>
+      <h2 class="doc-h2">배경 및 목적</h2>
+      <p class="doc-p">CBAM 신고 대상 제품의 기본 정보(제품코드, 구분, CN 코드, HS 코드, 생산 경로, 매개변수)를 등록·관리하는 마스터 화면이다. 제품 단위로 CBAM 배출량 산정에 필요한 핵심 속성을 사전 정의함으로써, 이후 출하 데이터 입력 및 인증서 발급 흐름을 지원한다.</p>
+      <h2 class="doc-h2">변경 이력</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:72px">버전</th><th style="width:110px">날짜</th><th>주요 변경 내용</th><th style="width:100px">작성자</th></tr></thead>
+        <tbody>
+          <tr><td>v0.1</td><td>2026-06-04</td><td>최초 작성 (캡처 화면 기반 초안)</td><td>김혜신</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px">
+        <button class="btn btn-primary" onclick="switchView('proto')">🖥️ 프로토타입 바로 보기</button>
+      </div>
+    </div>
+
+    <!-- 2. 화면 목록 (IA) -->
+    <div class="doc-section" id="sec-ia">
+      <h1 class="doc-h1">화면 목록 (IA)</h1>
+      <table class="doc-table">
+        <thead><tr><th>화면 ID</th><th>화면명</th><th>타입</th><th>진입 경로</th><th>권한</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SCR-CBAM-004-L</strong></td><td>CBAM 제품 마스터 목록</td><td>Type A</td><td>GNB > CBAM > 기준정보 > CBAM 제품 마스터</td><td>전체</td><td><span class="badge-doc warning">초안</span></td></tr>
+          <tr><td><strong>SCR-CBAM-004-R</strong></td><td>CBAM 제품 마스터 등록</td><td>Type B-1</td><td>목록 [+ 등록] 버튼 클릭</td><td>전체</td><td><span class="badge-doc warning">초안</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. 화면 기능 명세 -->
+    <div class="doc-section" id="sec-spec">
+      <h1 class="doc-h1">화면 기능 명세</h1>
+
+      <h2 class="doc-h2">3.1 목록 화면 (SCR-CBAM-004-L)</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:140px">Zone / 컴포넌트</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>날짜 필터</td><td>최근수정일 기준 날짜 범위 필터. 기본값 null (전체 조회)</td></tr>
+          <tr><td>상태 드롭다운</td><td>(D) 전체. 옵션: 전체 / 사용 / 사용안함</td></tr>
+          <tr><td>검색</td><td>제품코드 또는 제품명으로 검색. 기본값 null</td></tr>
+          <tr><td>+ 등록 버튼</td><td>클릭 이벤트: 등록 화면(SCR-CBAM-004-R)으로 이동</td></tr>
+          <tr><td>총 N건</td><td>테이블에 조회된 개수 표시</td></tr>
+          <tr><td>테이블 표시 선택</td><td>(D) 전체. 선택 가능 컬럼: 자재코드 / CN 코드 / 전구체 여부 / 상태 / 수정자 / 최근수정일</td></tr>
+          <tr><td>Excel 다운로드</td><td>조회 결과 전체를 Excel로 다운로드</td></tr>
+          <tr><td>데이터 그리드</td><td>기본 정렬: 최근수정일 내림차순. 정렬 기능 제공 컬럼: 모든 컬럼. 제품명 클릭 → 상세 팝업(미구현 단계)</td></tr>
+          <tr><td>페이지네이션</td><td>10개씩 보기(기본). 우클릭 컨텍스트 메뉴 제공</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="doc-h2">3.2 등록 화면 (SCR-CBAM-004-R)</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:140px">필드</th><th style="width:80px">필수</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>제품</td><td>필수</td><td>제품코드 또는 제품명 검색 인풋. 포커스 시 자재 검색 리스트 표시. (D) 첫 번째 항목. 정렬: 자재코드 내림차순. 자재 마스터 전체 목록 출력, 영역 초과 시 스크롤. [저장] 클릭 → 선택 자재의 자재코드·자재명을 인풋에 채움. [취소] 클릭 → 창 닫힘</td></tr>
+          <tr><td>구분</td><td>필수</td><td>라디오버튼. (D) 보고대상 제품. 옵션: 보고대상 제품 / 전구체</td></tr>
+          <tr><td>CN 코드</td><td>필수</td><td>직접 입력 불가. [CN 코드 조회] 버튼 클릭 → CN 코드 조회 팝업 출력. CBAM 대상 제품에 한하여 조회 가능</td></tr>
+          <tr><td>HS 코드</td><td>선택</td><td>직접 입력. 최대 12자리 숫자 입력</td></tr>
+          <tr><td>생산 경로</td><td>필수</td><td>Route 번호 + 생산 경로 드롭다운 + 삭제 아이콘. 제품당 최대 9개 경로 지정 가능. 품목마다 생산 경로 유무 및 선택 가능(옵션 상이). [+] 버튼으로 행 추가</td></tr>
+          <tr><td>매개변수</td><td>선택</td><td>배출량 산정에 적용된 입력 변수가 있을 경우 데이터 입력. [추가] 버튼으로 행 추가. 매개변수 선택 드롭다운 + 매개변수 값 입력</td></tr>
+          <tr><td>설명</td><td>선택</td><td>제품에 대한 자유 텍스트 설명</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="doc-h2">3.3 CN 코드 조회 팝업</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:140px">구성요소</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>안내 문구</td><td>*CBAM 대상 제품에 한하여 CN 코드 조회가 가능합니다.</td></tr>
+          <tr><td>구분 필터</td><td>드롭다운. (D) 전체. 옵션: 전체 / 시멘트 / 전기 / 수소 / 철강 / 비료 / 알루미늄</td></tr>
+          <tr><td>CN 코드 검색</td><td>CN 코드 직접 검색 인풋</td></tr>
+          <tr><td>결과 테이블</td><td>컬럼: 선택(라디오) / 구분 / 품목군 / 품목(한글+영문) / CN 코드</td></tr>
+          <tr><td>페이지네이션</td><td>이전/다음 페이지, 현재 페이지 번호 표시</td></tr>
+          <tr><td>[확인] 버튼</td><td>선택한 CN 코드를 등록 화면 CN 코드 필드에 반영 후 팝업 닫힘</td></tr>
+          <tr><td>[취소] 버튼</td><td>팝업 닫힘, 변경 내용 미적용</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. 데이터 명세 -->
+    <div class="doc-section" id="sec-data">
+      <h1 class="doc-h1">데이터 명세</h1>
+      <h2 class="doc-h2">CBAM 제품 마스터 엔티티</h2>
+      <table class="doc-table">
+        <thead><tr><th>필드명</th><th>한글명</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>product_id</td><td>제품코드</td><td>VARCHAR</td><td>Y</td><td>자재 마스터 연동 코드 (PK)</td></tr>
+          <tr><td>product_name</td><td>제품명</td><td>VARCHAR</td><td>Y</td><td>자재 마스터 연동 명칭</td></tr>
+          <tr><td>category</td><td>구분</td><td>ENUM</td><td>Y</td><td>D(보고대상제품) / P(전구체)</td></tr>
+          <tr><td>cn_code</td><td>CN 코드</td><td>VARCHAR(10)</td><td>Y</td><td>CBAM CN 코드 (조회 팝업에서 선택)</td></tr>
+          <tr><td>hs_code</td><td>HS 코드</td><td>VARCHAR(12)</td><td>N</td><td>최대 12자리</td></tr>
+          <tr><td>is_precursor</td><td>전구체 여부</td><td>CHAR(1)</td><td>Y</td><td>Y / N</td></tr>
+          <tr><td>status</td><td>상태</td><td>ENUM</td><td>Y</td><td>사용 / 사용안함</td></tr>
+          <tr><td>updated_by</td><td>수정자</td><td>VARCHAR</td><td>Y</td><td>최근 수정한 사용자명</td></tr>
+          <tr><td>updated_at</td><td>최근수정일</td><td>DATE</td><td>Y</td><td>최근 수정 일자</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">생산 경로 엔티티</h2>
+      <table class="doc-table">
+        <thead><tr><th>필드명</th><th>한글명</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>product_id</td><td>제품코드</td><td>VARCHAR</td><td>Y</td><td>FK, CBAM 제품 마스터 참조</td></tr>
+          <tr><td>route_no</td><td>경로 번호</td><td>INT</td><td>Y</td><td>1~9 (최대 9개)</td></tr>
+          <tr><td>production_route</td><td>생산 경로</td><td>ENUM</td><td>Y</td><td>품목별 상이</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. 부록 -->
+    <div class="doc-section" id="sec-appendix">
+      <h1 class="doc-h1">부록</h1>
+      <h2 class="doc-h2">비즈니스 규칙</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:80px">ID</th><th>규칙</th></tr></thead>
+        <tbody>
+          <tr><td>BR-01</td><td>CN 코드 조회는 CBAM 대상 제품(시멘트·전기·수소·철강·비료·알루미늄)에 한하여 가능하다.</td></tr>
+          <tr><td>BR-02</td><td>생산 경로는 제품당 최대 9개까지 등록 가능하며, 품목마다 선택 가능한 경로 옵션이 상이하다.</td></tr>
+          <tr><td>BR-03</td><td>구분이 "전구체"인 경우 전구체 여부(is_precursor)는 Y로 저장된다.</td></tr>
+          <tr><td>BR-04</td><td>HS 코드는 최대 12자리 숫자만 입력 가능하다.</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">Open Issues</h2>
+      <table class="doc-table">
+        <thead><tr><th>#</th><th>내용</th><th>담당</th><th>기한</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>제품 검색 시 자재 마스터 연동 범위 및 실시간 검색 vs 팝업 선택 방식 결정 필요</td><td>김혜신</td><td>미정</td></tr>
+          <tr><td>2</td><td>생산 경로 옵션 목록(품목별 상이) — 전체 옵션 목록 데이터 확보 필요</td><td>김혜신</td><td>미정</td></tr>
+          <tr><td>3</td><td>매개변수 항목 목록 및 입력 형식(단위 등) 확인 필요</td><td>김혜신</td><td>미정</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div><!-- /view-doc -->
+
+<!-- ═══════════ PROTO VIEW ═══════════ -->
+<div class="view proto-view active" id="view-proto">
+
+  <div class="screen-tab-bar">
+    <button class="screen-tab active" onclick="switchTab('list',this)">① 목록</button>
+    <button class="screen-tab" onclick="switchTab('reg',this)">② 등록</button>
+  </div>
+
+  <!-- 탑바 -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-name">CBAM 산정 플랫폼</div>
+      <div class="topbar-brand-sub">Carbon Border Adjustment</div>
+    </div>
+    <button class="topbar-toggle">☰</button>
+    <div style="flex:1;padding:0 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;">
+      <div style="font-size:15px;font-weight:700;color:var(--color-dark);">CBAM 제품 마스터</div>
+      <div style="font-size:12px;color:var(--text-muted);">CBAM <span style="color:#b0b8c4;">›</span> 기준정보 <span style="color:#b0b8c4;">›</span> <span style="font-weight:600;color:var(--text-base);">CBAM 제품 마스터</span></div>
+    </div>
+    <div class="topbar-help">?</div>
+    <span class="topbar-lang">KR</span>
+    <div class="topbar-user">
+      <div class="topbar-avatar">김</div>
+      <div class="topbar-user-info">
+        <div class="name">김혜신 관리자</div>
+        <div class="role">본사</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="proto-body">
+
+    <!-- 좌측 메뉴 트리 -->
+    <div class="proto-menu-tree">
+      <div class="proto-menu-tree-body">
+        <div class="nav-d1-item" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">OCF</span><span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children"></div>
+        <div class="nav-d1-item" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">PCF</span><span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children"></div>
+        <div class="nav-d1-item open" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">CBAM</span><span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children open">
+          <div class="nav-d2-item active open" onclick="toggleD2(this)">
+            <span class="d2-label">기준정보</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children open">
+            <span class="nav-d3-item active">CBAM 제품 마스터</span>
+            <span class="nav-d3-item" onclick="alert('준비 중')">공급사 마스터</span>
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-001_벤치마크.html'">CBAM 벤치마크</span>
+          </div>
+          <div class="nav-d2-item" onclick="toggleD2(this)">
+            <span class="d2-label">데이터 관리</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children">
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-002_출하데이터수집관리.html'">출하 데이터 수집/관리</span>
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-003_인증서비용조회.html'">CBAM 인증서 비용 조회</span>
+          </div>
+          <div class="nav-d2-item" onclick="toggleD2(this)">
+            <span class="d2-label">리포트/분석</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children">
+            <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 리포트</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 프로토 뷰포트 -->
+    <div class="proto-viewport">
+      <div class="proto-screens-wrap" id="protoScreensWrap">
+
+        <!-- ━━━━━━━━━━━ SCREEN 1: 목록 (Type A) ━━━━━━━━━━━ -->
+        <div class="proto-screen active" id="screen-list">
+          <div class="menu-title-area">
+            <span class="menu-title">CBAM 제품 마스터</span>
+            <div class="breadcrumb">
+              <span>CBAM</span><span class="breadcrumb-sep">›</span>
+              <span>기준정보</span><span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-cur">CBAM 제품 마스터</span>
+            </div>
+          </div>
+          <div class="main-container">
+            <div class="section-card">
+              <div class="card-title-area">
+                <span class="card-title">제품 정보</span>
+                <div class="title-actions">
+                  <button class="btn btn-primary" onclick="switchTab('reg',null)" id="note-anchor-4">+ 등록</button>
+                </div>
+              </div>
+              <!-- Filter Area -->
+              <div class="filter-area">
+                <div class="custom-dropdown date-selector" id="note-anchor-1" style="position:relative;">
+                  <button class="dropdown-trigger" onclick="this.nextElementSibling.classList.toggle('open')">
+                    <span class="trigger-text">2025-01-01 ~ 2025-12-31</span>
+                    <span class="trigger-icon">📅</span>
+                  </button>
+                </div>
+                <div class="custom-dropdown" id="note-anchor-2">
+                  <button class="dropdown-trigger" onclick="toggleDropdown(this)">
+                    <span class="trigger-text">상태 : 전체</span>
+                    <span class="trigger-icon">▼</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 전체')"><span class="item-text">전체</span></div>
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 사용')"><span class="item-text">사용</span></div>
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 사용안함')"><span class="item-text">사용안함</span></div>
+                  </div>
+                </div>
+                <div class="search-input-wrapper" id="note-anchor-3">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" class="search-input" placeholder="제품코드/제품명으로 검색하세요.">
+                </div>
+              </div>
+              <!-- Grid Control -->
+              <div class="grid-control">
+                <div class="grid-info" id="note-anchor-5">총 <strong id="totalCount">4</strong>건</div>
+                <div class="grid-actions">
+                  <div class="custom-dropdown" id="note-anchor-7">
+                    <button class="dropdown-trigger" onclick="toggleDropdown(this)" style="min-width:180px;">
+                      <span class="trigger-text">테이블 표시 선택 : 전체</span>
+                      <span class="trigger-icon">▼</span>
+                    </button>
+                    <div class="dropdown-menu">
+                      <div class="dropdown-header"><a href="#" onclick="selectAllCols(event)">전체 선택</a></div>
+                      <label class="dropdown-item"><span class="item-text">자재코드</span><input type="checkbox" checked data-column="col0"></label>
+                      <label class="dropdown-item"><span class="item-text">CN 코드</span><input type="checkbox" checked data-column="col2"></label>
+                      <label class="dropdown-item"><span class="item-text">전구체 여부</span><input type="checkbox" checked data-column="col3"></label>
+                      <label class="dropdown-item"><span class="item-text">상태</span><input type="checkbox" checked data-column="col4"></label>
+                      <label class="dropdown-item"><span class="item-text">수정자</span><input type="checkbox" checked data-column="col5"></label>
+                      <label class="dropdown-item"><span class="item-text">최근수정일</span><input type="checkbox" checked data-column="col6"></label>
+                    </div>
+                  </div>
+                  <button class="btn-icon excel" title="Excel 다운로드" onclick="downloadExcel()">📊</button>
+                </div>
+              </div>
+              <!-- Data Grid -->
+              <div class="data-grid-wrapper" id="note-anchor-6">
+                <table class="data-grid type-a" id="mainGrid">
+                  <thead>
+                    <tr>
+                      <th class="sortable" onclick="sortGrid(0)">제품코드<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(1)">제품명<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(2)">CN 코드<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(3)">전구체 여부<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(4)">상태<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(5)">수정자<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(6)" style="color:var(--color-primary);">최근수정일 ▼<span class="sort-icon desc"></span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="gridTbody">
+                    <tr oncontextmenu="showCtx(event)">
+                      <td><strong>MU456456</strong></td>
+                      <td><span class="td-link" onclick="alert('상세 팝업 (준비 중)')">메탈 스크롬 휠</span></td>
+                      <td>72200000</td>
+                      <td style="text-align:center;font-weight:700;color:var(--color-primary);">Y</td>
+                      <td><span class="badge b-success">사용</span></td>
+                      <td>홍길동</td>
+                      <td>2025-02-25</td>
+                    </tr>
+                    <tr oncontextmenu="showCtx(event)">
+                      <td><strong>HE231241</strong></td>
+                      <td><span class="td-link" onclick="alert('상세 팝업 (준비 중)')">메탈 버튼</span></td>
+                      <td>72101000</td>
+                      <td style="text-align:center;font-weight:700;color:var(--color-primary);">Y</td>
+                      <td><span class="badge b-success">사용</span></td>
+                      <td>홍길동</td>
+                      <td>2025-02-25</td>
+                    </tr>
+                    <tr oncontextmenu="showCtx(event)">
+                      <td><strong>BUT1000</strong></td>
+                      <td><span class="td-link" onclick="alert('상세 팝업 (준비 중)')">시멘트</span></td>
+                      <td>23450000</td>
+                      <td style="text-align:center;color:var(--text-muted);">N</td>
+                      <td><span class="badge b-success">사용</span></td>
+                      <td>홍길동</td>
+                      <td>2025-02-25</td>
+                    </tr>
+                    <tr oncontextmenu="showCtx(event)">
+                      <td><strong>BUT1001</strong></td>
+                      <td><span class="td-link" onclick="alert('상세 팝업 (준비 중)')">합판</span></td>
+                      <td>28145623</td>
+                      <td style="text-align:center;color:var(--text-muted);">N</td>
+                      <td><span class="badge b-info">사용안함</span></td>
+                      <td>홍길동</td>
+                      <td>YYYY-MM-DD</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Pagination -->
+              <div class="pagination-wrapper">
+                <div>
+                  <select class="page-size-sel">
+                    <option>10개씩 보기</option>
+                    <option>20개씩 보기</option>
+                    <option>50개씩 보기</option>
+                    <option>100개씩 보기</option>
+                  </select>
+                </div>
+                <div class="pagination-center">
+                  <button class="page-btn" disabled>◀</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn" disabled>▶</button>
+                </div>
+                <span style="font-size:12px;color:var(--text-muted);">1 / 1 페이지</span>
+              </div>
+            </div>
+          </div>
+        </div><!-- /screen-list -->
+
+        <!-- ━━━━━━━━━━━ SCREEN 2: 등록 (Type B-1) ━━━━━━━━━━━ -->
+        <div class="proto-screen" id="screen-reg">
+          <div class="menu-title-area">
+            <span class="menu-title">제품 등록</span>
+            <div class="breadcrumb">
+              <span>CBAM</span><span class="breadcrumb-sep">›</span>
+              <span>기준정보</span><span class="breadcrumb-sep">›</span>
+              <span>CBAM 제품 마스터</span><span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-cur">제품 등록</span>
+            </div>
+          </div>
+          <div class="main-container" style="overflow-y:auto;">
+            <div class="section-card">
+              <div class="card-title-area">
+                <span class="card-title">제품 등록</span>
+                <div class="title-actions">
+                  <button class="btn btn-outline" onclick="showModal('cancelModal')">취소</button>
+                  <button class="btn btn-primary" onclick="showModal('saveModal')">저장</button>
+                </div>
+              </div>
+              <div style="padding:24px 32px;">
+                <p style="font-size:12px;color:var(--text-muted);text-align:right;margin-bottom:16px;">* 필수입력</p>
+
+                <!-- 제품 필드 -->
+                <div class="form-group" style="position:relative;" id="note-anchor-1">
+                  <label class="form-label">제품 <span class="required">*</span></label>
+                  <div style="position:relative;display:inline-block;width:320px;">
+                    <input type="text" class="form-input" id="productInput" placeholder="제품코드 또는 제품명을 검색하세요."
+                      style="padding-right:36px;"
+                      onfocus="document.getElementById('productDropdown').style.display='block'"
+                      oninput="document.getElementById('productDropdown').style.display='block'">
+                    <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;">🔍</span>
+                  </div>
+                  <!-- 자재 검색 리스트 드롭다운 -->
+                  <div id="productDropdown" style="display:none;position:absolute;left:0;top:100%;margin-top:2px;z-index:200;background:#fff;border:1px solid var(--color-border,#dfe2eb);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);width:520px;">
+                    <div style="padding:8px 12px;border-bottom:1px solid #eee;background:#f8f9fc;display:flex;align-items:center;justify-content:space-between;border-radius:6px 6px 0 0;">
+                      <span style="font-size:12px;font-weight:700;color:#43474e;">자재 검색 리스트</span>
+                      <div style="display:flex;gap:6px;">
+                        <button class="btn btn-outline btn-sm" style="height:26px;font-size:11px;" onclick="selectProduct('MU456456','메탈 스크롬 휠')">저장</button>
+                        <button class="btn btn-outline btn-sm" style="height:26px;font-size:11px;" onclick="document.getElementById('productDropdown').style.display='none'">취소</button>
+                      </div>
+                    </div>
+                    <div style="max-height:200px;overflow-y:auto;">
+                      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                        <thead>
+                          <tr style="background:#f3f6f9;">
+                            <th style="padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid #eee;">선택</th>
+                            <th style="padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid #eee;">자재코드</th>
+                            <th style="padding:7px 10px;text-align:left;font-weight:600;border-bottom:1px solid #eee;">자재명</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style="cursor:pointer;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background=''" onclick="selectProduct('MU456456','메탈 스크롬 휠')">
+                            <td style="padding:7px 10px;"><input type="radio" name="prodSelect" checked></td>
+                            <td style="padding:7px 10px;font-weight:600;">MU456456</td>
+                            <td style="padding:7px 10px;">메탈 스크롬 휠</td>
+                          </tr>
+                          <tr style="cursor:pointer;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background=''" onclick="selectProduct('HE231241','메탈 버튼')">
+                            <td style="padding:7px 10px;"><input type="radio" name="prodSelect"></td>
+                            <td style="padding:7px 10px;font-weight:600;">HE231241</td>
+                            <td style="padding:7px 10px;">메탈 버튼</td>
+                          </tr>
+                          <tr style="cursor:pointer;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background=''" onclick="selectProduct('BUT1000','시멘트')">
+                            <td style="padding:7px 10px;"><input type="radio" name="prodSelect"></td>
+                            <td style="padding:7px 10px;font-weight:600;">BUT1000</td>
+                            <td style="padding:7px 10px;">시멘트</td>
+                          </tr>
+                          <tr style="cursor:pointer;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background=''" onclick="selectProduct('BUT1001','합판')">
+                            <td style="padding:7px 10px;"><input type="radio" name="prodSelect"></td>
+                            <td style="padding:7px 10px;font-weight:600;">BUT1001</td>
+                            <td style="padding:7px 10px;">합판</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 구분 필드 -->
+                <div class="form-group" id="note-anchor-2">
+                  <label class="form-label">구분 <span class="required">*</span></label>
+                  <div style="display:flex;align-items:center;gap:20px;padding:8px 0;">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                      <input type="radio" name="category" value="D" checked style="accent-color:var(--color-primary,#0561a4);">
+                      보고대상 제품
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+                      <input type="radio" name="category" value="P" style="accent-color:var(--color-primary,#0561a4);">
+                      전구체
+                    </label>
+                  </div>
+                </div>
+
+                <!-- CN 코드 필드 -->
+                <div class="form-group" id="note-anchor-3">
+                  <label class="form-label">CN 코드 <span class="required">*</span></label>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="text" class="form-input" id="cnCodeInput" placeholder="" readonly style="width:160px;background:#f8f9fc;cursor:default;">
+                    <button class="btn btn-primary" onclick="openCnModal()" style="white-space:nowrap;">CN 코드 조회</button>
+                  </div>
+                </div>
+
+                <!-- HS 코드 필드 -->
+                <div class="form-group" id="note-anchor-4">
+                  <label class="form-label">HS 코드</label>
+                  <input type="text" class="form-input" placeholder="HS 코드를 입력하세요." maxlength="12" style="width:200px;" oninput="this.value=this.value.replace(/\D/g,'')">
+                  <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">최대 12자리</span>
+                </div>
+
+                <!-- 생산 경로 -->
+                <div class="form-group" id="note-anchor-5">
+                  <label class="form-label">생산 경로 <span class="required">*</span></label>
+                  <table style="width:500px;border-collapse:collapse;font-size:13px;border:1px solid #dfe2eb;border-radius:6px;overflow:hidden;">
+                    <thead>
+                      <tr style="background:#f3f6f9;">
+                        <th style="padding:9px 14px;text-align:left;font-weight:600;width:80px;border-bottom:1px solid #dfe2eb;">Route</th>
+                        <th style="padding:9px 14px;text-align:left;font-weight:600;border-bottom:1px solid #dfe2eb;">생산 경로</th>
+                        <th style="padding:9px 14px;text-align:center;font-weight:600;width:60px;border-bottom:1px solid #dfe2eb;">관리</th>
+                      </tr>
+                    </thead>
+                    <tbody id="routeTable">
+                      <tr>
+                        <td style="padding:8px 14px;text-align:center;font-weight:700;">1</td>
+                        <td style="padding:8px 14px;">
+                          <select class="form-select" style="width:100%;max-width:280px;">
+                            <option value="">선택</option>
+                            <option>Direct production</option>
+                            <option>By-product production</option>
+                            <option>Waste gas production</option>
+                          </select>
+                        </td>
+                        <td style="padding:8px 14px;text-align:center;">
+                          <button onclick="deleteRoute(this)" style="border:none;background:none;cursor:pointer;color:#ff5812;font-size:16px;" title="삭제">🗑</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style="margin-top:6px;">
+                    <button onclick="addRoute()" style="width:500px;padding:7px;border:1px dashed #b0b8c4;background:none;border-radius:4px;color:var(--text-muted);cursor:pointer;font-size:13px;" id="addRouteBtn">+ 경로 추가</button>
+                  </div>
+                  <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">제품당 최대 9개 경로 지정 가능</p>
+                </div>
+
+                <!-- 매개변수 -->
+                <div class="form-group" id="note-anchor-6">
+                  <label class="form-label">매개변수</label>
+                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">배출량 산정에 적용된 입력 변수가 있을 경우 데이터를 입력하세요.</p>
+                  <table style="width:500px;border-collapse:collapse;font-size:13px;border:1px solid #dfe2eb;border-radius:6px;overflow:hidden;">
+                    <thead>
+                      <tr style="background:#f3f6f9;">
+                        <th style="padding:9px 14px;text-align:left;font-weight:600;width:40px;border-bottom:1px solid #dfe2eb;"></th>
+                        <th style="padding:9px 14px;text-align:left;font-weight:600;border-bottom:1px solid #dfe2eb;">매개변수</th>
+                        <th style="padding:9px 14px;text-align:left;font-weight:600;border-bottom:1px solid #dfe2eb;">매개변수 값</th>
+                      </tr>
+                    </thead>
+                    <tbody id="paramTable">
+                      <tr>
+                        <td style="padding:8px 14px;text-align:center;font-weight:700;">1</td>
+                        <td style="padding:8px 14px;">
+                          <select class="form-select" style="width:100%;max-width:180px;">
+                            <option value="">매개변수 선택</option>
+                            <option>매개변수 A</option>
+                            <option>매개변수 B</option>
+                            <option>매개변수 C</option>
+                          </select>
+                        </td>
+                        <td style="padding:8px 14px;">
+                          <input type="text" class="form-input" placeholder="" style="width:120px;">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style="margin-top:6px;">
+                    <button onclick="addParam()" style="border:none;background:var(--color-primary,#0561a4);color:#fff;border-radius:4px;padding:5px 14px;cursor:pointer;font-size:12px;font-weight:600;">추가</button>
+                  </div>
+                </div>
+
+                <!-- 설명 -->
+                <div class="form-group">
+                  <label class="form-label">설명</label>
+                  <textarea class="form-textarea" placeholder="설명을 입력하세요." style="width:500px;height:80px;"></textarea>
+                </div>
+
+              </div><!-- /padding -->
+            </div>
+          </div>
+        </div><!-- /screen-reg -->
+
+      </div><!-- /proto-screens-wrap -->
+    </div><!-- /proto-viewport -->
+
+    <!-- Widget Notes Panel -->
+    <div class="lnb-desc-panel" id="notePanel">
+      <div class="lnb-desc-header">
+        <span class="lnb-desc-header-title">Description</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="saveToFile()" title="HTML 파일에 노트 저장" style="border:none;font-size:11px;padding:3px 8px;background:var(--color-primary);color:#fff;border-radius:4px;cursor:pointer;white-space:nowrap;">💾 파일저장</button>
+          <button class="note-card-btn" onclick="toggleNotes()">✕</button>
+        </div>
+      </div>
+      <div class="lnb-notes-list" id="notesList"></div>
+    </div>
+
+  </div><!-- /proto-body -->
+</div><!-- /view-proto -->
+
+</div><!-- /app-body -->
+
+<!-- ═══════════ CN 코드 조회 팝업 모달 ═══════════ -->
+<div id="cnModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:8px;width:700px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.22);display:flex;flex-direction:column;max-height:90vh;">
+    <!-- 모달 헤더 -->
+    <div style="height:52px;background:#001b3d;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;">
+      <span style="color:#fff;font-size:15px;font-weight:700;">CN 코드 조회</span>
+      <button onclick="closeCnModal()" style="border:none;background:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <!-- 모달 바디 -->
+    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+      <p style="font-size:12px;color:#ff5812;margin-bottom:16px;">*CBAM 대상 제품에 한하여 CN 코드 조회가 가능합니다.</p>
+      <!-- 필터 -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <select style="height:34px;padding:0 10px;border:1px solid #dfe2eb;border-radius:4px;font-size:13px;font-family:inherit;">
+          <option>구분 : 전체</option>
+          <option>시멘트</option>
+          <option>전기</option>
+          <option>수소</option>
+          <option>철강</option>
+          <option>비료</option>
+          <option>알루미늄</option>
+        </select>
+        <div style="position:relative;flex:1;max-width:280px;">
+          <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#b0b8c4;font-size:14px;">🔍</span>
+          <input type="text" placeholder="CN 코드를 검색하세요." style="width:100%;height:34px;padding:0 10px 0 30px;border:1px solid #dfe2eb;border-radius:4px;font-size:13px;font-family:inherit;">
+        </div>
+      </div>
+      <!-- 테이블 -->
+      <div style="border:1px solid #dfe2eb;border-radius:6px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#f3f6f9;">
+              <th style="padding:10px 12px;text-align:center;font-weight:600;width:50px;border-bottom:1px solid #dfe2eb;">선택</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;width:70px;border-bottom:1px solid #dfe2eb;">구분</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;width:130px;border-bottom:1px solid #dfe2eb;">품목군</th>
+              <th style="padding:10px 12px;text-align:left;font-weight:600;border-bottom:1px solid #dfe2eb;">품목</th>
+              <th style="padding:10px 12px;text-align:center;font-weight:600;width:100px;border-bottom:1px solid #dfe2eb;">CN 코드</th>
+            </tr>
+          </thead>
+          <tbody id="cnTableBody">
+          </tbody>
+        </table>
+      </div>
+      <!-- 페이지네이션 -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;" id="cnPagination"></div>
+    </div>
+    <!-- 모달 푸터 -->
+    <div style="padding:14px 20px;border-top:1px solid #dfe2eb;display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;">
+      <button onclick="closeCnModal()" style="height:36px;padding:0 20px;border:1px solid #dfe2eb;border-radius:4px;background:#fff;font-size:13px;cursor:pointer;font-family:inherit;">취소</button>
+      <button onclick="confirmCnCode()" style="height:36px;padding:0 20px;border:none;border-radius:4px;background:#0561a4;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 공통 모달 ═══════════ -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span class="modal-title">저장하시겠습니까?</span>
+      <button class="modal-close" onclick="closeModal('saveModal')">✕</button>
+    </div>
+    <div class="modal-body">입력한 내용을 저장합니다.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('saveModal')">취소</button>
+      <button class="btn btn-primary" onclick="closeModal('saveModal');switchTab('list',null)">저장</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span class="modal-title">취소하시겠습니까?</span>
+      <button class="modal-close" onclick="closeModal('cancelModal')">✕</button>
+    </div>
+    <div class="modal-body">입력한 내용이 저장되지 않습니다.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('cancelModal')">아니오</button>
+      <button class="btn btn-primary" onclick="closeModal('cancelModal');switchTab('list',null)">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 컨텍스트 메뉴 ═══════════ -->
+<div class="ctx-menu" id="ctxMenu" style="display:none;">
+  <div class="ctx-item" onclick="switchTab('reg',null);closeCtx()">수정</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" onclick="alert('삭제 기능 (준비 중)');closeCtx()">삭제</div>
+</div>
+<div class="ctx-menu" id="widgetCtxMenu" style="display:none;">
+  <div class="ctx-item" id="widgetCtxAdd">Add Description</div>
+  <div class="ctx-item" id="widgetCtxEdit" style="display:none">Edit Description</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="widgetCtxDel" style="display:none">Delete Description</div>
+</div>
+
+<!-- ═══ 화면별 설정 ═══ -->
+<script>
+const NOTES_STORAGE_KEY = 'cbam-notes-CBAM004';
+const NOTES_EMBED_ID    = 'embeddedNotesCBAM004';
+const SAVE_FILENAME     = 'SCR-CBAM-004_제품마스터.html';
+const INIT_NOTES = {
+  list:[
+    {n:1,  name:'날짜 필터', body:'<ul><li>최근수정일 기준 날짜 범위 필터</li><li>기본값 : null (전체 조회)</li></ul>'},
+    {n:2,  name:'상태 필터', body:'<ul><li>(D) : 전체</li><li>전체 / 사용 / 사용안함</li></ul>'},
+    {n:3,  name:'검색', body:'<ul><li>안내문구 : 제품코드/제품명으로 검색하세요.</li><li>기본값 : null</li></ul>'},
+    {n:4,  name:'+ 등록 버튼', body:'<ul><li>클릭 이벤트 : 등록 화면으로 이동</li></ul>'},
+    {n:5,  name:'등록 건수', body:'<ul><li>테이블에 등록된 개수 표시</li></ul>'},
+    {n:6,  name:'CBAM 제품 정보 테이블', body:'<ul><li>기본정렬 : 최근수정일 내림차순</li><li>정렬기능 제공컬럼 : 모든 컬럼</li><li>테이블 항목 정의<br/>1) 자재코드 : 등록 시 입력값<br/>2) 자재명 : 등록 시 입력값, 클릭 시 상세 팝업<br/>3) CN 코드 : 등록 시 입력값<br/>4) 전구체 여부 : Y / N<br/>5) 상태 : 사용 / 사용안함<br/>6) 수정자 : 항목을 최근수정한 사용자<br/>7) 최근수정일 : 수정자가 최근수정한 일자값</li></ul>'},
+    {n:7,  name:'테이블 표시 선택', body:'<ul><li>(D) : 전체</li><li>자재코드 / CN 코드 / 전구체 여부 / 상태 / 수정자 / 최근수정일</li></ul>'},
+  ],
+  reg:[
+    {n:'1.1', name:'자재 검색 리스트', body:'<ul><li>(D) : 첫번째 항목</li><li>정렬 기준 : 자재코드 내림차순</li><li>자재 마스터에 등록된 리스트 전체 출력</li><li>영역 초과 시 스크롤 적용</li><li>[보기] 버튼 클릭 이벤트 : 자재정보 상세 팝업 출력</li><li>[저장] 버튼 클릭 이벤트 : 선택한 자재 선택 및 자재 검색 인풋박스에 자재코드 및 자재명 출력</li><li>[취소] 버튼 클릭 이벤트 : 창 닫힘</li></ul>'},
+    {n:2,  name:'구분 *', body:'<ul><li>필수 입력값</li><li>보고대상 제품(D), 전구체</li></ul>'},
+    {n:3,  name:'CN 코드 *', body:'<ul><li>필수 입력값</li><li>[CN 코드 조회] 버튼<br/>- 클릭 이벤트 : CN 코드 조회 팝업 출력</li></ul>'},
+    {n:4,  name:'HS 코드', body:'<ul><li>선택 입력값</li><li>최대 12자리 입력 가능</li></ul>'},
+    {n:5,  name:'생산 경로 *', body:'<ul><li>제품당 최대 9개 경로 지정 가능</li><li>품목마다 생산 경로 유무 및 선택 가능</li><li>옵션 상이</li></ul>'},
+    {n:6,  name:'매개변수', body:'<ul><li>배출량 산정에 적용된 입력 변수가 있을 경우 데이터 입력</li><li>[추가] 버튼으로 행 추가</li></ul>'},
+  ],
+};
+const SCREEN_IDS = ['list','reg'];
+</script>
+<script src="../../../_디자인시스템/cbam-proto.js"></script>
+<script id="embeddedNotesCBAM004" type="application/json">{}</script>
+
+<script>
+/* ─────────────────── CN 코드 조회 팝업 ─────────────────── */
+const CN_DATA = [
+  {cat:'시멘트', group:'Calcined clay',       nameKo:'고령토와 그 밖의 고령토질의 점토',              nameEn:'Kaolin and other kaolinic clays, calcined',                                  code:'2507 00 80'},
+  {cat:'시멘트', group:'Cement clinker',       nameKo:'시멘트 클링커',                                   nameEn:'Cement clinkers',                                                            code:'2523 10 00'},
+  {cat:'시멘트', group:'Cement',               nameKo:'백색 시멘트 (인위적으로 착색한 것인지에 상관없다)', nameEn:'White Portland cement, whether or not artificially coloured',                 code:'2523 21 00'},
+  {cat:'시멘트', group:'Cement',               nameKo:'기타 포틀랜드 시멘트',                             nameEn:'Other Portland cement',                                                      code:'2523 29 00'},
+  {cat:'시멘트', group:'Cement',               nameKo:'그 밖의 수경성 시멘트',                            nameEn:'Other hydraulic cements',                                                    code:'2523 90 00'},
+  {cat:'시멘트', group:'Aluminous cement',     nameKo:'알루미나 시멘트',                                  nameEn:"Aluminous cement *Alsoreferred toas 'Calcium Aluminate Cement'.",             code:'2523 30 00*'},
+  {cat:'전기',   group:'Electricity',          nameKo:'전기에너지',                                       nameEn:'Electrical energy',                                                          code:'2716 00 00'},
+  {cat:'수소',   group:'Hydrogen',             nameKo:'수소',                                             nameEn:'Hydrogen',                                                                   code:'2804 10 00'},
+  {cat:'철강',   group:'Sintered Ore',         nameKo:'응결한 철광과 그 정광 배소한 [황화철광은 제외한다]', nameEn:'Agglomerated iron ores and concentrates, other than roasted iron pyrites',    code:'2601 12 00'},
+  {cat:'철강',   group:'Iron or steel products',nameKo:'철과 강철',                                        nameEn:'IRON AND STEEL',                                                             code:'7200 00 00'},
+  {cat:'철강',   group:'Pig Iron',             nameKo:'선철과 스피그라이존 피그·블록 [모양이나 그 밖의 일차제품 형태인 것으로 한정한다]', nameEn:'Pig iron and spiegeleisen in pigs, blocks, or other primary forms',          code:'7201 00 00'},
+];
+
+let cnPage = 1;
+const CN_PER_PAGE = 6;
+let cnSelected = null;
+
+function openCnModal() {
+  cnPage = 1; cnSelected = null;
+  document.getElementById('cnModal').style.display = 'flex';
+  renderCnTable();
+  renderCnPagination();
+}
+function closeCnModal() {
+  document.getElementById('cnModal').style.display = 'none';
+}
+function renderCnTable() {
+  const start = (cnPage - 1) * CN_PER_PAGE;
+  const rows = CN_DATA.slice(start, start + CN_PER_PAGE);
+  const tbody = document.getElementById('cnTableBody');
+  tbody.innerHTML = rows.map((r, i) => {
+    const idx = start + i;
+    const sel = cnSelected === idx;
+    return `<tr style="cursor:pointer;background:${sel?'rgba(5,97,164,.06)':''}" onclick="selectCnRow(${idx},this)">
+      <td style="padding:9px 12px;text-align:center;border-bottom:1px solid #f0f2f5;">
+        <input type="radio" name="cnRadio" ${sel?'checked':''} style="accent-color:#0561a4;">
+      </td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f2f5;">${r.cat}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f2f5;">${r.group}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f2f5;line-height:1.5;">
+        <div style="font-weight:600;">${r.nameKo}</div>
+        <div style="font-size:11px;color:#73777f;">${r.nameEn}</div>
+      </td>
+      <td style="padding:9px 12px;text-align:center;border-bottom:1px solid #f0f2f5;font-weight:700;color:#0561a4;">${r.code}</td>
+    </tr>`;
+  }).join('');
+}
+function renderCnPagination() {
+  const total = Math.ceil(CN_DATA.length / CN_PER_PAGE);
+  const cont = document.getElementById('cnPagination');
+  let html = `<button onclick="cnGoPage(${cnPage-1})" ${cnPage===1?'disabled':''} style="width:28px;height:28px;border:1px solid #dfe2eb;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;">◀</button>`;
+  for(let p=1;p<=total;p++){
+    html += `<button onclick="cnGoPage(${p})" style="width:28px;height:28px;border:1px solid ${p===cnPage?'#0561a4':'#dfe2eb'};border-radius:4px;background:${p===cnPage?'#0561a4':'#fff'};color:${p===cnPage?'#fff':'#43474e'};cursor:pointer;font-size:12px;font-weight:${p===cnPage?700:400};">${p}</button>`;
+  }
+  html += `<button onclick="cnGoPage(${cnPage+1})" ${cnPage===total?'disabled':''} style="width:28px;height:28px;border:1px solid #dfe2eb;border-radius:4px;background:#fff;cursor:pointer;font-size:12px;">▶</button>`;
+  cont.innerHTML = html;
+}
+function cnGoPage(p) {
+  const total = Math.ceil(CN_DATA.length / CN_PER_PAGE);
+  if(p<1||p>total) return;
+  cnPage = p;
+  renderCnTable();
+  renderCnPagination();
+}
+function selectCnRow(idx, row) {
+  cnSelected = idx;
+  document.querySelectorAll('#cnTableBody tr').forEach(r=>r.style.background='');
+  row.style.background = 'rgba(5,97,164,.06)';
+  row.querySelector('input[type=radio]').checked = true;
+}
+function confirmCnCode() {
+  if(cnSelected === null){ alert('CN 코드를 선택하세요.'); return; }
+  const d = CN_DATA[cnSelected];
+  document.getElementById('cnCodeInput').value = d.code.replace(/\s/g,'');
+  closeCnModal();
+}
+
+/* ─────────────────── 등록 화면 동적 행 ─────────────────── */
+let routeCount = 1;
+function addRoute() {
+  if(routeCount >= 9){ alert('최대 9개 경로까지 추가 가능합니다.'); return; }
+  routeCount++;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="padding:8px 14px;text-align:center;font-weight:700;">${routeCount}</td>
+    <td style="padding:8px 14px;">
+      <select class="form-select" style="width:100%;max-width:280px;">
+        <option value="">선택</option>
+        <option>Direct production</option>
+        <option>By-product production</option>
+        <option>Waste gas production</option>
+      </select>
+    </td>
+    <td style="padding:8px 14px;text-align:center;">
+      <button onclick="deleteRoute(this)" style="border:none;background:none;cursor:pointer;color:#ff5812;font-size:16px;" title="삭제">🗑</button>
+    </td>`;
+  document.getElementById('routeTable').appendChild(tr);
+  renumberRoutes();
+}
+function deleteRoute(btn) {
+  btn.closest('tr').remove();
+  routeCount--;
+  renumberRoutes();
+}
+function renumberRoutes() {
+  document.querySelectorAll('#routeTable tr').forEach((tr,i)=>{
+    tr.cells[0].textContent = i+1;
+  });
+  routeCount = document.querySelectorAll('#routeTable tr').length;
+}
+
+let paramCount = 1;
+function addParam() {
+  paramCount++;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="padding:8px 14px;text-align:center;font-weight:700;">${paramCount}</td>
+    <td style="padding:8px 14px;">
+      <select class="form-select" style="width:100%;max-width:180px;">
+        <option value="">매개변수 선택</option>
+        <option>매개변수 A</option>
+        <option>매개변수 B</option>
+        <option>매개변수 C</option>
+      </select>
+    </td>
+    <td style="padding:8px 14px;">
+      <input type="text" class="form-input" placeholder="" style="width:120px;">
+    </td>`;
+  document.getElementById('paramTable').appendChild(tr);
+}
+
+/* ─────────────────── 자재 선택 ─────────────────── */
+function selectProduct(code, name) {
+  document.getElementById('productInput').value = code + ' ' + name;
+  document.getElementById('productDropdown').style.display = 'none';
+}
+document.addEventListener('click', function(e){
+  const dd = document.getElementById('productDropdown');
+  if(dd && !dd.contains(e.target) && e.target.id !== 'productInput'){
+    dd.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

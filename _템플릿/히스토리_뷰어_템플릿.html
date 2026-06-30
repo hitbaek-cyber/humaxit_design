@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  히스토리 뷰어 템플릿                                            ║
+  ║  사용법:                                                         ║
+  ║  1. [프로젝트명] 을 실제 프로젝트명으로 교체                     ║
+  ║  2. 미팅노트 추가 → A·B·C 섹션 지시에 따라 3곳 추가             ║
+  ║  3. 결정로그 추가 → D·E 섹션 지시에 따라 2곳 추가               ║
+  ║  4. 탭 배지 숫자(미팅 N건 / 결정 N건) 업데이트                  ║
+  ╚══════════════════════════════════════════════════════════════════╝
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[프로젝트명] — 히스토리 뷰어</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" />
+  <style>
+    :root {
+      --humax-primary: #0561a4;
+      --humax-secondary: #415aa9;
+      --humax-success: #006b56;
+      --humax-warning: #cea331;
+      --humax-danger: #ff5812;
+      --humax-bg: #f3f6f9;
+      --humax-text: #43474e;
+      --humax-border: #dee2e6;
+    }
+
+    body {
+      background: var(--humax-bg);
+      color: var(--humax-text);
+      font-family: 'Noto Sans KR', 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── 상단 헤더 ── */
+    .page-header {
+      background: var(--humax-primary);
+      color: #fff;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(5,97,164,.25);
+    }
+    .page-header .project-label { font-size: 12px; opacity: .7; letter-spacing: .5px; }
+    .page-header .page-title { font-size: 18px; font-weight: 700; margin: 0; }
+
+    /* ── 탭 네비 ── */
+    .main-tabs {
+      background: #fff;
+      border-bottom: 2px solid var(--humax-border);
+      padding: 8px 28px 0;
+    }
+    .main-tabs .nav-link {
+      color: #6c757d;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 20px;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: -2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      transition: background .2s, color .2s;
+    }
+    .main-tabs .nav-link:hover { background: #f0f6ff; color: var(--humax-primary); }
+    .main-tabs .nav-link.active { color: #fff; background: var(--humax-primary); border-bottom-color: var(--humax-primary); }
+    .main-tabs .nav-link .badge-count {
+      background: #d0d5dd;
+      color: #6c757d;
+      border-radius: 10px;
+      font-size: 11px;
+      padding: 1px 7px;
+      transition: background .2s, color .2s;
+    }
+    .main-tabs .nav-link.active .badge-count { background: rgba(255,255,255,0.25); color: #fff; }
+
+    /* ── 탭 콘텐츠 공통 ── */
+    .tab-section { display: none; padding: 28px; max-width: 1200px; margin: 0 auto; }
+    .tab-section.active { display: block; }
+
+    /* ── 미팅노트 탭 ── */
+    .meeting-list-card { background: #fff; border: 1px solid var(--humax-border); border-radius: 10px; overflow: hidden; }
+    .meeting-list-header { background: var(--humax-bg); padding: 12px 16px; font-size: 12px; font-weight: 700; color: #6c757d; letter-spacing: .5px; border-bottom: 1px solid var(--humax-border); }
+    .meeting-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; border-bottom: 1px solid var(--humax-border); cursor: pointer; transition: background .15s; }
+    .meeting-item:last-child { border-bottom: none; }
+    .meeting-item:hover { background: #f0f6ff; }
+    .meeting-item.selected { background: #e8f0fb; border-left: 3px solid var(--humax-primary); }
+    .meeting-date-badge { min-width: 70px; text-align: center; background: var(--humax-primary); color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; line-height: 1.3; }
+    .meeting-date-badge .month { font-size: 10px; opacity: .85; }
+    .meeting-info { flex: 1; min-width: 0; }
+    .meeting-info .title { font-weight: 700; font-size: 14px; color: var(--humax-text); margin-bottom: 4px; }
+    .meeting-info .meta { font-size: 12px; color: #6c757d; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    /* ── 마크다운 렌더 영역 ── */
+    .md-content-area { background: #fff; border: 1px solid var(--humax-border); border-radius: 10px; padding: 32px 36px; min-height: 400px; }
+    .md-content-area h1 { font-size: 22px; font-weight: 800; color: var(--humax-primary); border-bottom: 2px solid var(--humax-primary); padding-bottom: 10px; margin-bottom: 20px; }
+    .md-content-area h2 { font-size: 17px; font-weight: 700; color: var(--humax-text); margin-top: 28px; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid var(--humax-border); }
+    .md-content-area h3 { font-size: 15px; font-weight: 700; color: var(--humax-secondary); margin-top: 20px; margin-bottom: 10px; }
+    .md-content-area h4 { font-size: 14px; font-weight: 700; margin-top: 16px; margin-bottom: 8px; }
+    .md-content-area table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 16px; }
+    .md-content-area table th { background: var(--humax-bg); font-weight: 700; padding: 8px 12px; border: 1px solid var(--humax-border); text-align: left; }
+    .md-content-area table td { padding: 8px 12px; border: 1px solid var(--humax-border); }
+    .md-content-area table tr:nth-child(even) td { background: #fafbfc; }
+    .md-content-area blockquote { border-left: 4px solid var(--humax-primary); background: #f0f6ff; margin: 12px 0; padding: 10px 16px; border-radius: 0 6px 6px 0; font-size: 14px; color: #344; }
+    .md-content-area code { background: #f0f4f8; padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #d44; }
+    .md-content-area ul, .md-content-area ol { padding-left: 24px; font-size: 14px; }
+    .md-content-area li { margin-bottom: 4px; }
+    .md-content-area hr { border: none; border-top: 1px solid var(--humax-border); margin: 24px 0; }
+    .md-content-area p { font-size: 14px; line-height: 1.75; }
+    .md-content-area strong { color: #2a2f36; }
+
+    /* ── 결정로그 탭 ── */
+    .decision-index { background: #fff; border: 1px solid var(--humax-border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+    .decision-index-header { background: var(--humax-primary); color: #fff; padding: 12px 20px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .decision-index table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .decision-index table th { background: var(--humax-bg); font-weight: 700; padding: 10px 16px; border-bottom: 1px solid var(--humax-border); text-align: left; }
+    .decision-index table td { padding: 10px 16px; border-bottom: 1px solid var(--humax-border); }
+    .decision-index table tr:last-child td { border-bottom: none; }
+    .decision-index table tr:hover td { background: #f0f6ff; cursor: pointer; }
+    .d-badge { display: inline-block; background: var(--humax-secondary); color: #fff; border-radius: 6px; padding: 2px 10px; font-size: 12px; font-weight: 700; }
+    .decision-card { background: #fff; border: 1px solid var(--humax-border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+    .decision-card-header { background: var(--humax-bg); padding: 14px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--humax-border); cursor: pointer; }
+    .decision-card-header:hover { background: #e8f0fb; }
+    .decision-card-title { font-weight: 700; font-size: 15px; flex: 1; }
+    .decision-card-body { padding: 0 24px 24px; display: none; }
+    .decision-card-body.show { display: block; }
+    .chevron { transition: transform .25s; }
+    .decision-card-header.open .chevron { transform: rotate(180deg); }
+    .status-chip { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+    .status-draft { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d1e7dd; color: #0a3622; }
+
+    /* ── 검색 바 ── */
+    .search-bar-wrap { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--humax-border); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(5,97,164,.06); }
+    .search-bar-wrap:focus-within { border-color: var(--humax-primary); box-shadow: 0 0 0 3px rgba(5,97,164,.12); }
+    .search-bar-wrap i { font-size: 18px; color: #aab; flex-shrink: 0; }
+    .search-bar-wrap input { flex: 1; border: none; outline: none; font-size: 14px; color: var(--humax-text); background: transparent; }
+    .search-bar-wrap input::placeholder { color: #bbb; }
+    .search-clear { background: none; border: none; color: #bbb; cursor: pointer; font-size: 18px; padding: 0; line-height: 1; display: none; }
+    .search-clear.visible { display: block; }
+    .search-clear:hover { color: var(--humax-danger); }
+    .search-count { font-size: 12px; font-weight: 700; white-space: nowrap; padding: 3px 10px; border-radius: 10px; background: var(--humax-bg); color: #6c757d; }
+    .search-count.has-result { background: #e8f0fb; color: var(--humax-primary); }
+    .search-count.no-result { background: #fde8e8; color: var(--humax-danger); }
+    mark.search-hit { background: #ffe082; color: #333; border-radius: 2px; padding: 0 1px; }
+    .match-badge { display: none; background: var(--humax-warning); color: #fff; border-radius: 10px; font-size: 11px; font-weight: 700; padding: 1px 7px; margin-left: auto; }
+    .match-badge.visible { display: inline-block; }
+    .meeting-item.no-match { opacity: .4; }
+    .decision-card.search-hidden { display: none; }
+    .decision-index tbody tr.search-hidden { display: none; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f0f0; }
+    ::-webkit-scrollbar-thumb { background: #c0c8d4; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- 상단 헤더 -->
+<div class="page-header">
+  <i class='bx bx-history' style="font-size:22px"></i>
+  <div>
+    <div class="project-label">[프로젝트명]</div>  <!-- ★ 프로젝트명 교체 -->
+    <h1 class="page-title">히스토리 뷰어</h1>
+  </div>
+</div>
+
+<!-- 탭 네비게이션 -->
+<div class="main-tabs">
+  <ul class="nav" id="mainTabs">
+    <li class="nav-item">
+      <button class="nav-link active" onclick="switchTab('meetings', this)">
+        <i class='bx bx-notepad'></i> 미팅노트
+        <span class="badge-count">1</span>  <!-- ★ 미팅 추가 시 숫자 +1 -->
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" onclick="switchTab('decisions', this)">
+        <i class='bx bx-check-shield'></i> 결정로그
+        <span class="badge-count">1</span>  <!-- ★ 결정 추가 시 숫자 +1 -->
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════ 미팅노트 탭 ═══════════════════════════════════ -->
+<div class="tab-section active" id="tab-meetings">
+  <div class="search-bar-wrap">
+    <i class='bx bx-search'></i>
+    <input type="text" id="search-meetings" placeholder="미팅노트 전체 검색…" oninput="onMeetingSearch(this.value)" />
+    <span class="search-count" id="meeting-search-count" style="display:none"></span>
+    <button class="search-clear" id="meeting-search-clear" title="검색 초기화" onclick="clearMeetingSearch()">
+      <i class='bx bx-x'></i>
+    </button>
+  </div>
+  <div class="row g-4">
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="meeting-list-card">
+        <div class="meeting-list-header"><i class='bx bx-list-ul me-1'></i> 회의 목록</div>
+
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             [A] 미팅 목록 아이템 — 미팅 추가 시 아래를 복사하여 추가
+                 - onclick의 'm001' → 고유 ID로 변경 (예: m0421, m0519 …)
+                 - month: YYYY.MM, 날짜(DD), 제목, 시간, 인원수 교체
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <div class="meeting-item selected" onclick="showMeeting('m001', this)">
+          <div class="meeting-date-badge">
+            <div class="month">YYYY.MM</div>
+            <div>DD</div>
+          </div>
+          <div class="meeting-info">
+            <div class="title">[회의 제목]</div>
+            <div class="meta">
+              <span><i class='bx bx-time-five'></i> HH:MM~HH:MM</span>
+              <span><i class='bx bx-user'></i> N명</span>
+            </div>
+          </div>
+        </div>
+        <!-- [A] 여기까지 복사 -->
+
+      </div>
+    </div>
+
+    <div class="col-12 col-md-8 col-lg-9">
+      <div class="md-content-area" id="meeting-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ 결정로그 탭 ═══════════════════════════════════ -->
+<div class="tab-section" id="tab-decisions">
+  <div class="search-bar-wrap">
+    <i class='bx bx-search'></i>
+    <input type="text" id="search-decisions" placeholder="결정로그 전체 검색…" oninput="onDecisionSearch(this.value)" />
+    <span class="search-count" id="decision-search-count" style="display:none"></span>
+    <button class="search-clear" id="decision-search-clear" title="검색 초기화" onclick="clearDecisionSearch()">
+      <i class='bx bx-x'></i>
+    </button>
+  </div>
+
+  <!-- 결정 인덱스 테이블 -->
+  <div class="decision-index mb-4">
+    <div class="decision-index-header"><i class='bx bx-table'></i> 결정 인덱스</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:90px">ID</th>
+          <th>결정 제목</th>
+          <th style="width:120px">결정일</th>
+          <th style="width:120px">결정자</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             [D] 인덱스 행 — 결정 추가 시 아래를 복사하여 맨 위에 추가 (최신순)
+                 - onclick의 'd001' → 결정카드 id와 동일하게
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+        <tr onclick="scrollToDecision('d001')">
+          <td><span class="d-badge">D-001</span></td>
+          <td>[결정 제목]</td>
+          <td>YYYY-MM-DD</td>
+          <td>[결정자]</td>
+        </tr>
+        <!-- [D] 여기까지 복사 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       [E] 결정 카드 — 결정 추가 시 아래를 복사하여 맨 위에 추가 (최신순)
+           - div id="d001" → 인덱스 행 onclick과 동일하게
+           - status-chip: 🟡 초안 / 🟢 확정 / 🔴 폐기
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="decision-card" id="d001">
+    <div class="decision-card-header" onclick="toggleDecision(this)">
+      <span class="d-badge">D-001</span>
+      <span class="decision-card-title">[결정 제목]</span>
+      <span class="status-chip status-confirmed">🟢 확정</span>
+      <i class='bx bx-chevron-down chevron' style="font-size:20px;color:#6c757d"></i>
+    </div>
+    <div class="decision-card-body show md-content-area" style="padding-top:20px">
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:16px">
+        <tr><th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6;width:140px">결정일</th><td style="padding:8px 12px;border:1px solid #dee2e6">YYYY-MM-DD</td></tr>
+        <tr><th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">결정자</th><td style="padding:8px 12px;border:1px solid #dee2e6">[결정자]</td></tr>
+        <tr><th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">참여자</th><td style="padding:8px 12px;border:1px solid #dee2e6">[참여자]</td></tr>
+        <tr><th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">관련 기능</th><td style="padding:8px 12px;border:1px solid #dee2e6">[관련 기능]</td></tr>
+        <tr><th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">관련 미팅</th><td style="padding:8px 12px;border:1px solid #dee2e6">[관련 미팅]</td></tr>
+      </table>
+
+      <h4>배경 / 문제 상황</h4>
+      <blockquote>[배경 서술]</blockquote>
+
+      <h4>검토한 옵션들</h4>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:16px">
+        <tr>
+          <th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">옵션</th>
+          <th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">장점</th>
+          <th style="background:#f3f6f9;padding:8px 12px;border:1px solid #dee2e6">단점</th>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px;border:1px solid #dee2e6">옵션 A</td>
+          <td style="padding:8px 12px;border:1px solid #dee2e6"></td>
+          <td style="padding:8px 12px;border:1px solid #dee2e6"></td>
+        </tr>
+      </table>
+
+      <h4>최종 결정</h4>
+      <blockquote>✅ [결정 내용]</blockquote>
+
+      <h4>결정 근거</h4>
+      <ul>
+        <li>[근거 1]</li>
+      </ul>
+
+      <h4>후속 액션</h4>
+      <ul>
+        <li>☐ [액션] — 담당: [담당자] | 기한: YYYY-MM-DD</li>
+      </ul>
+    </div>
+  </div>
+  <!-- [E] 여기까지 복사 -->
+
+</div><!-- /tab-decisions -->
+
+<!-- ═══ 숨겨진 마크다운 소스 ═══ -->
+<!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     [B] raw 마크다운 textarea — 미팅 추가 시 복사
+         - id="raw-m001" → [A] onclick의 ID와 동일하게
+         - 내용: 미팅노트 .md 파일 전체 내용 붙여넣기
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<textarea id="raw-m001" style="display:none">
+# 미팅노트 — YYYY-MM-DD | [회의 제목]
+
+🟢 확정
+
+---
+
+## 기본 정보
+
+| 항목 | 내용 |
+|------|------|
+| 일시 | YYYY-MM-DD (요일) HH:MM ~ HH:MM |
+| 장소 / 채널 | 오프라인 |
+| 참석자 | [참석자] |
+| 회의 목적 | [목적] |
+| 작성자 | |
+
+---
+
+## 안건 (Agenda)
+
+1. [안건 1]
+2. [안건 2]
+
+---
+
+## 논의 내용
+
+### 안건 1 — [제목]
+
+**논의 요약**
+> [요약]
+
+**결론**
+> [결론]
+
+---
+
+## ✅ 액션 아이템
+
+| # | 할 일 | 담당자 | 기한 | 상태 |
+|---|------|--------|------|------|
+| 1 | [할 일] | [담당] | - | ⬜ 미완료 |
+
+---
+
+## 🔗 관련 결정사항
+
+> [결정사항 또는 '이 회의에서 확정된 결정사항은 별도 없음']
+
+---
+
+## 다음 미팅 예정
+
+- 일시: YYYY-MM-DD
+- 주요 안건: [안건]
+</textarea>
+<!-- [B] 여기까지 복사 -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+<script>
+  // ════════════════════════════════════════
+  //  [C] MEETINGS 객체 — 미팅 추가 시 한 줄 추가
+  //      형식: mXXX: { rawId: 'raw-mXXX' },
+  //      [A][B]의 ID와 모두 동일해야 함
+  // ════════════════════════════════════════
+  const MEETINGS = {
+    m001: { rawId: 'raw-m001' },
+    // ← 여기에 추가: mXXX: { rawId: 'raw-mXXX' },
+  };
+
+  // ════════════════════════════════════════
+  //  이하 코드는 수정하지 않아도 됩니다
+  // ════════════════════════════════════════
+  let currentMeetingId = Object.keys(MEETINGS)[0];
+  let meetingSearchTerm = '';
+
+  function highlightInElement(el, term) {
+    clearHighlights(el);
+    if (!term) return 0;
+    const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+      acceptNode: n => {
+        const tag = n.parentNode.nodeName;
+        return (tag === 'SCRIPT' || tag === 'STYLE') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    let count = 0;
+    nodes.forEach(node => {
+      if (!regex.test(node.textContent)) return;
+      regex.lastIndex = 0;
+      const frag = document.createDocumentFragment();
+      let last = 0, m;
+      while ((m = regex.exec(node.textContent)) !== null) {
+        if (m.index > last) frag.appendChild(document.createTextNode(node.textContent.slice(last, m.index)));
+        const mark = document.createElement('mark');
+        mark.className = 'search-hit';
+        mark.textContent = m[0];
+        frag.appendChild(mark);
+        count++;
+        last = regex.lastIndex;
+      }
+      if (last < node.textContent.length) frag.appendChild(document.createTextNode(node.textContent.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    });
+    return count;
+  }
+
+  function clearHighlights(el) {
+    el.querySelectorAll('mark.search-hit').forEach(mark => mark.replaceWith(document.createTextNode(mark.textContent)));
+    el.normalize();
+  }
+
+  function textContains(text, term) { return text.toLowerCase().includes(term.toLowerCase()); }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.main-tabs .nav-link').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function showMeeting(id, el) {
+    document.querySelectorAll('.meeting-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    currentMeetingId = id;
+    const md = document.getElementById(MEETINGS[id].rawId).value;
+    const content = document.getElementById('meeting-content');
+    content.innerHTML = marked.parse(md);
+    if (meetingSearchTerm) {
+      const count = highlightInElement(content, meetingSearchTerm);
+      updateMeetingCount(count);
+      if (count > 0) content.querySelector('mark.search-hit')?.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function onMeetingSearch(term) {
+    meetingSearchTerm = term.trim();
+    const clearBtn = document.getElementById('meeting-search-clear');
+    clearBtn.classList.toggle('visible', meetingSearchTerm.length > 0);
+    const content = document.getElementById('meeting-content');
+    const countEl = document.getElementById('meeting-search-count');
+    if (!meetingSearchTerm) {
+      clearHighlights(content);
+      countEl.style.display = 'none';
+      document.querySelectorAll('.meeting-item').forEach(item => {
+        item.classList.remove('no-match');
+        item.querySelector('.match-badge')?.remove();
+      });
+      return;
+    }
+    const currentCount = highlightInElement(content, meetingSearchTerm);
+    updateMeetingCount(currentCount);
+    document.querySelectorAll('.meeting-item').forEach(item => {
+      const id = item.getAttribute('data-id');
+      const raw = document.getElementById(MEETINGS[id].rawId).value;
+      const matched = textContains(raw, meetingSearchTerm);
+      item.classList.toggle('no-match', !matched);
+      let badge = item.querySelector('.match-badge');
+      if (!badge) { badge = document.createElement('span'); badge.className = 'match-badge'; item.appendChild(badge); }
+      if (matched) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = marked.parse(raw);
+        badge.textContent = highlightInElement(tmp, meetingSearchTerm) + '건';
+        badge.classList.add('visible');
+      } else { badge.classList.remove('visible'); }
+    });
+  }
+
+  function updateMeetingCount(count) {
+    const el = document.getElementById('meeting-search-count');
+    el.style.display = 'inline-block';
+    if (!meetingSearchTerm) { el.style.display = 'none'; return; }
+    el.textContent = count > 0 ? count + '건 발견' : '결과 없음';
+    el.className = 'search-count ' + (count > 0 ? 'has-result' : 'no-result');
+  }
+
+  function clearMeetingSearch() { document.getElementById('search-meetings').value = ''; onMeetingSearch(''); }
+
+  const originalDecisionHTML = {};
+  let decisionSearchTerm = '';
+
+  function initDecisionOriginals() {
+    document.querySelectorAll('.decision-card').forEach(card => {
+      originalDecisionHTML[card.id] = card.querySelector('.decision-card-body').innerHTML;
+    });
+  }
+
+  function onDecisionSearch(term) {
+    decisionSearchTerm = term.trim();
+    document.getElementById('decision-search-clear').classList.toggle('visible', decisionSearchTerm.length > 0);
+    const countEl = document.getElementById('decision-search-count');
+    if (!decisionSearchTerm) {
+      document.querySelectorAll('.decision-card').forEach(card => {
+        card.querySelector('.decision-card-body').innerHTML = originalDecisionHTML[card.id];
+        card.classList.remove('search-hidden');
+      });
+      document.querySelectorAll('.decision-index tbody tr').forEach(tr => tr.classList.remove('search-hidden'));
+      countEl.style.display = 'none';
+      return;
+    }
+    let totalCount = 0;
+    document.querySelectorAll('.decision-card').forEach(card => {
+      const body = card.querySelector('.decision-card-body');
+      body.innerHTML = originalDecisionHTML[card.id];
+      const count = highlightInElement(body, decisionSearchTerm);
+      const headerMatch = textContains(card.querySelector('.decision-card-title').textContent, decisionSearchTerm);
+      const hasMatch = count > 0 || headerMatch;
+      card.classList.toggle('search-hidden', !hasMatch);
+      if (hasMatch) { body.classList.add('show'); card.querySelector('.decision-card-header').classList.add('open'); totalCount += count; }
+    });
+    document.querySelectorAll('.decision-index tbody tr').forEach(tr => {
+      tr.classList.toggle('search-hidden', !textContains(tr.textContent, decisionSearchTerm));
+    });
+    countEl.style.display = 'inline-block';
+    countEl.textContent = totalCount > 0 ? totalCount + '건 발견' : '결과 없음';
+    countEl.className = 'search-count ' + (totalCount > 0 ? 'has-result' : 'no-result');
+  }
+
+  function clearDecisionSearch() { document.getElementById('search-decisions').value = ''; onDecisionSearch(''); }
+
+  function toggleDecision(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('show', !body.classList.contains('show'));
+    header.classList.toggle('open', !header.classList.contains('open'));
+  }
+
+  function scrollToDecision(id) {
+    document.querySelectorAll('.main-tabs .nav-link')[1].click();
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const body = el.querySelector('.decision-card-body');
+      if (!body.classList.contains('show')) { body.classList.add('show'); el.querySelector('.decision-card-header').classList.add('open'); }
+    }, 100);
+  }
+
+  (function init() {
+    document.querySelectorAll('.meeting-item').forEach(item => {
+      const m = (item.getAttribute('onclick') || '').match(/showMeeting\('(\w+)'/);
+      if (m) item.setAttribute('data-id', m[1]);
+    });
+    const firstId = Object.keys(MEETINGS)[0];
+    document.getElementById('meeting-content').innerHTML = marked.parse(document.getElementById(MEETINGS[firstId].rawId).value);
+    initDecisionOriginals();
+  })();
+</script>
+
+</body>
+</html>

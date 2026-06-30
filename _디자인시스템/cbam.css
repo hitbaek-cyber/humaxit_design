@@ -1,0 +1,10 @@
+/* ═══════════════════════════════════════════════════
+   호환성 유지용 래퍼 — 기존 CBAM_SaaS HTML 파일들이
+   <link rel="stylesheet" href="cbam.css">로 참조 중이므로 유지.
+
+   신규 작업 시에는 이 파일 대신 아래 두 파일을 직접 import할 것:
+     1) tokens/cbam.css  (또는 tokens/law_ai.css 등 프로젝트별 토큰)
+     2) base.css         (공통 컴포넌트)
+═══════════════════════════════════════════════════ */
+@import url('tokens/cbam.css');
+@import url('base.css');

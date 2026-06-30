@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCR-CBAM-001 CBAM 벤치마크 | CBAM 산정 플랫폼</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+<style>
+/* ── 디자인 토큰 (색상.md 기준) ── */
+:root {
+  --primary:      #0561a4;
+  --primary-h:    #044e8a;
+  --secondary:    #415aa9;
+  --success:      #006b56;
+  --warning:      #cea331;
+  --danger:       #ff5812;
+  --dark:         #001b3d;
+  --bg:           #f3f6f9;
+  --text:         #43474e;
+  --text-muted:   #73777f;
+  --border:       #dfe2eb;
+  --border-input: #e9ebec;
+  --card-bg:      #ffffff;
+  --header-bg:    #f8f9fc;
+  --rgb-primary:  5,97,164;
+  --rgb-success:  0,107,86;
+  --rgb-warning:  206,163,49;
+  --rgb-danger:   255,88,18;
+  --rgb-secondary:65,90,169;
+  --rgb-info:     115,119,127;
+  --rgb-dark:     0,27,61;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI','Noto Sans KR',sans-serif;font-size:13px;color:var(--text);background:var(--bg);height:100vh;min-height:900px;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ── 앱 탭바 ── */
+.app-tab-bar{height:44px;background:var(--dark);display:flex;align-items:center;padding:0 16px;gap:4px;flex-shrink:0;justify-content:space-between;}
+.app-tab-bar-left{display:flex;align-items:center;gap:4px;}
+.app-logo{font-size:14px;font-weight:700;color:#fff;margin-right:12px;white-space:nowrap;letter-spacing:-.2px;}
+.app-logo span{color:#4fc3f7;}
+.app-logo small{font-size:10px;color:rgba(255,255,255,.35);font-weight:400;margin-left:5px;}
+.app-tab{height:30px;padding:0 14px;border:none;border-radius:4px;font-size:12px;cursor:pointer;color:rgba(255,255,255,.5);background:transparent;transition:all .15s;font-family:inherit;}
+.app-tab:hover{background:rgba(255,255,255,.09);color:#fff;}
+.app-tab.active{background:rgba(var(--rgb-primary),.32);color:#fff;font-weight:600;}
+.app-tab-bar-right{display:flex;align-items:center;gap:8px;}
+.btn-notes-toggle{height:28px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:4px;background:transparent;color:rgba(255,255,255,.65);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-notes-toggle:hover{background:rgba(255,255,255,.09);color:#fff;}
+.btn-notes-toggle.active{background:rgba(var(--rgb-primary),.35);border-color:var(--primary);color:#fff;}
+
+/* ── 뷰 시스템 ── */
+.app-body{flex:1;display:flex;overflow:hidden;}
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;}
+.view.proto-view.active{display:flex;flex-direction:column;overflow:hidden;height:100%;}
+.proto-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+@media print{.app-tab-bar,.view.proto-view{display:none!important;}.view.doc-view{display:flex!important;position:static;}}
+
+/* ── DOC VIEW ── */
+.doc-view{flex-direction:row;background:#fff;}
+.doc-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;}
+.doc-sidebar-title{padding:14px 16px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);}
+.doc-nav-item{padding:10px 16px;font-size:13px;color:var(--text-muted);cursor:pointer;border-left:2px solid transparent;transition:all .1s;}
+.doc-nav-item:hover{background:rgba(0,0,0,.03);color:var(--text);}
+.doc-nav-item.active{background:rgba(var(--rgb-primary),.07);color:var(--primary);border-left-color:var(--primary);font-weight:600;}
+.doc-content{flex:1;overflow-y:auto;padding:36px 44px;}
+.doc-section{display:none;}
+.doc-section.active{display:block;}
+.doc-h1{font-size:20px;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.doc-h2{font-size:15px;font-weight:700;color:var(--dark);margin:30px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--border);}
+.doc-h3{font-size:13px;font-weight:700;color:var(--text);margin:18px 0 8px;}
+.doc-p{font-size:13px;line-height:1.85;color:var(--text);margin-bottom:10px;}
+.doc-meta{display:flex;gap:24px;margin:12px 0 28px;padding:14px 18px;background:var(--bg);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap;}
+.doc-meta-item{font-size:12px;color:var(--text-muted);}
+.doc-meta-item strong{display:block;font-size:13px;color:var(--text);margin-top:3px;}
+.doc-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;}
+.doc-table th{background:var(--header-bg);font-weight:600;padding:10px 13px;border:1px solid var(--border);text-align:left;}
+.doc-table td{padding:10px 13px;border:1px solid var(--border);vertical-align:top;line-height:1.65;}
+.doc-table tr:hover td{background:#fafbfc;}
+.ph{background:#fffbea;border-bottom:1px dashed #f0c000;color:#7a6000;padding:0 3px;border-radius:2px;}
+.status-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;padding:10px 14px;background:rgba(var(--rgb-primary),.05);border:1px solid rgba(var(--rgb-primary),.14);border-radius:6px;}
+.badge-doc{display:inline-flex;align-items:center;height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;}
+.badge-doc.primary{background:rgba(var(--rgb-primary),.12);color:var(--primary);}
+.badge-doc.warning{background:rgba(var(--rgb-warning),.12);color:#a07b00;}
+.doc-note{background:#f0f9ff;border-left:3px solid var(--primary);padding:12px 16px;border-radius:0 5px 5px 0;margin:14px 0;font-size:13px;line-height:1.7;}
+.doc-ul{padding-left:20px;margin:8px 0 12px;}
+.doc-ul li{font-size:13px;line-height:1.85;color:var(--text);}
+
+/* ── PROTO — 메뉴 트리 (3뎁스) ── */
+.proto-menu-tree{width:240px;background:var(--dark);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;}
+.proto-menu-tree-header{padding:14px 14px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.proto-menu-logo{font-size:13px;font-weight:700;color:#fff;}
+.proto-menu-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;}
+.proto-menu-tree-body{padding:6px 0 20px;flex:1;}
+/* 1뎁스 */
+.nav-d1-item{display:flex;align-items:center;gap:9px;padding:10px 14px 10px 16px;color:rgba(255,255,255,.65);font-size:13px;font-weight:500;cursor:pointer;user-select:none;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.04);}
+.nav-d1-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-d1-item.open{color:#fff;background:rgba(255,255,255,.04);}
+.nav-d1-item .d1-icon{font-size:16px;flex-shrink:0;color:rgba(255,255,255,.35);}
+.nav-d1-item .d1-label{flex:1;}
+.nav-chevron{font-size:15px;flex-shrink:0;color:rgba(255,255,255,.3);transition:transform .2s;}
+.nav-d1-item.open>.nav-chevron{transform:rotate(90deg);color:rgba(255,255,255,.5);}
+/* 1뎁스 자식 */
+.nav-d1-children{display:none;background:rgba(0,0,0,.15);}
+.nav-d1-children.open{display:block;}
+/* 2뎁스 */
+.nav-d2-item{display:flex;align-items:center;gap:8px;padding:9px 14px 9px 32px;color:rgba(255,255,255,.5);font-size:12px;font-weight:500;cursor:pointer;user-select:none;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.03);}
+.nav-d2-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);}
+.nav-d2-item.open{color:rgba(255,255,255,.9);}
+.nav-d2-item .d2-label{flex:1;}
+.nav-d2-item.open>.nav-chevron{transform:rotate(90deg);}
+/* 2뎁스 자식 */
+.nav-d2-children{display:none;}
+.nav-d2-children.open{display:block;}
+/* 3뎁스 */
+.nav-d3-item{display:block;padding:8px 14px 8px 48px;color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;transition:background .15s,color .15s;border-bottom:1px solid rgba(255,255,255,.02);cursor:pointer;}
+.nav-d3-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.75);}
+.nav-d3-item.active{color:#4fc3f7;font-weight:600;}
+.nav-d3-item.active::before{content:'▸ ';font-size:10px;}
+
+/* ── PROTO — 뷰포트 ── */
+.proto-viewport{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.proto-screens-wrap{flex:1;overflow-y:auto;background:#fff;display:flex;flex-direction:column;}
+.proto-screen{display:none;}
+.proto-screen.active{display:flex;flex:1;flex-direction:column;}
+
+/* ── Widget Notes Panel ── */
+.lnb-desc-panel{width:0;min-width:0;overflow:hidden;border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:width .22s ease,min-width .22s ease;background:#fff;}
+.lnb-desc-panel.open{width:280px;min-width:280px;}
+.lnb-desc-header{min-width:279px;height:46px;padding:0 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--header-bg);flex-shrink:0;}
+.lnb-desc-header-title{font-size:13px;font-weight:700;color:var(--text);}
+.lnb-notes-list{min-width:279px;flex:1;overflow-y:auto;padding:10px;}
+.lnb-empty{color:#b0b8c4;font-size:12px;text-align:center;padding:24px 0;}
+.note-card{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#fff;margin-bottom:8px;}
+.note-card-header{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--header-bg);border-bottom:1px solid var(--border);gap:6px;}
+.note-num{width:20px;height:20px;background:#f5c842;color:#000;border-radius:4px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.note-card-name-wrap{flex:1;min-width:0;cursor:pointer;}
+.note-card-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.note-card-name-wrap:hover .note-card-name{text-decoration:underline dotted;}
+.note-name-input{width:100%;border:none;outline:none;font-size:12px;font-weight:600;background:transparent;border-bottom:1px solid var(--primary);padding:0;}
+.note-card-body{padding:8px 10px;font-size:12px;color:var(--text);line-height:1.65;min-height:30px;}
+.note-card-body ul{list-style-type:disc;padding-left:16px;margin:2px 0;}
+.note-card-body ol{list-style-type:decimal;padding-left:16px;margin:2px 0;}
+.note-card-body li{display:list-item;}
+.note-card-btn{width:22px;height:22px;border:none;background:transparent;border-radius:3px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);}
+.note-card-btn:hover{background:var(--border);}
+.note-badge-overlay{position:absolute;width:20px;height:20px;background:#f5c842;color:#000;border-radius:4px;font-size:11px;font-weight:800;z-index:500;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+/* ── 리치 에디터 ── */
+.note-editor-wrap{border:1px solid var(--border);border-radius:4px;overflow:hidden;margin:8px 8px 0;}
+.note-editor-wrap:focus-within{border-color:var(--primary);}
+.note-editor-wrap.unsaved{border-color:#f59e0b;}
+.note-toolbar{display:flex;align-items:center;gap:1px;padding:4px 6px;border-bottom:1px solid var(--border);background:var(--header-bg);}
+.note-tb-btn{width:24px;height:24px;border:none;background:transparent;border-radius:3px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.note-tb-btn:hover{background:var(--border);}
+.note-tb-sep{width:1px;height:14px;background:var(--border);margin:0 3px;}
+.note-editor{min-height:80px;max-height:180px;overflow-y:auto;padding:8px;font-size:12px;line-height:1.7;outline:none;}
+.note-editor:empty::before{content:attr(data-placeholder);color:#b0b8c4;}
+.note-editor ul,.note-editor ol{padding-left:20px;margin:4px 0;list-style:disc;}
+.note-editor ol{list-style:decimal;}
+.note-editor li{padding:0;margin:1px 0;}
+.note-actions{display:flex;justify-content:flex-end;gap:6px;padding:6px 8px;}
+
+/* ── 컨텍스트 메뉴 ── */
+.ctx-menu{position:fixed;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.14);z-index:9000;overflow:hidden;min-width:158px;}
+.ctx-item{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text);}
+.ctx-item:hover{background:var(--bg);}
+.ctx-item.danger{color:var(--danger);}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0;}
+
+/* ── 화면 레이아웃 ── */
+.page-wrap{display:flex;flex-direction:column;flex:1;}
+
+/* ZONE-1 */
+.zone1{height:52px;padding:0 24px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.zone1-left{display:flex;align-items:center;gap:10px;}
+.page-title{font-size:15px;font-weight:700;color:var(--dark);}
+.breadcrumb{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;}
+.breadcrumb-sep{color:#b0b8c4;}
+.breadcrumb-cur{font-weight:600;color:var(--text);}
+.zone1-right{display:flex;align-items:center;gap:8px;}
+.user-info{font-size:12px;color:var(--text-muted);}
+
+/* TOPBAR */
+.topbar{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px 0 0;gap:14px;flex-shrink:0;}
+.topbar-brand{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 16px;align-self:stretch;border-right:1px solid var(--border);width:240px;min-width:240px;flex-shrink:0;}
+.topbar-brand-name{font-size:13px;font-weight:700;color:var(--dark);}
+.topbar-brand-sub{font-size:10px;color:var(--text-muted);}
+.topbar-toggle{width:32px;height:32px;border:none;background:none;color:var(--text-muted);font-size:20px;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.topbar-toggle:hover{background:var(--bg);}
+.topbar-help{width:30px;height:30px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-muted);cursor:pointer;font-weight:700;}
+.topbar-help:hover{border-color:var(--primary);color:var(--primary);}
+.topbar-user{display:flex;align-items:center;gap:8px;}
+.topbar-avatar{width:32px;height:32px;background:var(--secondary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;}
+.topbar-user-info{font-size:12px;line-height:1.4;}
+.topbar-user-info .name{font-weight:600;color:var(--text);}
+.topbar-user-info .role{color:var(--text-muted);}
+.topbar-lang{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.04em;}
+
+/* ZONE-2 (카드 헤더) */
+.zone2{height:56px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.card-title{font-size:15px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:8px;}
+.title-badge{height:20px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;background:rgba(var(--rgb-primary),.1);color:var(--primary);}
+.zone2-actions{display:flex;gap:8px;}
+
+/* ── 요약 카드 ── */
+.summary-band{display:flex;gap:14px;padding:16px 22px;border-bottom:1px solid var(--border);background:#fff;}
+.sum-card{flex:1;padding:14px 18px;border-radius:7px;border:1px solid var(--border);display:flex;flex-direction:column;gap:3px;}
+.sum-card.hi{background:rgba(var(--rgb-primary),.04);border-color:rgba(var(--rgb-primary),.2);}
+.sum-label{font-size:11px;color:var(--text-muted);}
+.sum-value{font-size:20px;font-weight:700;color:var(--dark);}
+.sum-sub{font-size:11px;color:#b0b8c4;}
+
+/* ZONE-3 필터 */
+.zone3{padding:10px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;}
+.filter-sep{width:1px;height:20px;background:var(--border);margin:0 2px;}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:280px;}
+.search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;}
+.search-input{width:100%;height:34px;padding:0 10px 0 30px;border:1px solid var(--border-input);border-radius:5px;font-size:13px;outline:none;font-family:inherit;color:var(--text);}
+.search-input:focus{border-color:var(--primary);}
+.search-input::placeholder{color:#b0b7c3;}
+.dd-wrap{position:relative;}
+.dd-trigger{height:34px;padding:0 10px;min-width:140px;background:#fff;border:1px solid var(--border-input);border-radius:5px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;user-select:none;white-space:nowrap;font-family:inherit;color:var(--text);}
+.dd-trigger:hover{border-color:#9ea7b8;}
+.dd-arrow{color:var(--text-muted);font-size:9px;transition:transform .18s;}
+.dd-trigger.open .dd-arrow{transform:rotate(180deg);}
+.dd-menu{position:absolute;top:38px;left:0;min-width:100%;background:#fff;border:1px solid #cfd5e1;border-radius:5px;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:1000;max-height:260px;overflow-y:auto;display:none;}
+.dd-menu.open{display:block;}
+.dd-item{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text);white-space:nowrap;text-align:left;}
+.dd-item:hover{background:var(--bg);}
+.dd-item.sel{color:var(--primary);font-weight:600;background:rgba(var(--rgb-primary),.05);}
+.filter-reset{height:34px;padding:0 14px;background:#fff;border:1px solid var(--border-input);border-radius:5px;font-size:12px;cursor:pointer;color:var(--text-muted);font-family:inherit;white-space:nowrap;}
+.filter-reset:hover{border-color:var(--danger);color:var(--danger);}
+.filter-spacer{flex:1;}
+
+/* ZONE-4 그리드 컨트롤 */
+.zone4{padding:10px 22px;display:flex;align-items:center;justify-content:space-between;background:#fff;}
+.result-count{font-size:13px;color:var(--text-muted);}
+.result-count strong{color:var(--primary);font-weight:700;}
+.zone4-right{display:flex;align-items:center;gap:8px;}
+.tool-btn{display:flex;align-items:center;gap:5px;height:32px;padding:0 11px;border:1px solid var(--border);border-radius:5px;font-size:12px;cursor:pointer;background:#fff;color:var(--text);font-family:inherit;white-space:nowrap;}
+.tool-btn:hover{border-color:var(--primary);color:var(--primary);}
+.divider-v{width:1px;height:20px;background:var(--border);}
+
+/* ZONE-5 데이터 그리드 */
+.grid-wrap{padding:0 22px;background:#fff;}
+.data-grid{width:100%;border-collapse:collapse;border-top:1px solid #cfd5e1;}
+.data-grid thead th{background:var(--header-bg);height:44px;font-size:12px;font-weight:700;padding:0 14px;border-bottom:1px solid #cfd5e1;white-space:nowrap;vertical-align:middle;text-align:left;}
+.data-grid thead th.sortable{cursor:pointer;user-select:none;}
+.data-grid thead th.sortable:hover{background:#eef0f5;}
+.sort-icon{margin-left:4px;color:#b0b8c4;font-size:11px;display:inline-block;width:12px;text-align:center;}
+.sort-icon.asc::after{content:'▲';}
+.sort-icon.desc::after{content:'▼';}
+.sort-icon.none::after{content:'⇅';}
+.sort-icon.asc,.sort-icon.desc{color:var(--primary);}
+.data-grid tbody tr{border-bottom:1px solid #ececec;}
+.data-grid tbody tr:last-child{border-bottom:none;}
+.data-grid tbody td{height:auto;min-height:50px;font-size:13px;padding:10px 14px;vertical-align:middle;text-align:left;}
+.data-grid tbody tr:hover td{background:#f8f9fb;}
+.col-chk{width:44px;text-align:center!important;padding:0!important;}
+.col-no{width:52px;text-align:center!important;}
+.col-cn{width:110px;}
+.col-sector{width:110px;text-align:center!important;}
+.col-goods{width:130px;}
+.col-prod{min-width:300px;}
+.col-num{width:150px;text-align:right!important;}
+.col-bm-actual,.col-bm-default{width:116px;text-align:right!important;}
+.col-al-actual,.col-al-default{width:116px;text-align:right!important;}
+.col-group-actual{text-align:center!important;background:#f6f7fb!important;border-left:2px solid #e0e4ef;}
+.col-group-default{text-align:center!important;background:rgba(5,97,164,.07)!important;border-left:2px solid rgba(5,97,164,.25);}
+.col-al-actual{background:rgba(251,191,36,.10)!important;}
+.col-al-default{background:rgba(5,97,164,.05)!important;}
+.col-year{width:80px;text-align:center!important;}
+.col-status{width:90px;text-align:center!important;}
+.col-action{width:130px;text-align:center!important;}
+td.tr{text-align:right!important;}
+td.tc{text-align:center!important;}
+/* ── 컬럼 토글 ── */
+#mainGrid.hide-sector th.col-sector,#mainGrid.hide-sector td.col-sector{display:none;}
+#mainGrid.hide-goodsGroup th.col-goods,#mainGrid.hide-goodsGroup td.col-goods{display:none;}
+#mainGrid.hide-prod th.col-prod,#mainGrid.hide-prod td.col-prod{display:none;}
+#mainGrid.hide-actual th.col-bm-actual,#mainGrid.hide-actual td.col-bm-actual,
+#mainGrid.hide-actual th.col-al-actual,#mainGrid.hide-actual td.col-al-actual,
+#mainGrid.hide-actual th.col-group-actual{display:none;}
+#mainGrid.hide-default th.col-bm-default,#mainGrid.hide-default td.col-bm-default,
+#mainGrid.hide-default th.col-al-default,#mainGrid.hide-default td.col-al-default,
+#mainGrid.hide-default th.col-group-default{display:none;}
+.col-toggle-item{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;cursor:pointer;color:var(--text);white-space:nowrap;text-align:left;}
+.col-toggle-item:hover{background:var(--bg);}
+.col-dot{width:12px;height:12px;border-radius:50%;border:1.5px solid #c5cad6;flex-shrink:0;transition:background .15s,border-color .15s;}
+.col-toggle-item.on .col-dot{background:var(--primary);border-color:var(--primary);}
+.excel-icon-btn{width:34px;height:34px;background:#1D6F42;border:none;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;}
+.excel-icon-btn:hover{background:#155a35;}
+.cn-link{color:var(--primary);font-weight:700;cursor:pointer;text-decoration:none;}
+.cn-link:hover{text-decoration:underline;}
+.bm-bar-wrap{display:flex;align-items:center;gap:6px;}
+.bm-bar{height:4px;border-radius:2px;background:rgba(var(--rgb-primary),.18);flex-shrink:0;}
+.bm-bar-fill{height:4px;border-radius:2px;background:var(--primary);}
+
+/* 뱃지 */
+.badge{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}
+.b-primary{background:rgba(var(--rgb-primary),.1);color:var(--primary);}
+.b-success{background:rgba(var(--rgb-success),.1);color:var(--success);}
+.b-warning{background:rgba(var(--rgb-warning),.12);color:#8a6e00;}
+.b-danger{background:rgba(var(--rgb-danger),.1);color:var(--danger);}
+.b-info{background:rgba(var(--rgb-info),.1);color:var(--text-muted);}
+.b-secondary{background:rgba(var(--rgb-secondary),.1);color:var(--secondary);}
+
+/* ZONE-6 페이지네이션 */
+.zone6{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-top:1px solid var(--border);}
+.page-size-sel{height:30px;padding:0 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;background:#fff;font-family:inherit;cursor:pointer;}
+.pagination-center{display:flex;gap:3px;}
+.page-btn{width:32px;height:32px;border:1px solid #d1d5db;border-radius:4px;background:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;font-family:inherit;}
+.page-btn:hover:not(.active):not(:disabled){background:var(--bg);border-color:#9ea7b8;}
+.page-btn.active{background:var(--primary);color:#fff;font-weight:700;border-color:var(--primary);}
+.page-btn:disabled{opacity:.3;cursor:not-allowed;}
+.page-info{font-size:12px;color:var(--text-muted);}
+
+/* ── 버튼 ── */
+.btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;font-family:inherit;white-space:nowrap;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-h);}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border);font-weight:500;}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+.btn-sm{height:28px;padding:0 10px;font-size:12px;}
+
+/* ── 모달 ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:3000;display:none;justify-content:center;align-items:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:8px;width:680px;max-width:92vw;box-shadow:0 8px 28px rgba(0,0,0,.18);}
+.modal-header{height:52px;padding:0 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:16px;font-weight:700;color:var(--dark);}
+.modal-close{width:30px;height:30px;border:none;background:transparent;font-size:20px;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--bg);}
+.modal-body{padding:24px;max-height:calc(100vh - 220px);overflow-y:auto;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+.info-table{width:100%;border-collapse:collapse;border:1px solid #cfd5e1;}
+.info-table tr{border-bottom:1px solid #cfd5e1;}
+.info-table tr:last-child{border-bottom:none;}
+.info-table th{background:var(--header-bg);font-size:12px;font-weight:700;width:140px;padding:12px 14px;text-align:left;border-right:1px solid #cfd5e1;color:var(--text-muted);}
+.info-table td{background:#fff;font-size:13px;padding:12px 14px;text-align:left;}
+.sec-title{font-size:13px;font-weight:700;color:var(--dark);margin:20px 0 10px;}
+.sec-title:first-child{margin-top:0;}
+.info-note{margin-top:14px;padding:12px 14px;background:#f0f9ff;border-left:3px solid var(--primary);border-radius:0 4px 4px 0;font-size:12px;line-height:1.7;}
+
+/* ── 빈 상태 ── */
+.empty-state{padding:60px 0;text-align:center;color:var(--text-muted);}
+.empty-state-icon{font-size:36px;margin-bottom:10px;}
+.empty-state-text{font-size:14px;font-weight:600;margin-bottom:5px;}
+.empty-state-sub{font-size:12px;color:#b0b8c4;}
+
+/* ── 섹션 카드 ── */
+.section-card{background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.07);overflow:hidden;}
+.main-cont{padding:20px 22px 48px;}
+/* ── 추이 모달 차트 ── */
+.trend-modal-box{background:#fff;border-radius:8px;width:780px;max-width:94vw;box-shadow:0 8px 28px rgba(0,0,0,.18);}
+.cbam-info-strip{padding:8px 22px;border-bottom:1px solid var(--border);background:rgba(5,97,164,.04);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.cbam-year-pill{display:inline-flex;flex-direction:column;align-items:center;padding:4px 10px;border-radius:5px;border:1px solid var(--border);font-size:11px;cursor:default;min-width:58px;transition:all .15s;}
+.cbam-year-pill.sel{background:var(--primary);color:#fff;border-color:var(--primary);}
+.cbam-year-pill b{font-size:13px;font-weight:700;}
+.cbam-year-pill span{font-size:10px;opacity:.75;}
+.diff-dn{color:var(--danger);font-size:11px;font-weight:600;}
+.diff-up{color:var(--success);font-size:11px;font-weight:600;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- 앱 탭바 -->
+<div class="app-tab-bar">
+  <div class="app-tab-bar-left">
+    <span class="app-logo">Compli·<span>Law</span> <small>CBAM SaaS</small></span>
+    <button class="app-tab" onclick="switchView('doc')">📋 기획 문서</button>
+    <button class="app-tab active" onclick="switchView('proto')">🖥️ 프로토타입</button>
+  </div>
+  <div class="app-tab-bar-right">
+    <button class="btn-notes-toggle active" id="notesToggleBtn" onclick="toggleNotes()">📝 Description</button>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ═══════════ DOC VIEW ═══════════ -->
+<div class="view doc-view" id="view-doc">
+  <nav class="doc-sidebar">
+    <div class="doc-sidebar-title">문서 목차</div>
+    <div class="doc-nav-item active" onclick="docNav('sec-overview',this)">1. 서비스 개요</div>
+    <div class="doc-nav-item" onclick="docNav('sec-ia',this)">2. 화면 목록 (IA)</div>
+    <div class="doc-nav-item" onclick="docNav('sec-spec',this)">3. 화면 기능 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-data',this)">4. 데이터 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-appendix',this)">5. 부록</div>
+  </nav>
+  <div class="doc-content">
+
+    <div class="doc-section active" id="sec-overview">
+      <div class="status-bar">
+        <span class="badge-doc primary">🔵 검토 중</span>
+        <span style="font-size:12px;color:var(--text-muted)">v0.1 &nbsp;|&nbsp; 2026-05-19 &nbsp;|&nbsp; 작성자 임지현</span>
+      </div>
+      <h1 class="doc-h1">SCR-CBAM-001 CBAM 벤치마크</h1>
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>서비스</strong>CBAM 산정 플랫폼</div>
+        <div class="doc-meta-item"><strong>화면 ID</strong>SCR-CBAM-001</div>
+        <div class="doc-meta-item"><strong>화면 타입</strong>Type A (조회 목록)</div>
+        <div class="doc-meta-item"><strong>진입 경로</strong>GNB &gt; CBAM 마스터 &gt; CBAM 벤치마크</div>
+        <div class="doc-meta-item"><strong>접근 권한</strong><span class="ph">관리자 / 일반 사용자</span></div>
+      </div>
+      <h2 class="doc-h2">배경 및 목적</h2>
+      <p class="doc-p">EU CBAM(탄소국경조정메커니즘)은 철강·시멘트·알루미늄·비료·전력·수소 등 탄소집약적 상품 수입 시 EU ETS 탄소가격에 상응하는 비용을 부과하는 제도입니다. 수출 기업은 제품별 CN(Combined Nomenclature) 코드에 매핑된 <strong>벤치마크(기준 탄소배출량)</strong>와 <strong>무상할당 인수(Free Allocation Factor)</strong>를 기반으로 CBAM 인증서 구매 수량을 산정해야 합니다.</p>
+      <p class="doc-p">본 화면은 EU 집행위가 공표한 CN코드별 벤치마크·무상할당 기준값을 조회·관리하는 마스터 데이터 화면입니다.</p>
+      <h2 class="doc-h2">변경 이력</h2>
+      <table class="doc-table">
+        <thead>
+          <tr><th style="width:72px">버전</th><th style="width:110px">날짜</th><th>주요 변경 내용</th><th style="width:100px">작성자</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>v0.1</td><td>2026-05-19</td><td>최초 작성</td><td>임지현</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px">
+        <button class="btn btn-primary" onclick="switchView('proto')">🖥️ 프로토타입 바로 보기</button>
+      </div>
+    </div>
+
+    <div class="doc-section" id="sec-ia">
+      <h1 class="doc-h1">화면 목록 (IA)</h1>
+      <table class="doc-table">
+        <thead><tr><th>화면 ID</th><th>화면명</th><th>타입</th><th>진입 경로</th><th>권한</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SCR-CBAM-001</strong></td><td>CBAM 벤치마크</td><td>Type A</td><td>GNB &gt; CBAM 마스터 &gt; CBAM 벤치마크</td><td>전체</td><td><span class="badge-doc primary">검토 중</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="doc-section" id="sec-spec">
+      <h1 class="doc-h1">화면 기능 명세 — SCR-CBAM-001</h1>
+      <h2 class="doc-h2">3.1 UI 구성요소</h2>
+      <table class="doc-table">
+        <thead><tr><th>Zone</th><th>컴포넌트</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>요약 카드</td><td>Summary Cards (4개)</td><td>총 CN코드 수, 적용 제품군, 최신 기준연도, 데이터 최종 업데이트</td></tr>
+          <tr><td>필터</td><td>검색 인풋</td><td>CN코드·제품명 통합 검색 (Enter 키 적용)</td></tr>
+          <tr><td>필터</td><td>제품군 드롭다운</td><td>전체 / 철강 / 알루미늄 / 시멘트 / 비료 / 전력 / 수소</td></tr>
+          <tr><td>필터</td><td>기준연도 드롭다운</td><td>2026 / 2027 / 2028</td></tr>
+          <tr><td>필터</td><td>상태 드롭다운</td><td>전체 / 적용 중 / 대기 / 만료</td></tr>
+          <tr><td>그리드 컨트롤</td><td>결과 건수, Excel 내보내기, 컬럼 선택</td><td>필터링 건수 표시, CSV 다운로드</td></tr>
+          <tr><td>데이터 그리드</td><td>정렬 가능 컬럼 테이블</td><td>CN코드·제품명·제품군·벤치마크·단위·무상할당·기준연도·상태·상세</td></tr>
+          <tr><td>페이지네이션</td><td>50/100/200/400개 보기 (기본 50)</td><td>공통 리스트 화면 규칙 준수 (2026-05-12 결정)</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">3.2 기능 상세</h2>
+      <h3 class="doc-h3">F-01 실시간 필터링</h3>
+      <ul class="doc-ul">
+        <li>제품군·기준연도·상태 드롭다운: 값 변경 즉시 그리드 갱신</li>
+        <li>검색 인풋: Enter 키 또는 검색 아이콘 클릭 시 적용</li>
+        <li>다중 필터 AND 조건 적용</li>
+      </ul>
+      <h3 class="doc-h3">F-02 컬럼 정렬</h3>
+      <ul class="doc-ul">
+        <li>CN코드·벤치마크·무상할당 인수·기준연도 컬럼 헤더 클릭 → 오름/내림차순 토글</li>
+        <li>정렬 기준 컬럼 헤더에 ▲/▼ 아이콘 표시</li>
+      </ul>
+      <h3 class="doc-h3">F-03 CN코드 상세 조회</h3>
+      <ul class="doc-ul">
+        <li>CN코드 컬럼 클릭 → 상세 모달 팝업</li>
+        <li>모달 내 [상세 페이지로 이동] 버튼 → SCR-102 이동</li>
+      </ul>
+      <h3 class="doc-h3">F-04 데이터 내보내기</h3>
+      <ul class="doc-ul">
+        <li>Excel 버튼 → 현재 필터 조건 기준 CSV 다운로드</li>
+        <li>파일명: <code>CBAM_CN코드벤치마크_YYYY-MM-DD.csv</code> (BOM 포함)</li>
+      </ul>
+    </div>
+
+    <div class="doc-section" id="sec-data">
+      <h1 class="doc-h1">데이터 명세</h1>
+      <h2 class="doc-h2">CN코드 벤치마크 엔티티</h2>
+      <table class="doc-table">
+        <thead><tr><th>필드명</th><th>한글명</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>cn_code</td><td>CN코드</td><td>VARCHAR(10)</td><td>Y</td><td>EU Combined Nomenclature 8자리 코드</td></tr>
+          <tr><td>product_name_ko</td><td>제품명(한국어)</td><td>VARCHAR(200)</td><td>Y</td><td></td></tr>
+          <tr><td>product_name_en</td><td>제품명(영어)</td><td>VARCHAR(200)</td><td>Y</td><td>EU 공식 명칭</td></tr>
+          <tr><td>sector</td><td>제품군</td><td>ENUM</td><td>Y</td><td>STEEL / ALUMINIUM / CEMENT / FERTILIZER / ELECTRICITY / HYDROGEN</td></tr>
+          <tr><td>benchmark_value</td><td>벤치마크값</td><td>DECIMAL(10,4)</td><td>Y</td><td>tCO₂e/단위</td></tr>
+          <tr><td>benchmark_unit</td><td>벤치마크 단위</td><td>VARCHAR(50)</td><td>Y</td><td>예: tCO₂e/t, tCO₂e/MWh</td></tr>
+          <tr><td>free_allocation_factor</td><td>무상할당 인수</td><td>DECIMAL(6,4)</td><td>Y</td><td>0~1 범위. 2026년 각 부문별 할당률 적용</td></tr>
+          <tr><td>reference_year</td><td>기준연도</td><td>YEAR</td><td>Y</td><td>해당 기준값의 적용 연도</td></tr>
+          <tr><td>status</td><td>상태</td><td>ENUM</td><td>Y</td><td>ACTIVE / PENDING / EXPIRED</td></tr>
+          <tr><td>scope</td><td>배출 범위</td><td>ENUM</td><td>Y</td><td>직접 / 직접+간접 / 간접</td></tr>
+          <tr><td>source_doc</td><td>근거 문서</td><td>VARCHAR(500)</td><td>N</td><td>EU 관보 등 출처 URL/문서번호</td></tr>
+          <tr><td>updated_at</td><td>최종 수정일</td><td>DATETIME</td><td>Y</td><td>자동 갱신</td></tr>
+        </tbody>
+      </table>
+      <div class="doc-note">
+        <strong>무상할당 산정 공식</strong><br>
+        CBAM 인증서 구매 수량 = 내재 배출량(tCO₂e) × (1 − 무상할당 인수) − 원산지 탄소가격 상당분<br>
+        무상할당 인수는 2026년부터 2034년까지 단계적 감소 예정 (Phase-out 스케줄 적용)
+      </div>
+    </div>
+
+    <div class="doc-section" id="sec-appendix">
+      <h1 class="doc-h1">부록</h1>
+      <h2 class="doc-h2">용어 정의</h2>
+      <table class="doc-table">
+        <thead><tr><th>용어</th><th>정의</th></tr></thead>
+        <tbody>
+          <tr><td>CN코드</td><td>EU 통합관세분류(Combined Nomenclature) 8자리 코드</td></tr>
+          <tr><td>벤치마크</td><td>제품 1단위 생산 시 기준 온실가스 배출량 (tCO₂e/단위). EU ETS Phase 4 기준값 적용</td></tr>
+          <tr><td>무상할당(Free Allocation)</td><td>EU ETS 내 생산자에게 무상으로 부여되는 배출권. CBAM 세액 계산 시 제외</td></tr>
+          <tr><td>내재 배출량</td><td>제품 생산 과정에서 발생하는 직접+간접 온실가스 배출량 총합</td></tr>
+          <tr><td>CBAM 인증서</td><td>수입업자가 구매해야 하는 EU ETS 탄소가격 연동 증서 (주간 경매가 기준)</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">Open Issues</h2>
+      <table class="doc-table">
+        <thead><tr><th>#</th><th>내용</th><th>담당</th><th>기한</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>무상할당 Phase-out 연도별 인수 테이블 확정 필요 (EU 집행위 최신 규정 확인)</td><td><span class="ph">담당자</span></td><td><span class="ph">YYYY-MM-DD</span></td></tr>
+          <tr><td>2</td><td>간접 배출(Scope 2) 포함 여부 제품군별 정의 필요</td><td><span class="ph">담당자</span></td><td><span class="ph">YYYY-MM-DD</span></td></tr>
+          <tr><td>3</td><td>CN코드 신규 추가 시 관리자 승인 워크플로 설계 필요</td><td><span class="ph">담당자</span></td><td><span class="ph">YYYY-MM-DD</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div><!-- /doc-view -->
+
+
+<!-- ═══════════ PROTO VIEW ═══════════ -->
+<div class="view proto-view active" id="view-proto">
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-name">CBAM 산정 플랫폼</div>
+      <div class="topbar-brand-sub">Carbon Border Adjustment</div>
+    </div>
+    <button class="topbar-toggle"><i class="bx bx-menu"></i></button>
+    <div style="flex:1;padding:0 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;">
+      <div style="font-size:15px;font-weight:700;color:var(--dark);">CBAM 벤치마크</div>
+      <div style="font-size:12px;color:var(--text-muted);">CBAM 마스터 <span style="color:#b0b8c4;">›</span> <span style="font-weight:600;color:var(--text);">CBAM 벤치마크</span></div>
+    </div>
+    <div class="topbar-help">?</div>
+    <span class="topbar-lang">KR</span>
+    <div class="topbar-user">
+      <div class="topbar-avatar">임</div>
+      <div class="topbar-user-info">
+        <div class="name">임지현 관리자</div>
+        <div class="role">NUVX_TEST 본사</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="proto-body">
+
+  <!-- 좌측 메뉴 트리 -->
+  <nav class="proto-menu-tree">
+    <div class="proto-menu-tree-body">
+
+      <!-- ① OCF (닫힘) -->
+      <div class="nav-d1-item" onclick="toggleD1(this)">
+        <i class="bx bx-folder d1-icon"></i>
+        <span class="d1-label">OCF</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children">
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">OCF 제품 마스터</span>
+        </div>
+      </div>
+
+      <!-- ② PCF (닫힘) -->
+      <div class="nav-d1-item" onclick="toggleD1(this)">
+        <i class="bx bx-folder d1-icon"></i>
+        <span class="d1-label">PCF</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children">
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">BOM 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">배출량 산정</span>
+        </div>
+      </div>
+
+      <!-- ③ CBAM (열림) -->
+      <div class="nav-d1-item open" onclick="toggleD1(this)">
+        <i class="bx bx-folder-open d1-icon"></i>
+        <span class="d1-label">CBAM</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children open">
+
+        <!-- 2뎁스: 기준정보 (열림, 현재 활성) -->
+        <div class="nav-d2-item open" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children open">
+          <span class="nav-d3-item" onclick="window.location.href='../../컴플라이로_PCF프로젝트/02_기획화면/SCR-001_CBAM제품마스터.html'">CBAM 제품 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">공급사 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">검증기관 마스터</span>
+          <span class="nav-d3-item active" id="tree-cn-list" onclick="goScreen('cn-list');setTreeActive(this)">CBAM 벤치마크</span>
+        </div>
+
+        <!-- 2뎁스: 데이터 관리 (닫힘) -->
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">데이터 관리</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 내재배출량 관리</span>
+          <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-002_출하데이터수집관리.html'">출하 데이터 수집/관리</span>
+          <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-003_인증서비용조회.html'">CBAM 인증서 비용 조회</span>
+        </div>
+
+        <!-- 2뎁스: 리포트/분석 (닫힘) -->
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">리포트/분석</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 리포트</span>
+        </div>
+
+      </div><!-- /CBAM children -->
+
+    </div>
+  </nav>
+
+  <!-- 뷰포트 -->
+  <div class="proto-viewport">
+    <div class="proto-screens-wrap" id="screensWrap" style="position: relative;">
+
+      <!-- ── SCREEN: cn-list ── -->
+      <div class="proto-screen active" id="screen-cn-list">
+        <div class="page-wrap">
+
+
+          <div class="main-cont">
+            <div class="section-card">
+
+
+              <!-- ZONE-2 -->
+              <div class="zone2">
+                <h3 class="card-title">
+                  CBAM 벤치마크
+                  <span class="title-badge">EU CBAM Implementing Regulation</span>
+                </h3>
+                <div class="zone2-actions"></div>
+              </div>
+
+              <!-- ZONE-3 필터 -->
+              <div class="zone3">
+                <div class="dd-wrap" id="dd-sector">
+                  <button class="dd-trigger" onclick="toggleDD('dd-sector')" data-widget="wvycxdk">
+                    <span id="dd-sector-label">구분 : 전체</span><span class="dd-arrow">▼</span>
+                  </button>
+                  <div class="dd-menu" id="dd-sector-menu">
+                    <div class="dd-item sel" onclick="pickDD('dd-sector','구분 : 전체','')">전체</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','시멘트','Cement')">시멘트</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','수소','Hydrogen')">수소</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','비료','Fertilisers')">비료</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','철강','Iron &amp; Steel')">철강</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','알루미늄','Aluminium')">알루미늄</div>
+                    <div class="dd-item" onclick="pickDD('dd-sector','전력','Electricity')">전력</div>
+                  </div>
+                </div>
+                <div class="filter-sep"></div>
+                <!-- 무상할당 기준 연도: 양쪽 무상할당량 컬럼 모두에 적용 -->
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:12px;color:var(--text-muted);white-space:nowrap">무상할당 기준</span>
+                  <div class="dd-wrap" id="dd-year">
+                    <button class="dd-trigger" onclick="toggleDD('dd-year')" data-widget="wlbbl9a">
+                      <span id="dd-year-label">2026년</span><span class="dd-arrow">▼</span>
+                    </button>
+                    <div class="dd-menu" id="dd-year-menu" style="top:36px;left:0;min-width:190px">
+                      <div class="dd-item sel" onclick="selectYear('2026')">2026년 <small style="color:var(--text-muted)">— 97.5% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2027')">2027년 <small style="color:var(--text-muted)">— 95% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2028')">2028년 <small style="color:var(--text-muted)">— 90% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2029')">2029년 <small style="color:var(--text-muted)">— 77.5% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2030')">2030년 <small style="color:var(--text-muted)">— 51.5% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2031')">2031년 <small style="color:var(--text-muted)">— 39% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2032')">2032년 <small style="color:var(--text-muted)">— 26.5% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2033')">2033년 <small style="color:var(--text-muted)">— 14% 무상</small></div>
+                      <div class="dd-item" onclick="selectYear('2034')">2034년 <small style="color:#ff5812">— 0% 무상</small></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="filter-sep"></div>
+                <div class="search-wrap" style="max-width:320px">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"></circle><path d="M10 10l2.5 2.5"></path></svg>
+                  <input class="search-input" type="text" id="searchInput" placeholder="CN 코드 또는 품목명으로 검색하세요." onkeydown="if(event.key==='Enter')doFilter()" oninput="doFilter()" data-widget="wtvvrmd">
+                </div>
+              </div>
+
+              <!-- ZONE-4 -->
+              <div class="zone4">
+                <div class="result-count">총 <strong id="filteredCount">36</strong>건 <span style="color:#b0b8c4;font-size:11px">(전체 <span id="totalCount">36</span>건)</span></div>
+                <div class="zone4-right">
+                  <div class="dd-wrap" id="dd-col">
+                    <button class="dd-trigger" onclick="toggleDD('dd-col')" style="min-width:160px">
+                      <span>테이블 표시 선택</span><span class="dd-arrow">▼</span>
+                    </button>
+                    <div class="dd-menu" id="dd-col-menu" style="right:0;left:auto;min-width:160px">
+                      <div class="col-toggle-item on" id="col-toggle-all" onclick="toggleAllCols()"><span class="col-dot"></span>전체</div>
+                      <div class="col-toggle-item on" id="col-toggle-sector" onclick="toggleCol('sector')"><span class="col-dot"></span>구분</div>
+                      <div class="col-toggle-item on" id="col-toggle-goodsGroup" onclick="toggleCol('goodsGroup')"><span class="col-dot"></span>품목군</div>
+                      <div class="col-toggle-item on" id="col-toggle-prod" onclick="toggleCol('prod')"><span class="col-dot"></span>품목</div>
+                      <div class="col-toggle-item on" id="col-toggle-actual" onclick="toggleCol('actual')"><span class="col-dot"></span>실제 배출량 산정 기반</div>
+                      <div class="col-toggle-item on" id="col-toggle-default" onclick="toggleCol('default')"><span class="col-dot"></span>기본값 사용 기반</div>
+                    </div>
+                  </div>
+                  <button class="excel-icon-btn" onclick="downloadCSV()" title="Excel 다운로드">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8L14 2z" fill="rgba(255,255,255,.2)" stroke="white" stroke-width="1.5"></path>
+                      <polyline points="14 2 14 8 20 8" stroke="white" stroke-width="1.5" fill="none"></polyline>
+                      <path d="M8 13l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ZONE-5 데이터 그리드 -->
+              <div class="grid-wrap">
+                <table class="data-grid" id="mainGrid">
+                  <thead>
+                    <!-- 1행: 그룹 헤더 -->
+                    <tr>
+                      <th class="col-cn sortable" rowspan="2" style="vertical-align:middle" data-sort-key="cn" onclick="sortBy('cn')">CN 코드<span class="sort-icon none"></span></th>
+                      <th class="col-sector sortable" rowspan="2" style="vertical-align:middle;text-align:center" data-sort-key="sector" onclick="sortBy('sector')">구분<span class="sort-icon none"></span></th>
+                      <th class="col-goods sortable" rowspan="2" style="vertical-align:middle" data-sort-key="goods" onclick="sortBy('goods')">품목군<span class="sort-icon none"></span></th>
+                      <th class="col-prod sortable" rowspan="2" style="vertical-align:middle" data-sort-key="prod" onclick="sortBy('prod')">품목<span class="sort-icon none"></span></th>
+                      <th colspan="2" class="col-group-actual" style="border-left:2px solid #e0e4ef">
+                        실제 배출량 산정 기반
+                      </th>
+                      <th colspan="2" class="col-group-default" style="border-left:2px solid rgba(5,97,164,.25)" data-widget="w3mjc6x">
+                        기본값 사용 기반
+                      </th>
+                    </tr>
+                    <!-- 2행: 컬럼 헤더 -->
+                    <tr>
+                      <th class="col-bm-actual" style="text-align:right;padding:0 14px;font-size:11px;border-left:2px solid #e0e4ef">CBAM 벤치마크 (tCO₂e/t)</th>
+                      <th class="col-al-actual" style="text-align:right;padding:0 14px;font-size:11px;background:rgba(251,191,36,.10)"><span class="th-year-label">2026</span>년 무상할당량 (tCO₂e/t)</th>
+                      <th class="col-bm-default" style="text-align:right;padding:0 14px;font-size:11px;border-left:2px solid rgba(5,97,164,.25)">CBAM 벤치마크 (tCO₂e/t)</th>
+                      <th class="col-al-default" style="text-align:right;padding:0 14px;font-size:11px;background:rgba(5,97,164,.07)"><span class="th-year-label">2026</span>년 무상할당량 (tCO₂e/t)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="gridBody"><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2507 00 80</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">소성점토</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Calcined Clay</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">기타 고령토계 점토</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Other kaolinic clays</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.666</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.649</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.666</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.649</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2523 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">시멘트 클링커</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Cement Clinkers</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">시멘트 클링커</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Cement clinkers</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.666</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.649</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.666</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.649</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2523 21 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">시멘트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Cement</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">백색 포틀랜드 시멘트 (인공착색 여부 무관)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">White portland cement, whether or not artificially coloured</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.000</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.000</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.859</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.838</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2523 29 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">시멘트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Cement</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">기타 포틀랜드 시멘트 (백색 제외)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Portland cement, other than white (excl. artificially coloured)</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.859</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.838</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.859</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.838</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2523 30 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">특수 시멘트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Special Cement</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">알루미나 시멘트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminous cement</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.717</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.699</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.859</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.838</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2523 90 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-warning">시멘트</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">기타 시멘트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Other Cement</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">시멘트 (착색 여부 무관, 포틀랜드·알루미나 제외)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Cement, whether or not coloured (excl. portland and aluminous cement)</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.666</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.649</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.859</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.838</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2804 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-primary">수소</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">수소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Hydrogen</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">수소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Hydrogen</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">5.089</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">4.962</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">5.089</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">4.962</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2808 00 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">무기산</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Inorganic Acids</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">질산; 황산질산 혼합산</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Nitric acid; sulphonitric acids</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.582</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.567</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.582</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.567</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2814 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">암모니아</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonia</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">무수 암모니아</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Anhydrous ammonia</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.522</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.484</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.522</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.484</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2814 20 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">암모니아</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonia</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">암모니아수</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonia in aqueous solution</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.457</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.446</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.457</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.446</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2834 21 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">질산염</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Nitrates</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">질산칼륨</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Nitrate of potassium</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.626</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.610</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.626</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.610</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 10 12</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">요소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">요소 수용액 (질소&gt;45%, 33.2%≤요소≤53.2%)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea in aqueous solution, &gt;45% N, 33.2%≤urea≤53.2%</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.304</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.296</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.304</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.296</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 10 15</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">요소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">요소 수용액 (질소&gt;45%, 요소&gt;55%)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea in aqueous solution, &gt;45% N, &gt;55% urea</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.503</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.490</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.503</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.490</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 10 19</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">요소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">요소 수용액 (기타)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea in aqueous solution or solid form, other</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.902</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.879</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.902</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.879</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 10 90</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">요소</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">요소 (기타)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Urea, whether or not in aqueous solution, other</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.882</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.860</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.882</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.860</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 21 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">황산암모늄</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonium Sulphate</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">황산암모늄</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonium sulphate</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.414</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.404</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.414</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.404</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 29 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">황산암모늄·질산암모늄</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonium Sulphate/Nitrate</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">황산암모늄·질산암모늄 이중염 및 혼합물</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Double salts and mixtures of ammonium sulphate and ammonium nitrate</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.566</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.552</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.566</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.552</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">3102 30 10</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-success">비료</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">질산암모늄</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonium Nitrate</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">질산암모늄 수용액</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ammonium nitrate in aqueous solution</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.508</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.495</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.508</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.495</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7201 10 11</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">선철</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig Iron</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">선철 — 규소 함유량 1% 이하</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig iron containing by weight 1% or less of silicon</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.180</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.180</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7201 10 19</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">선철</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig Iron</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">선철 — 규소 1% 이하 (기타)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig iron, Si ≤ 1%, other</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.180</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.180</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7201 10 30</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">선철</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig Iron</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">선철 — 규소 1% 초과 2% 이하</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig iron containing by weight more than 1% but not more than 2% of silicon</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.180</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.180</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7201 20 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">선철</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Pig Iron</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">경강 선철 (Haematite pig iron)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Haematite pig iron</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.180</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.210</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.180</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7203 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">직접환원철</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Direct Reduced Iron</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">직접환원 해면철 (스폰지 아이언)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ferrous products obtained by direct reduction of iron ore (sponge iron)</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">0.703</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">0.685</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">0.851</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">0.830</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7206 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">철강 잉곳</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Iron &amp; Steel Ingots</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">비합금 철 잉곳 (기타)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Non-alloy iron ingots, other</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.628</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.587</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.628</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.587</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7207 11 10</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">철강 반제품</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Semi-finished Products</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">반제품 사각단면 (탄소 0.25% 미만)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Semi-finished products of iron, C &lt; 0.25%</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.223</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.328</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.295</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7208 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">평판 압연제품</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Flat-rolled Products</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">열연 코일 (표면 패턴 없음)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Flat-rolled products of iron, hot-rolled, in coils</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.211</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.181</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.223</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7209 15 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">평판 압연제품</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Flat-rolled Products</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">냉연 코일 (폭 600mm 이상, 두께 3mm 초과)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Flat-rolled products of iron, cold-rolled, width ≥ 600mm, thickness &gt; 3mm</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.223</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.223</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7215 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">봉강·형강</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Bars &amp; Sections</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">비합금강 봉강 (열간압연)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Bars and rods of non-alloy steel, simply hot-rolled</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">1.223</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">1.254</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">1.223</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7218 99 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">스테인리스강</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Stainless Steel</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">스테인리스 반제품 (기타)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Semi-finished products of stainless steel, other</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">2.931</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">2.858</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">2.931</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">2.858</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7223 00 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-info">철강</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">스테인리스강 선재</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Stainless Steel Wire</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">스테인리스강 선재</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Wire of stainless steel</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">2.931</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">2.858</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">2.931</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">2.858</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7601 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-secondary">알루미늄</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">알루미늄 잉곳</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium Ingots</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">비합금 알루미늄 (괴)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium, not alloyed, unwrought</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">6.566</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">6.566</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7601 20 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-secondary">알루미늄</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">알루미늄 잉곳</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium Ingots</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">합금 알루미늄 (괴)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium alloys, unwrought</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">5.912</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">5.764</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">5.912</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">5.764</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7603 10 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-secondary">알루미늄</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">알루미늄 분말·박편</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium Powders</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">알루미늄 분말 (비박편형)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium powders, non-lamellar</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">7.120</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">6.942</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">7.120</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">6.942</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7605 11 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-secondary">알루미늄</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">알루미늄 선재</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium Wire</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">비합금 알루미늄 선재 (단면 최대폭 7mm 초과)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Wire of aluminium, not alloyed, max cross-section &gt; 7mm</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">6.566</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">6.566</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">7606 11 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-secondary">알루미늄</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">알루미늄 판·시트</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Aluminium Plates &amp; Sheets</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">비합금 알루미늄 판·시트 (두께 0.2mm 초과)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Plates, sheets and strip of aluminium, not alloyed, thickness &gt; 0.2mm</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">6.566</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">6.734</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">6.566</span>
+        </td>
+      </tr><tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">2716 00 00</td>
+        <td class="col-sector" style="text-align:center"><span class="badge b-danger">전력</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">전력</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Electrical Energy</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">전력</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Electrical energy</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">—</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">—</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">—</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">—</span>
+        </td>
+      </tr></tbody>
+                </table>
+              </div>
+
+              <!-- ZONE-6 페이지네이션 -->
+              <div class="zone6">
+                <select class="page-size-sel" onchange="changePageSize(+this.value)">
+                  <option value="50">50개씩 보기</option>
+                  <option value="100">100개씩 보기</option>
+                  <option value="200">200개씩 보기</option>
+                  <option value="400">400개씩 보기</option>
+                </select>
+                <div class="pagination-center" id="pagCenter"><button class="page-btn" disabled="" onclick="goPage(1)">«</button><button class="page-btn" disabled="" onclick="goPage(0)">‹</button><button class="page-btn active" onclick="goPage(1)">1</button><button class="page-btn" disabled="" onclick="goPage(2)">›</button><button class="page-btn" disabled="" onclick="goPage(1)">»</button></div>
+                <span class="page-info" id="pageInfo">1–36 / 36건</span>
+              </div>
+
+            </div><!-- /section-card -->
+          </div><!-- /main-cont -->
+        </div><!-- /page-wrap -->
+      </div><!-- /screen-cn-list -->
+
+
+      <!-- ── SCREEN: cn-detail (placeholder) ── -->
+      <div class="proto-screen" id="screen-cn-detail">
+        <div class="page-wrap">
+          <div class="main-cont" style="display:flex;align-items:center;justify-content:center;min-height:400px">
+            <div style="text-align:center;color:var(--text-muted)">
+              <div style="font-size:38px;margin-bottom:12px">🔍</div>
+              <div style="font-size:15px;font-weight:700;margin-bottom:6px">SCR-102 CN코드 상세 — 준비 중</div>
+              <div style="font-size:13px">목록에서 CN코드를 클릭하면 상세 모달이 표시됩니다</div>
+              <button class="btn btn-outline" style="margin-top:16px" onclick="goScreen('cn-list');setTreeActive(document.getElementById('tree-cn-list'))">← 목록으로</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SCREEN: dash (placeholder) ── -->
+      <div class="proto-screen" id="screen-dash">
+        <div class="page-wrap">
+          <div class="main-cont" style="display:flex;align-items:center;justify-content:center;min-height:400px">
+            <div style="text-align:center;color:var(--text-muted)">
+              <div style="font-size:38px;margin-bottom:12px">📊</div>
+              <div style="font-size:15px;font-weight:700">대시보드 화면 — 준비 중</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="note-badge-overlay" style="left: 179px; top: 81px;">1</div><div class="note-badge-overlay" style="left: 417.531px; top: 81px;">2</div><div class="note-badge-overlay" style="left: 758.531px; top: 81px;">3</div><div class="note-badge-overlay" style="left: 1326px; top: 180.5px;">4</div></div><!-- /proto-screens-wrap -->
+  </div><!-- /proto-viewport -->
+
+  <!-- Widget Notes Panel -->
+  <div class="lnb-desc-panel open" id="descPanel">
+    <div class="lnb-desc-header">
+      <span class="lnb-desc-header-title">📝 Description</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button onclick="saveToFile001()" title="HTML 파일에 노트 저장" style="border:none;font-size:11px;padding:3px 8px;background:#0561A4;color:#fff;border-radius:4px;cursor:pointer;white-space:nowrap;">💾 파일저장</button>
+        <button class="btn-sm btn-outline" onclick="toggleNotes()">✕</button>
+      </div>
+    </div>
+    <div class="lnb-notes-list" id="notesList">
+      <div class="lnb-empty" id="notesEmpty" style="display: none;">우클릭하여 요소에 설명을 추가하세요</div>
+    <div class="note-card" data-note-key="cn-list::wvycxdk"><div class="note-card-header">
+      <div class="note-num">1</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">구분</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body"><ul><li>전체 / 시멘트 / 전기/ 수소 / 비료 / 철강 / 알루미늄</li></ul></div></div><div class="note-card" data-note-key="cn-list::wlbbl9a"><div class="note-card-header">
+      <div class="note-num">2</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">무상할당 기준</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body"><ul><li>2026 / 2027 / ... / 2034</li></ul></div></div><div class="note-card" data-note-key="cn-list::wtvvrmd"><div class="note-card-header">
+      <div class="note-num">3</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">검색</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body">플레이스 홀더 문구 : CN 코드 또는 품목명으로 검색하세요.</div></div><div class="note-card" data-note-key="cn-list::w3mjc6x"><div class="note-card-header">
+      <div class="note-num">4</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">리스트</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body"><ul><li>CN 코드별 벤치마크 및 무상할당량 정보 제공 리스트</li><li>정렬 기준 : CN 코드 순</li><li>CN 코드, 구분, 품목군, 품목 필드에 데이터 정렬 기능 추가</li></ul>[CBAM 벤치마크]<div><ul><li>EU CBAM에서 제공하는 CBAM 벤치마크 값 출력 (엑셀 파일 제공)</li><li>실제 배출량 산정 기반 : Column A 값</li><li>기본값 사용 기반 : Column B</li></ul></div><div>[YYYY년 무상할당량]</div><div><ul><li>무상할당량 = CBAM 벤치마크 *&nbsp; CBAM 계수</li><li>CBAM 계수 값<br><span data-path-to-node="6,2,0,0" style=""><span data-path-to-node="6,2,0,0" data-index-in-node="0" style="">2026년 :&nbsp;</span></span><span data-path-to-node="6,2,1,0" style="">97.5%<br></span><span data-path-to-node="6,3,0,0" style=""><span data-path-to-node="6,3,0,0" data-index-in-node="0">2027년 :&nbsp;</span></span><span data-path-to-node="6,3,1,0" style="">95.0%<br></span><span data-path-to-node="6,4,0,0" style=""><span data-path-to-node="6,4,0,0" data-index-in-node="0">2028년 :&nbsp;</span></span><span data-path-to-node="6,4,1,0" style="">90.0%<br></span><span data-path-to-node="6,5,0,0" style=""><span data-path-to-node="6,5,0,0" data-index-in-node="0">2029년 :&nbsp;</span></span><span data-path-to-node="6,5,1,0" style="">77.5%<br></span><span data-path-to-node="6,6,0,0" style=""><span data-path-to-node="6,6,0,0" data-index-in-node="0">2030년 :&nbsp;</span></span><span data-path-to-node="6,6,1,0" style="">51.5%</span><span data-path-to-node="6,6,2,0" style=""><span data-path-to-node="6,6,2,0" data-index-in-node="0"><br></span></span><span data-path-to-node="6,7,0,0" style=""><span data-path-to-node="6,7,0,0" data-index-in-node="0">2031년 :&nbsp;</span></span><span data-path-to-node="6,7,1,0" style="">39.0%<br></span><span data-path-to-node="6,8,0,0" style=""><span data-path-to-node="6,8,0,0" data-index-in-node="0">2032년 :&nbsp;</span></span><span data-path-to-node="6,8,1,0" style="">26.5%<br></span><span data-path-to-node="6,9,0,0" style=""><span data-path-to-node="6,9,0,0" data-index-in-node="0">2033년 :&nbsp;</span></span><span data-path-to-node="6,9,1,0" style="">14.0%<br></span><span data-path-to-node="6,10,0,0" style=""><span data-path-to-node="6,10,0,0" data-index-in-node="0">2034년 :&nbsp;</span></span><span data-path-to-node="6,10,1,0" style="">0%</span></li></ul></div><div><br></div></div></div></div>
+  </div>
+
+  </div><!-- /proto-body -->
+
+</div><!-- /proto-view -->
+
+</div><!-- /app-body -->
+
+
+<!-- 상세 모달 -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">CN코드 상세</span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">닫기</button>
+      <button class="btn btn-primary" onclick="goScreen('cn-detail');setTreeActive(null);closeModal()">상세 페이지로 이동</button>
+    </div>
+  </div>
+</div>
+
+<!-- 컨텍스트 메뉴 -->
+<div class="ctx-menu" id="ctxMenu" style="display: none; left: 1736px; top: 298px;">
+  <div class="ctx-item" id="ctxAdd" style="display: block;">Add Description</div>
+  <div class="ctx-item" id="ctxEdit" style="display:none">Edit Description</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="ctxDel" style="display:none">Delete Description</div>
+</div>
+
+
+<!-- 노트 임베드 저장소: 💾 파일저장 클릭 시 이 태그에 노트 데이터가 기록됨 -->
+<script id="embeddedNotes001" type="application/json">{"cn-list::wvycxdk":{"num":1,"title":"구분","text":"<ul><li>전체 / 시멘트 / 전기/ 수소 / 비료 / 철강 / 알루미늄</li></ul>","selector":"#dd-sector>button.dd-trigger"},"cn-list::wlbbl9a":{"num":2,"title":"무상할당 기준","text":"<ul><li>2026 / 2027 / ... / 2034</li></ul>","selector":"#dd-year>button.dd-trigger"},"cn-list::wtvvrmd":{"num":3,"title":"검색","text":"플레이스 홀더 문구 : CN 코드 또는 품목명으로 검색하세요.","selector":"#searchInput"},"cn-list::w3mjc6x":{"num":4,"title":"리스트","text":"<ul><li>CN 코드별 벤치마크 및 무상할당량 정보 제공 리스트</li><li>정렬 기준 : CN 코드 순</li><li>CN 코드, 구분, 품목군, 품목 필드에 데이터 정렬 기능 추가</li></ul>[CBAM 벤치마크]<div><ul><li>EU CBAM에서 제공하는 CBAM 벤치마크 값 출력 (엑셀 파일 제공)</li><li>실제 배출량 산정 기반 : Column A 값</li><li>기본값 사용 기반 : Column B</li></ul></div><div>[YYYY년 무상할당량]</div><div><ul><li>무상할당량 = CBAM 벤치마크 *&nbsp; CBAM 계수</li><li>CBAM 계수 값<br><span data-path-to-node=\"6,2,0,0\" style=\"\"><span data-path-to-node=\"6,2,0,0\" data-index-in-node=\"0\" style=\"\">2026년 :&nbsp;</span></span><span data-path-to-node=\"6,2,1,0\" style=\"\">97.5%<br></span><span data-path-to-node=\"6,3,0,0\" style=\"\"><span data-path-to-node=\"6,3,0,0\" data-index-in-node=\"0\">2027년 :&nbsp;</span></span><span data-path-to-node=\"6,3,1,0\" style=\"\">95.0%<br></span><span data-path-to-node=\"6,4,0,0\" style=\"\"><span data-path-to-node=\"6,4,0,0\" data-index-in-node=\"0\">2028년 :&nbsp;</span></span><span data-path-to-node=\"6,4,1,0\" style=\"\">90.0%<br></span><span data-path-to-node=\"6,5,0,0\" style=\"\"><span data-path-to-node=\"6,5,0,0\" data-index-in-node=\"0\">2029년 :&nbsp;</span></span><span data-path-to-node=\"6,5,1,0\" style=\"\">77.5%<br></span><span data-path-to-node=\"6,6,0,0\" style=\"\"><span data-path-to-node=\"6,6,0,0\" data-index-in-node=\"0\">2030년 :&nbsp;</span></span><span data-path-to-node=\"6,6,1,0\" style=\"\">51.5%</span><span data-path-to-node=\"6,6,2,0\" style=\"\"><span data-path-to-node=\"6,6,2,0\" data-index-in-node=\"0\"><br></span></span><span data-path-to-node=\"6,7,0,0\" style=\"\"><span data-path-to-node=\"6,7,0,0\" data-index-in-node=\"0\">2031년 :&nbsp;</span></span><span data-path-to-node=\"6,7,1,0\" style=\"\">39.0%<br></span><span data-path-to-node=\"6,8,0,0\" style=\"\"><span data-path-to-node=\"6,8,0,0\" data-index-in-node=\"0\">2032년 :&nbsp;</span></span><span data-path-to-node=\"6,8,1,0\" style=\"\">26.5%<br></span><span data-path-to-node=\"6,9,0,0\" style=\"\"><span data-path-to-node=\"6,9,0,0\" data-index-in-node=\"0\">2033년 :&nbsp;</span></span><span data-path-to-node=\"6,9,1,0\" style=\"\">14.0%<br></span><span data-path-to-node=\"6,10,0,0\" style=\"\"><span data-path-to-node=\"6,10,0,0\" data-index-in-node=\"0\">2034년 :&nbsp;</span></span><span data-path-to-node=\"6,10,1,0\" style=\"\">0%</span></li></ul></div><div><br></div>","selector":"#mainGrid>thead>tr:nth-of-type(1)>th.col-group-default:nth-of-type(6)"}}</script>
+
+<script>
+/* ════════════════════════════════════════════
+   DATA  —  EU CBAM Implementing Regulation
+   (Commission Implementing Regulation (EU) 2024/3214)
+════════════════════════════════════════════ */
+const cnData = [
+  // ── Cement (시멘트) ──  bm=기본값 / bmActual=실제 배출량 산정 기반
+  {cn:'25070080',goodsGroup:'소성점토',nameKo:'기타 고령토계 점토',nameEn:'Other kaolinic clays',sector:'Cement',bm:0.666,bmActual:0.666,route:''},
+  {cn:'25231000',goodsGroup:'시멘트 클링커',nameKo:'시멘트 클링커',nameEn:'Cement clinkers',sector:'Cement',bm:0.666,bmActual:0.666,route:'A'},
+  {cn:'25232100',goodsGroup:'시멘트',nameKo:'백색 포틀랜드 시멘트 (인공착색 여부 무관)',nameEn:'White portland cement, whether or not artificially coloured',sector:'Cement',bm:0.859,bmActual:0.000,route:''},
+  {cn:'25232900',goodsGroup:'시멘트',nameKo:'기타 포틀랜드 시멘트 (백색 제외)',nameEn:'Portland cement, other than white (excl. artificially coloured)',sector:'Cement',bm:0.859,bmActual:0.859,route:'A'},
+  {cn:'25233000',goodsGroup:'특수 시멘트',nameKo:'알루미나 시멘트',nameEn:'Aluminous cement',sector:'Cement',bm:0.859,bmActual:0.717,route:'1'},
+  {cn:'25239000',goodsGroup:'기타 시멘트',nameKo:'시멘트 (착색 여부 무관, 포틀랜드·알루미나 제외)',nameEn:'Cement, whether or not coloured (excl. portland and aluminous cement)',sector:'Cement',bm:0.859,bmActual:0.666,route:'A'},
+  // ── Hydrogen (수소) ──
+  {cn:'28041000',goodsGroup:'수소',nameKo:'수소',nameEn:'Hydrogen',sector:'Hydrogen',bm:5.089,bmActual:5.089,route:''},
+  // ── Fertilisers (비료) ──
+  {cn:'28080000',goodsGroup:'무기산',nameKo:'질산; 황산질산 혼합산',nameEn:'Nitric acid; sulphonitric acids',sector:'Fertilisers',bm:0.582,bmActual:0.582,route:''},
+  {cn:'28141000',goodsGroup:'암모니아',nameKo:'무수 암모니아',nameEn:'Anhydrous ammonia',sector:'Fertilisers',bm:1.522,bmActual:1.522,route:''},
+  {cn:'28142000',goodsGroup:'암모니아',nameKo:'암모니아수',nameEn:'Ammonia in aqueous solution',sector:'Fertilisers',bm:0.457,bmActual:0.457,route:''},
+  {cn:'28342100',goodsGroup:'질산염',nameKo:'질산칼륨',nameEn:'Nitrate of potassium',sector:'Fertilisers',bm:0.626,bmActual:0.626,route:''},
+  {cn:'31021012',goodsGroup:'요소',nameKo:'요소 수용액 (질소>45%, 33.2%≤요소≤53.2%)',nameEn:'Urea in aqueous solution, >45% N, 33.2%≤urea≤53.2%',sector:'Fertilisers',bm:0.304,bmActual:0.304,route:''},
+  {cn:'31021015',goodsGroup:'요소',nameKo:'요소 수용액 (질소>45%, 요소>55%)',nameEn:'Urea in aqueous solution, >45% N, >55% urea',sector:'Fertilisers',bm:0.503,bmActual:0.503,route:''},
+  {cn:'31021019',goodsGroup:'요소',nameKo:'요소 수용액 (기타)',nameEn:'Urea in aqueous solution or solid form, other',sector:'Fertilisers',bm:0.902,bmActual:0.902,route:''},
+  {cn:'31021090',goodsGroup:'요소',nameKo:'요소 (기타)',nameEn:'Urea, whether or not in aqueous solution, other',sector:'Fertilisers',bm:0.882,bmActual:0.882,route:''},
+  {cn:'31022100',goodsGroup:'황산암모늄',nameKo:'황산암모늄',nameEn:'Ammonium sulphate',sector:'Fertilisers',bm:0.414,bmActual:0.414,route:''},
+  {cn:'31022900',goodsGroup:'황산암모늄·질산암모늄',nameKo:'황산암모늄·질산암모늄 이중염 및 혼합물',nameEn:'Double salts and mixtures of ammonium sulphate and ammonium nitrate',sector:'Fertilisers',bm:0.566,bmActual:0.566,route:''},
+  {cn:'31023010',goodsGroup:'질산암모늄',nameKo:'질산암모늄 수용액',nameEn:'Ammonium nitrate in aqueous solution',sector:'Fertilisers',bm:0.508,bmActual:0.508,route:''},
+  // ── Iron & Steel (철강) ──
+  {cn:'72011011',goodsGroup:'선철',nameKo:'선철 — 규소 함유량 1% 이하',nameEn:'Pig iron containing by weight 1% or less of silicon',sector:'Iron & Steel',bm:1.210,bmActual:1.210,route:''},
+  {cn:'72011019',goodsGroup:'선철',nameKo:'선철 — 규소 1% 이하 (기타)',nameEn:'Pig iron, Si ≤ 1%, other',sector:'Iron & Steel',bm:1.210,bmActual:1.210,route:''},
+  {cn:'72011030',goodsGroup:'선철',nameKo:'선철 — 규소 1% 초과 2% 이하',nameEn:'Pig iron containing by weight more than 1% but not more than 2% of silicon',sector:'Iron & Steel',bm:1.210,bmActual:1.210,route:''},
+  {cn:'72012000',goodsGroup:'선철',nameKo:'경강 선철 (Haematite pig iron)',nameEn:'Haematite pig iron',sector:'Iron & Steel',bm:1.210,bmActual:1.210,route:''},
+  {cn:'72031000',goodsGroup:'직접환원철',nameKo:'직접환원 해면철 (스폰지 아이언)',nameEn:'Ferrous products obtained by direct reduction of iron ore (sponge iron)',sector:'Iron & Steel',bm:0.851,bmActual:0.703,route:''},
+  {cn:'72061000',goodsGroup:'철강 잉곳',nameKo:'비합금 철 잉곳 (기타)',nameEn:'Non-alloy iron ingots, other',sector:'Iron & Steel',bm:1.628,bmActual:1.628,route:''},
+  {cn:'72071110',goodsGroup:'철강 반제품',nameKo:'반제품 사각단면 (탄소 0.25% 미만)',nameEn:'Semi-finished products of iron, C < 0.25%',sector:'Iron & Steel',bm:1.328,bmActual:1.254,route:''},
+  {cn:'72081000',goodsGroup:'평판 압연제품',nameKo:'열연 코일 (표면 패턴 없음)',nameEn:'Flat-rolled products of iron, hot-rolled, in coils',sector:'Iron & Steel',bm:1.254,bmActual:1.211,route:''},
+  {cn:'72091500',goodsGroup:'평판 압연제품',nameKo:'냉연 코일 (폭 600mm 이상, 두께 3mm 초과)',nameEn:'Flat-rolled products of iron, cold-rolled, width ≥ 600mm, thickness > 3mm',sector:'Iron & Steel',bm:1.254,bmActual:1.254,route:''},
+  {cn:'72151000',goodsGroup:'봉강·형강',nameKo:'비합금강 봉강 (열간압연)',nameEn:'Bars and rods of non-alloy steel, simply hot-rolled',sector:'Iron & Steel',bm:1.254,bmActual:1.254,route:''},
+  {cn:'72189900',goodsGroup:'스테인리스강',nameKo:'스테인리스 반제품 (기타)',nameEn:'Semi-finished products of stainless steel, other',sector:'Iron & Steel',bm:2.931,bmActual:2.931,route:''},
+  {cn:'72230000',goodsGroup:'스테인리스강 선재',nameKo:'스테인리스강 선재',nameEn:'Wire of stainless steel',sector:'Iron & Steel',bm:2.931,bmActual:2.931,route:''},
+  // ── Aluminium (알루미늄) ──
+  {cn:'76011000',goodsGroup:'알루미늄 잉곳',nameKo:'비합금 알루미늄 (괴)',nameEn:'Aluminium, not alloyed, unwrought',sector:'Aluminium',bm:6.734,bmActual:6.734,route:''},
+  {cn:'76012000',goodsGroup:'알루미늄 잉곳',nameKo:'합금 알루미늄 (괴)',nameEn:'Aluminium alloys, unwrought',sector:'Aluminium',bm:5.912,bmActual:5.912,route:''},
+  {cn:'76031000',goodsGroup:'알루미늄 분말·박편',nameKo:'알루미늄 분말 (비박편형)',nameEn:'Aluminium powders, non-lamellar',sector:'Aluminium',bm:7.120,bmActual:7.120,route:''},
+  {cn:'76051100',goodsGroup:'알루미늄 선재',nameKo:'비합금 알루미늄 선재 (단면 최대폭 7mm 초과)',nameEn:'Wire of aluminium, not alloyed, max cross-section > 7mm',sector:'Aluminium',bm:6.734,bmActual:6.734,route:''},
+  {cn:'76061100',goodsGroup:'알루미늄 판·시트',nameKo:'비합금 알루미늄 판·시트 (두께 0.2mm 초과)',nameEn:'Plates, sheets and strip of aluminium, not alloyed, thickness > 0.2mm',sector:'Aluminium',bm:6.734,bmActual:6.734,route:''},
+  // ── Electricity (전력) ──
+  {cn:'27160000',goodsGroup:'전력',nameKo:'전력',nameEn:'Electrical energy',sector:'Electricity',bm:null,bmActual:null,route:''},
+];
+
+const sectorKo   = {Cement:'시멘트','Iron & Steel':'철강',Aluminium:'알루미늄',Fertilisers:'비료',Electricity:'전력',Hydrogen:'수소'};
+const sectorEmoji= {Cement:'🏗️','Iron & Steel':'⚙️',Aluminium:'🔩',Fertilisers:'🌱',Electricity:'⚡',Hydrogen:'💧'};
+const sectorBadge= {Cement:'b-warning','Iron & Steel':'b-info',Aluminium:'b-secondary',Fertilisers:'b-success',Electricity:'b-danger',Hydrogen:'b-primary'};
+
+/* ── EU CBAM 무상할당 단계적 폐지 일정 (Reg. 2023/956) ── */
+const cbamFactors = {2026:0.025,2027:0.050,2028:0.100,2029:0.225,2030:0.485,2031:0.610,2032:0.735,2033:0.860,2034:1.000};
+const cbamYears   = [2026,2027,2028,2029,2030,2031,2032,2033,2034];
+function calcAl(bm,year){if(bm===null||bm===undefined)return null;return+(bm*(1-(cbamFactors[+year]??0.025))).toFixed(4);}
+function freePct(year){return Math.round((1-(cbamFactors[+year]??0.025))*100);}
+
+const goodsGroupEn = {
+  '소성점토':'Calcined Clay',
+  '점토 및 점토광물':'Kaolinic Clays & Clay Minerals',
+  '시멘트':'Cement',
+  '시멘트 클링커':'Cement Clinkers',
+  '포틀랜드 시멘트':'Portland Cement',
+  '특수 시멘트':'Special Cement',
+  '기타 시멘트':'Other Cement',
+  '수소':'Hydrogen',
+  '무기산':'Inorganic Acids',
+  '암모니아':'Ammonia',
+  '질산염':'Nitrates',
+  '요소':'Urea',
+  '황산암모늄':'Ammonium Sulphate',
+  '황산암모늄·질산암모늄':'Ammonium Sulphate/Nitrate',
+  '질산암모늄':'Ammonium Nitrate',
+  '선철':'Pig Iron',
+  '직접환원철':'Direct Reduced Iron',
+  '철강 잉곳':'Iron & Steel Ingots',
+  '철강 반제품':'Semi-finished Products',
+  '평판 압연제품':'Flat-rolled Products',
+  '봉강·형강':'Bars & Sections',
+  '스테인리스강':'Stainless Steel',
+  '스테인리스강 선재':'Stainless Steel Wire',
+  '알루미늄 잉곳':'Aluminium Ingots',
+  '알루미늄 분말·박편':'Aluminium Powders',
+  '알루미늄 선재':'Aluminium Wire',
+  '알루미늄 판·시트':'Aluminium Plates & Sheets',
+  '전력':'Electrical Energy',
+};
+
+/* ── 유틸 ── */
+function fmtCN(cn){return cn.length===8?cn.slice(0,4)+' '+cn.slice(4,6)+' '+cn.slice(6):cn;}
+function fmtBm(v){return v===null?'—':v===0?'0.000':v.toFixed(3);}
+function routeBadge(r){return r?`<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:3px;background:rgba(65,90,169,.12);color:var(--secondary);font-size:10px;font-weight:700;margin-left:4px">${r}</span>`:''}
+
+let fSector='', fYear='2026', fSearch='';
+let curPage=1, pageSize=50;
+let sortKey='', sortDir=1;
+
+function getFiltered(){
+  return cnData.filter(r=>{
+    if(fSector && r.sector!==fSector) return false;
+    if(fSearch){
+      const q=fSearch.toLowerCase();
+      if(!r.cn.includes(q)&&!r.nameKo.toLowerCase().includes(q)&&!r.nameEn.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>{
+    if(!sortKey) return 0;
+    let va,vb;
+    if(sortKey==='cn'){va=a.cn;vb=b.cn;}
+    else if(sortKey==='sector'){va=a.sector||'';vb=b.sector||'';}
+    else if(sortKey==='goods'){va=a.goodsGroup||'';vb=b.goodsGroup||'';}
+    else if(sortKey==='prod'){va=a.nameKo||'';vb=b.nameKo||'';}
+    else if(sortKey==='bmActual'){va=a.bmActual??a.bm;vb=b.bmActual??b.bm;}
+    else if(sortKey==='alActual'){va=calcAl(a.bmActual??a.bm,fYear);vb=calcAl(b.bmActual??b.bm,fYear);}
+    else if(sortKey==='bm'){va=a.bm;vb=b.bm;}
+    else if(sortKey==='alDefault'){va=calcAl(a.bm,fYear);vb=calcAl(b.bm,fYear);}
+    else{va=0;vb=0;}
+    if(va===null||va===undefined)va=-Infinity;
+    if(vb===null||vb===undefined)vb=-Infinity;
+    if(typeof va==='string'&&typeof vb==='string') return sortDir*va.localeCompare(vb,'ko');
+    return sortDir*(va<vb?-1:va>vb?1:0);
+  });
+}
+
+function selectYear(y){
+  fYear=y;
+  document.getElementById('dd-year-label').textContent=y+'년';
+  document.querySelectorAll('#dd-year-menu .dd-item').forEach(el=>{
+    el.classList.toggle('sel',el.textContent.trim().startsWith(y));
+  });
+  // 컬럼 헤더 연도 동기화
+  document.querySelectorAll('.th-year-label').forEach(el=>{el.textContent=y;});
+  closeAllDD();
+  renderGrid();
+}
+
+function renderGrid(){
+  const data=getFiltered();
+  document.getElementById('filteredCount').textContent=data.length;
+  document.getElementById('totalCount').textContent=cnData.length;
+  const total=data.length, totalPages=Math.max(1,Math.ceil(total/pageSize));
+  curPage=Math.min(curPage,totalPages);
+  const start=(curPage-1)*pageSize;
+  const rows=data.slice(start,start+pageSize);
+
+  const tbody=document.getElementById('gridBody');
+  if(rows.length===0){
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">조회된 데이터가 없습니다</div><div class="empty-state-sub">검색어 또는 필터 조건을 변경해 보세요</div></div></td></tr>`;
+  } else {
+    tbody.innerHTML=rows.map(r=>{
+      const sB=sectorBadge[r.sector]||'b-info';
+      const ko=sectorKo[r.sector]||r.sector;
+      const alActual=calcAl(r.bmActual??r.bm,fYear);
+      const alDefault=calcAl(r.bm,fYear);
+      const diffBm=(r.bmActual!=null&&r.bm!=null&&r.bmActual!==r.bm);
+      return`<tr>
+        <td class="col-cn" style="font-variant-numeric:tabular-nums">${fmtCN(r.cn)}</td>
+        <td class="col-sector" style="text-align:center"><span class="badge ${sB}">${ko}</span></td>
+        <td class="col-goods">
+          <div style="font-size:13px">${r.goodsGroup}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${goodsGroupEn[r.goodsGroup]||''}</div>
+        </td>
+        <td class="col-prod">
+          <div style="font-size:13px">${r.nameKo}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${r.nameEn}</div>
+        </td>
+        <td class="col-bm-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid #e0e4ef">
+          <span style="font-weight:600">${fmtBm(r.bmActual??r.bm)}</span>
+        </td>
+        <td class="col-al-actual" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(251,191,36,.08)">
+          <span style="font-weight:700;color:#b45309">${alActual!==null?alActual.toFixed(3):'—'}</span>
+        </td>
+        <td class="col-bm-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;border-left:2px solid rgba(5,97,164,.2)">
+          <span style="font-weight:600">${fmtBm(r.bm)}</span>
+        </td>
+        <td class="col-al-default" style="text-align:right;font-variant-numeric:tabular-nums;padding:0 14px;vertical-align:middle;background:rgba(5,97,164,.04)">
+          <span style="font-weight:700;color:var(--primary)">${alDefault!==null?alDefault.toFixed(3):'—'}</span>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+  renderPagination(totalPages,total,start);
+  renderNoteBadges();
+  renderSortIcons();
+}
+
+function renderPagination(totalPages,total,start){
+  const end=Math.min(start+pageSize,total);
+  document.getElementById('pageInfo').textContent=total>0?`${start+1}–${end} / ${total}건`:'0건';
+  const pc=document.getElementById('pagCenter');
+  let h=`<button class="page-btn" ${curPage===1?'disabled':''} onclick="goPage(1)">«</button>`;
+  h+=`<button class="page-btn" ${curPage===1?'disabled':''} onclick="goPage(${curPage-1})">‹</button>`;
+  for(let p=Math.max(1,curPage-2);p<=Math.min(totalPages,curPage+2);p++)
+    h+=`<button class="page-btn${p===curPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
+  h+=`<button class="page-btn" ${curPage===totalPages?'disabled':''} onclick="goPage(${curPage+1})">›</button>`;
+  h+=`<button class="page-btn" ${curPage===totalPages?'disabled':''} onclick="goPage(${totalPages})">»</button>`;
+  pc.innerHTML=h;
+}
+
+function goPage(p){curPage=p;renderGrid();}
+function changePageSize(v){pageSize=v;curPage=1;renderGrid();}
+
+function doFilter(){fSearch=document.getElementById('searchInput').value;curPage=1;renderGrid();}
+function resetFilter(){
+  fSector='';fSearch='';
+  document.getElementById('searchInput').value='';
+  pickDD('dd-sector','구분 : 전체','',true);
+  selectYear('2026');  // selectYear 내부에서 th-year-label도 함께 초기화됨
+  curPage=1;renderGrid();
+}
+
+/* ── 컬럼 표시 토글 ── */
+const colDefs=[
+  {key:'sector',   label:'구분'},
+  {key:'goodsGroup',label:'품목군'},
+  {key:'prod',     label:'품목'},
+  {key:'actual',   label:'실제 배출량 산정 기반'},
+  {key:'default',  label:'기본값 사용 기반'},
+];
+const hiddenCols=new Set();
+
+function toggleCol(key){
+  const grid=document.getElementById('mainGrid');
+  if(hiddenCols.has(key)){hiddenCols.delete(key);grid.classList.remove('hide-'+key);}
+  else{hiddenCols.add(key);grid.classList.add('hide-'+key);}
+  refreshColMenu();
+}
+function toggleAllCols(){
+  const grid=document.getElementById('mainGrid');
+  if(hiddenCols.size===0){
+    colDefs.forEach(c=>{hiddenCols.add(c.key);grid.classList.add('hide-'+c.key);});
+  } else {
+    hiddenCols.clear();
+    colDefs.forEach(c=>grid.classList.remove('hide-'+c.key));
+  }
+  refreshColMenu();
+}
+function refreshColMenu(){
+  document.getElementById('col-toggle-all').classList.toggle('on',hiddenCols.size===0);
+  colDefs.forEach(c=>{
+    document.getElementById('col-toggle-'+c.key).classList.toggle('on',!hiddenCols.has(c.key));
+  });
+}
+
+function renderSortIcons(){
+  document.querySelectorAll('.data-grid thead th[data-sort-key]').forEach(th=>{
+    const icon=th.querySelector('.sort-icon');if(!icon)return;
+    const key=th.dataset.sortKey;
+    icon.className='sort-icon '+(key===sortKey?(sortDir===1?'asc':'desc'):'none');
+  });
+}
+function sortBy(key){
+  if(sortKey===key){sortDir*=-1;}else{sortKey=key;sortDir=1;}
+  curPage=1;renderGrid();
+}
+
+function closeModal(){document.getElementById('detailModal').classList.remove('open');}
+
+/* ── CSV 다운로드 ── */
+function downloadCSV(){
+  const data=getFiltered();
+  const y=+fYear||2026;
+  const hdr=['CN코드','구분','품목군','품목명(국문)','품목명(영문)','[실제]CBAM BM(tCO2e/t)',`[실제]${y}년 무상할당량(tCO2e/t)`,'[기본값]CBAM BM(tCO2e/t)',`[기본값]${y}년 무상할당량(tCO2e/t)`,'생산경로'];
+  const rows=data.map(r=>{
+    const bmA=r.bmActual??r.bm;
+    const alA=calcAl(bmA,y);
+    const alD=calcAl(r.bm,y);
+    return[r.cn,sectorKo[r.sector]||r.sector,r.goodsGroup,r.nameKo,r.nameEn,bmA??'',alA!==null?alA.toFixed(3):'',r.bm??'',alD!==null?alD.toFixed(3):'',r.route]
+      .map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+  });
+  const csv='﻿'+[hdr.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`CBAM_벤치마크_${y}년_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+/* ── 드롭다운 ── */
+function toggleDD(id){
+  const menu=document.getElementById(id+'-menu');
+  if(!menu)return;
+  const isOpen=menu.classList.contains('open');
+  closeAllDD();
+  if(!isOpen){menu.classList.add('open');}
+}
+function closeAllDD(){
+  document.querySelectorAll('.dd-menu.open').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.dd-trigger.open').forEach(t=>t.classList.remove('open'));
+}
+function pickDD(id,label,value,silent){
+  const lel=document.getElementById(id+'-label');
+  if(lel)lel.textContent=label;
+  document.querySelectorAll('#'+id+'-menu .dd-item').forEach(el=>{
+    el.classList.toggle('sel',el.textContent.trim().startsWith(label));
+  });
+  closeAllDD();
+  if(!silent){
+    if(id==='dd-sector'){fSector=value;curPage=1;renderGrid();}
+  }
+}
+
+/* ── 뷰 전환 ── */
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.app-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.app-tab')[v==='doc'?0:1].classList.add('active');
+}
+function goScreen(id){
+  document.querySelectorAll('.proto-screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('screen-'+id);
+  if(el)el.classList.add('active');
+  renderNoteBadges();
+}
+function setTreeActive(el){
+  document.querySelectorAll('.nav-d3-item').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+}
+function toggleD1(el){
+  const children=el.nextElementSibling;
+  const isOpen=el.classList.contains('open');
+  el.classList.toggle('open');
+  children.classList.toggle('open');
+  const icon=el.querySelector('.d1-icon');
+  if(icon) icon.className=isOpen?'bx bx-folder d1-icon':'bx bx-folder-open d1-icon';
+}
+function toggleD2(el){
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+function docNav(id,nav){
+  document.querySelectorAll('.doc-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.doc-nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(nav)nav.classList.add('active');
+}
+
+/* ── Widget Notes (리치 에디터) ── */
+const descStore={};
+let ctxTargetEl=null,ctxTargetKey=null;
+
+const NOTES_STORAGE_KEY='cbam-notes-001';
+const NOTES_EMBED_ID='embeddedNotes001';
+let _fileHandle001=null;
+
+function getSelector(el){
+  if(!el)return null;
+  try{
+    if(el.id)return'#'+el.id;
+    const root=document.querySelector('.proto-screens-wrap')||document.getElementById('screensWrap')||document.body;
+    const parts=[];let node=el;
+    while(node&&node!==root){
+      if(node.id){parts.unshift('#'+node.id);break;}
+      let p=node.tagName.toLowerCase();
+      const cls=[...node.classList].filter(c=>!/^(active|open|hover|focus|show|selected)$/.test(c)).slice(0,2);
+      if(cls.length)p+='.'+cls.join('.');
+      const par=node.parentElement;
+      if(par){const st=[...par.children].filter(c=>c.tagName===node.tagName);
+        if(st.length>1)p+=':nth-of-type('+(st.indexOf(node)+1)+')';}
+      parts.unshift(p);node=node.parentElement;
+    }
+    return parts.length?parts.join('>'):null;
+  }catch(e){return null;}
+}
+function saveNotes(){
+  const s={};Object.entries(descStore).forEach(([k,n])=>{s[k]={num:n.num,title:n.title,text:n.text,selector:n.selector||null};});
+  const json=JSON.stringify(s);
+  const embed=document.getElementById(NOTES_EMBED_ID);if(embed)embed.textContent=json;
+  try{localStorage.setItem(NOTES_STORAGE_KEY,json);}catch(e){}
+}
+function loadNotes(){
+  try{
+    const embed=document.getElementById(NOTES_EMBED_ID);
+    if(embed){const d=JSON.parse(embed.textContent||'{}');
+      if(Object.keys(d).length>0){Object.entries(d).forEach(([k,n])=>{descStore[k]={...n,el:null};});return true;}}
+  }catch(e){}
+  try{const raw=localStorage.getItem(NOTES_STORAGE_KEY);if(!raw)return;
+    const d=JSON.parse(raw);if(Object.keys(d).length>0)Object.entries(d).forEach(([k,n])=>{descStore[k]={...n,el:null};});}
+  catch(e){}
+}
+async function saveToFile001(){
+  saveNotes();
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  try{
+    if(window.showSaveFilePicker){
+      if(!_fileHandle001){
+        _fileHandle001=await window.showSaveFilePicker({
+          suggestedName:'SCR-CBAM-001_벤치마크.html',
+          types:[{description:'HTML File',accept:{'text/html':['.html']}}]
+        });
+      }
+      const w=await _fileHandle001.createWritable();await w.write(html);await w.close();
+      showSaveToast001('파일에 저장되었습니다 ✓');return;
+    }
+  }catch(e){if(e.name==='AbortError')return;}
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='SCR-CBAM-001_벤치마크.html';a.click();
+  URL.revokeObjectURL(url);
+  showSaveToast001('다운로드 완료. 기존 파일을 교체하세요.');
+}
+function showSaveToast001(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;right:20px;background:#0561A4;color:#fff;padding:10px 16px;border-radius:6px;font-size:13px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.2)';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+function activeScreenId(){const el=document.querySelector('.proto-screen.active');return el?el.id.replace('screen-',''):'?';}
+function hideCtx(){document.getElementById('ctxMenu').style.display='none';}
+function toggleNotes(){
+  const p=document.getElementById('descPanel'),b=document.getElementById('notesToggleBtn');
+  p.classList.toggle('open');b.classList.toggle('active');renderNoteBadges();
+}
+
+document.getElementById('screensWrap').addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  const target=e.target.closest('[data-widget]')||e.target;
+  const wid=target.dataset.widget||('w'+Math.random().toString(36).slice(2,8));
+  if(!target.dataset.widget)target.dataset.widget=wid;
+  const key=activeScreenId()+'::'+wid;
+  ctxTargetEl=target;ctxTargetKey=key;
+  const exists=!!descStore[key];
+  document.getElementById('ctxAdd').style.display=exists?'none':'block';
+  document.getElementById('ctxEdit').style.display=exists?'block':'none';
+  document.getElementById('ctxDel').style.display=exists?'block':'none';
+  const menu=document.getElementById('ctxMenu');
+  menu.style.cssText=`display:block;left:${Math.min(e.clientX,window.innerWidth-170)}px;top:${Math.min(e.clientY,window.innerHeight-100)}px`;
+});
+document.getElementById('ctxAdd').onclick=()=>{
+  const num=Object.keys(descStore).length+1;
+  descStore[ctxTargetKey]={num,title:'새 노트',text:'',el:ctxTargetEl,selector:getSelector(ctxTargetEl)};
+  saveNotes();renderNotesList();renderNoteBadges();
+  if(!document.getElementById('descPanel').classList.contains('open'))toggleNotes();
+  setTimeout(()=>editNote(ctxTargetKey),30);
+  hideCtx();
+};
+document.getElementById('ctxEdit').onclick=()=>{
+  if(!document.getElementById('descPanel').classList.contains('open'))toggleNotes();
+  setTimeout(()=>editNote(ctxTargetKey),30);
+  hideCtx();
+};
+document.getElementById('ctxDel').onclick=()=>{
+  const n=descStore[ctxTargetKey];
+  if(n&&n.el)n.el.removeAttribute('data-widget');
+  delete descStore[ctxTargetKey];
+  renumberNotes();saveNotes();renderNotesList();renderNoteBadges();hideCtx();
+};
+
+function renumberNotes(){let i=1;Object.values(descStore).forEach(n=>n.num=i++);}
+
+function renderNotesList(){
+  const list=document.getElementById('notesList'),em=document.getElementById('notesEmpty');
+  const entries=Object.entries(descStore);
+  em.style.display=entries.length?'none':'';
+  list.querySelectorAll('.note-card').forEach(el=>el.remove());
+  entries.forEach(([key,n])=>{
+    const c=document.createElement('div');c.className='note-card';c.dataset.noteKey=key;
+    c.innerHTML=`<div class="note-card-header">
+      <div class="note-num">${n.num}</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">${n.title}</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body">${n.text||'<span style="color:#b0b8c4">(내용 없음)</span>'}</div>`;
+    c.querySelector('.note-card-name-wrap').addEventListener('click',()=>startNameEdit(key,c));
+    c.querySelectorAll('.note-card-btn')[0].addEventListener('click',()=>editNote(key));
+    c.querySelectorAll('.note-card-btn')[1].addEventListener('click',()=>deleteNote(key));
+    list.appendChild(c);
+  });
+}
+
+function editNote(key){
+  const n=descStore[key];if(!n)return;
+  const card=[...document.querySelectorAll('.note-card')].find(c=>c.dataset.noteKey===key);
+  if(!card)return;
+  const body=card.querySelector('.note-card-body');
+  body.innerHTML=`<div class="note-editor-wrap unsaved">
+    <div class="note-toolbar">
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('bold')"><b>B</b></button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('italic')"><i>I</i></button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('underline')"><u>U</u></button>
+      <div class="note-tb-sep"></div>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('justifyLeft')" title="좌측 정렬">≡</button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('justifyCenter')" title="가운데 정렬">☰</button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('insertUnorderedList')" title="불릿 목록">•</button>
+    </div>
+    <div class="note-editor" contenteditable="true" data-placeholder="내용을 입력하세요...">${n.text}</div>
+  </div>
+  <div class="note-actions">
+    <button class="btn btn-sm btn-outline">취소</button>
+    <button class="btn btn-sm btn-primary">저장</button>
+  </div>`;
+  const ew=body.querySelector('.note-editor-wrap');
+  const editor=body.querySelector('.note-editor');
+  editor.addEventListener('input',()=>ew.classList.add('unsaved'));
+  body.querySelector('.note-actions .btn-outline').addEventListener('click',()=>renderNotesList());
+  body.querySelector('.note-actions .btn-primary').addEventListener('click',()=>{
+    n.text=editor.innerHTML;saveNotes();renderNotesList();renderNoteBadges();
+  });
+  editor.focus();
+}
+
+function deleteNote(key){
+  const n=descStore[key];
+  if(n&&n.el)n.el.removeAttribute('data-widget');
+  delete descStore[key];
+  renumberNotes();saveNotes();renderNotesList();renderNoteBadges();
+}
+
+function startNameEdit(key,card){
+  const wrap=card.querySelector('.note-card-name-wrap');
+  const nameDiv=wrap.querySelector('.note-card-name');if(!nameDiv)return;
+  const orig=nameDiv.textContent;
+  const input=document.createElement('input');
+  input.className='note-name-input';input.value=orig;
+  wrap.replaceChild(input,nameDiv);input.focus();input.select();
+  const save=()=>{
+    const val=input.value.trim()||orig;
+    descStore[key].title=val;saveNotes();
+    const d=document.createElement('div');d.className='note-card-name';d.textContent=val;
+    if(input.parentNode===wrap)wrap.replaceChild(d,input);
+  };
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();save();}
+    if(e.key==='Escape'){const d=document.createElement('div');d.className='note-card-name';d.textContent=orig;if(input.parentNode===wrap)wrap.replaceChild(d,input);}
+  });
+}
+
+function renderNoteBadges(){
+  document.querySelectorAll('.note-badge-overlay').forEach(el=>el.remove());
+  if(!document.getElementById('descPanel').classList.contains('open'))return;
+  const wrap=document.getElementById('screensWrap');
+  wrap.style.position='relative';
+  const wrapRect=wrap.getBoundingClientRect();
+  Object.entries(descStore).forEach(([key,n])=>{
+    const wid=key.split('::')[1];
+    let target=document.querySelector(`[data-widget="${wid}"]`)||(n.el&&n.el.isConnected?n.el:null);
+    if(!target&&n.selector){try{target=document.querySelector(n.selector);}catch(e){}}
+    if(target&&!target.dataset.widget)target.dataset.widget=wid;
+    if(!target)return;
+    const r=target.getBoundingClientRect();
+    const badge=document.createElement('div');
+    badge.className='note-badge-overlay';badge.textContent=n.num;
+    badge.style.left=(r.left-wrapRect.left+r.width-6)+'px';
+    badge.style.top=(r.top-wrapRect.top-6)+'px';
+    badge.onclick=()=>{
+      if(!document.getElementById('descPanel').classList.contains('open'))toggleNotes();
+      const card=[...document.querySelectorAll('.note-card')].find(c=>c.dataset.noteKey===key);
+      if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    wrap.appendChild(badge);
+  });
+}
+
+/* ── 이벤트 ── */
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd-wrap'))closeAllDD();
+  if(!e.target.closest('.ctx-menu'))hideCtx();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();hideCtx();}});
+document.getElementById('detailModal').addEventListener('click',e=>{if(e.target===document.getElementById('detailModal'))closeModal();});
+
+/* ── 초기 렌더 ── */
+loadNotes();
+renderNotesList();
+renderGrid();
+</script>
+
+
+</body></html>

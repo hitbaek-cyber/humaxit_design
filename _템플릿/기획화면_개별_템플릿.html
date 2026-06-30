@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCR-[SCREEN-ID] [화면명] | CBAM 산정 플랫폼</title>
+<link rel="stylesheet" href="../_디자인시스템/cbam.css">
+<!--
+  CBAM 기획화면 템플릿 (얇은 버전) — 공유 자산 링크 방식
+  · 스타일      : _디자인시스템/cbam.css
+  · 프레임워크 JS: _디자인시스템/cbam-proto.js
+  · 컴포넌트 참조 : _템플릿/컴포넌트_카탈로그.md (클래스명 + 최소 마크업)
+  복사 후: [PLACEHOLDER] 교체, 하단 inline <script>의 화면별 설정(NOTES키/SCREEN_IDS/INIT_NOTES) 수정,
+           [SCREEN-CONTENT]에 프로토타입, [DOC-내용]은 확정 시 작성.
+  ※ 링크 경로는 projects/*/02_기획화면/ 기준(../../). 단독 파일로 떼면 경로 깨짐.
+-->
+</head>
+<body>
+<!-- ══════════════════════════════ 앱 탭바 ══════════════════════════════ -->
+<div class="app-tab-bar">
+  <div class="app-tab-bar-left">
+    <span class="app-logo">Compli·<span>Law</span> <small>CBAM SaaS</small></span>
+    <button class="app-tab" onclick="switchView('doc')">📋 기획 문서</button>
+    <button class="app-tab active" onclick="switchView('proto')">🖥️ 프로토타입</button>
+  </div>
+  <div class="app-tab-bar-right">
+    <button class="btn-notes-toggle" id="noteToggleBtn" onclick="toggleNotes()">📝 Description</button>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ═══════════ DOC VIEW ═══════════ -->
+<div class="view doc-view" id="view-doc">
+  <nav class="doc-sidebar">
+    <div class="doc-sidebar-title">문서 목차</div>
+    <div class="doc-nav-item active" onclick="docNav('sec-overview',this)">1. 서비스 개요</div>
+    <div class="doc-nav-item" onclick="docNav('sec-ia',this)">2. 화면 목록 (IA)</div>
+    <div class="doc-nav-item" onclick="docNav('sec-spec',this)">3. 화면 기능 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-data',this)">4. 데이터 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-appendix',this)">5. 부록</div>
+  </nav>
+  <div class="doc-content">
+
+    <!-- 1. 서비스 개요 -->
+    <div class="doc-section active" id="sec-overview">
+      <div class="status-bar">
+        <!-- [DOC-내용] 상태뱃지: 🟡 초안 / 🔵 검토 중 / 🟢 확정 -->
+        <span class="badge-doc warning">🟡 초안</span>
+        <span style="font-size:12px;color:var(--text-muted)">v0.1 &nbsp;|&nbsp; <span class="ph">YYYY-MM-DD</span> &nbsp;|&nbsp; 작성자 <span class="ph">이름</span></span>
+      </div>
+      <h1 class="doc-h1">SCR-[SCREEN-ID] [화면명]</h1>
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>서비스</strong>CBAM 산정 플랫폼</div>
+        <div class="doc-meta-item"><strong>화면 ID</strong>SCR-[SCREEN-ID]</div>
+        <div class="doc-meta-item"><strong>화면 타입</strong><span class="ph">Type A / B-1 / B-2 / C</span></div>
+        <div class="doc-meta-item"><strong>진입 경로</strong>GNB > [메뉴그룹] > <span class="ph">경로</span></div>
+        <div class="doc-meta-item"><strong>접근 권한</strong><span class="ph">관리자 / 일반 사용자</span></div>
+      </div>
+      <h2 class="doc-h2">배경 및 목적</h2>
+      <p class="doc-p"><span class="ph">[배경 및 목적을 작성하세요.]</span></p>
+      <h2 class="doc-h2">변경 이력</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:72px">버전</th><th style="width:110px">날짜</th><th>주요 변경 내용</th><th style="width:100px">작성자</th></tr></thead>
+        <tbody>
+          <tr><td>v0.1</td><td><span class="ph">YYYY-MM-DD</span></td><td>최초 작성</td><td><span class="ph">이름</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px">
+        <button class="btn btn-primary" onclick="switchView('proto')">🖥️ 프로토타입 바로 보기</button>
+      </div>
+    </div>
+
+    <!-- 2. 화면 목록 (IA) -->
+    <div class="doc-section" id="sec-ia">
+      <h1 class="doc-h1">화면 목록 (IA)</h1>
+      <table class="doc-table">
+        <thead><tr><th>화면 ID</th><th>화면명</th><th>타입</th><th>진입 경로</th><th>권한</th><th>상태</th></tr></thead>
+        <tbody>
+          <!-- [DOC-내용] 화면 목록 행 추가 -->
+          <tr><td><strong>SCR-[SCREEN-ID]-L</strong></td><td>[화면명] 목록</td><td>Type A</td><td><span class="ph">진입경로</span></td><td>전체</td><td><span class="badge-doc primary">초안</span></td></tr>
+          <tr><td><strong>SCR-[SCREEN-ID]-R</strong></td><td>[화면명] 등록</td><td>Type B-1</td><td>목록 [+ 등록] 버튼</td><td>전체</td><td><span class="badge-doc primary">초안</span></td></tr>
+          <tr><td><strong>SCR-[SCREEN-ID]-D</strong></td><td>[화면명] 상세조회</td><td>Type C</td><td>목록 행 클릭</td><td>전체</td><td><span class="badge-doc primary">초안</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. 화면 기능 명세 -->
+    <div class="doc-section" id="sec-spec">
+      <h1 class="doc-h1">화면 기능 명세</h1>
+      <!-- [DOC-내용] 기능 명세 내용 작성 -->
+      <h2 class="doc-h2">3.1 목록 화면 (SCR-[SCREEN-ID]-L)</h2>
+      <table class="doc-table">
+        <thead><tr><th>Zone</th><th>컴포넌트</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>Menu Title</td><td>페이지 타이틀 + [+ 등록] 버튼</td><td>등록 화면 이동</td></tr>
+          <tr><td>Filter Area</td><td>날짜 필터 / 상태 드롭다운 / 검색</td><td>복합 AND 필터</td></tr>
+          <tr><td>Grid Control</td><td>결과 건수 / 테이블 표시 선택 / Excel</td><td></td></tr>
+          <tr><td>Data Grid</td><td><span class="ph">컬럼 목록</span></td><td>기본 정렬: <span class="ph">컬럼명</span> 내림차순</td></tr>
+          <tr><td>Pagination</td><td>10개씩 보기 (기본)</td><td>우클릭 컨텍스트 메뉴</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. 데이터 명세 -->
+    <div class="doc-section" id="sec-data">
+      <h1 class="doc-h1">데이터 명세</h1>
+      <!-- [DOC-내용] 엔티티 테이블 작성 -->
+      <h2 class="doc-h2"><span class="ph">[엔티티명]</span> 엔티티</h2>
+      <table class="doc-table">
+        <thead><tr><th>필드명</th><th>한글명</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ph">id</span></td><td><span class="ph">ID</span></td><td>BIGINT</td><td>Y</td><td>PK, 자동 생성</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. 부록 -->
+    <div class="doc-section" id="sec-appendix">
+      <h1 class="doc-h1">부록</h1>
+      <h2 class="doc-h2">Open Issues</h2>
+      <table class="doc-table">
+        <thead><tr><th>#</th><th>내용</th><th>담당</th><th>기한</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><span class="ph">[오픈 이슈 작성]</span></td><td><span class="ph">담당자</span></td><td><span class="ph">YYYY-MM-DD</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div><!-- /view-doc -->
+
+<!-- ═══════════ PROTO VIEW ═══════════ -->
+<div class="view proto-view active" id="view-proto">
+
+  <!-- 화면 서브탭 — [PLACEHOLDER] 탭 항목 수정 -->
+  <div class="screen-tab-bar">
+    <button class="screen-tab active" onclick="switchTab('list',this)">① 목록</button>
+    <button class="screen-tab" onclick="switchTab('reg',this)">② 등록</button>
+    <button class="screen-tab" onclick="switchTab('detail',this)">③ 상세조회</button>
+    <!-- 필요 시 탭 추가 -->
+  </div>
+
+  <!-- 탑바 — [PLACEHOLDER] 화면명/브레드크럼 수정 -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-name">CBAM 산정 플랫폼</div>
+      <div class="topbar-brand-sub">Carbon Border Adjustment</div>
+    </div>
+    <button class="topbar-toggle">☰</button>
+    <div style="flex:1;padding:0 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;">
+      <div style="font-size:15px;font-weight:700;color:var(--color-dark);">[화면명]</div>
+      <div style="font-size:12px;color:var(--text-muted);">[메뉴그룹] <span style="color:#b0b8c4;">›</span> <span style="font-weight:600;color:var(--text-base);">[화면명]</span></div>
+    </div>
+    <div class="topbar-help">?</div>
+    <span class="topbar-lang">KR</span>
+    <div class="topbar-user">
+      <div class="topbar-avatar">임</div>
+      <div class="topbar-user-info">
+        <div class="name">임지현 관리자</div>
+        <div class="role">NUVX_TEST 본사</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="proto-body">
+
+    <!-- 좌측 메뉴 트리 — [PLACEHOLDER] active 항목 수정 -->
+    <div class="proto-menu-tree">
+      <div class="proto-menu-tree-body">
+        <div class="nav-d1-item" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">OCF</span>
+          <span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children"></div>
+
+        <div class="nav-d1-item" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">PCF</span>
+          <span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children"></div>
+
+        <div class="nav-d1-item open" onclick="toggleD1(this)">
+          <span>📁</span><span class="d1-label">CBAM</span>
+          <span class="nav-chevron">›</span>
+        </div>
+        <div class="nav-d1-children open">
+          <!-- [PLACEHOLDER] 활성 메뉴 항목에 active 클래스 추가 -->
+          <div class="nav-d2-item" onclick="toggleD2(this)">
+            <span class="d2-label">기준정보</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children">
+            <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 제품 마스터</span>
+            <span class="nav-d3-item" onclick="alert('준비 중')">공급사 마스터</span>
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-001_벤치마크.html'">CBAM 벤치마크</span>
+          </div>
+          <div class="nav-d2-item" onclick="toggleD2(this)">
+            <span class="d2-label">데이터 관리</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children">
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-002_출하데이터수집관리.html'">출하 데이터 수집/관리</span>
+            <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-003_인증서비용조회.html'">CBAM 인증서 비용 조회</span>
+          </div>
+          <div class="nav-d2-item" onclick="toggleD2(this)">
+            <span class="d2-label">리포트/분석</span><span class="nav-chevron">›</span>
+          </div>
+          <div class="nav-d2-children">
+            <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 리포트</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 프로토 뷰포트 -->
+    <div class="proto-viewport">
+      <div class="proto-screens-wrap" id="protoScreensWrap">
+
+        <!-- ━━━━━━━━━━━ SCREEN 1: 목록 (Type A) ━━━━━━━━━━━ -->
+        <div class="proto-screen active" id="screen-list">
+          <!-- Menu Title Area -->
+          <div class="menu-title-area">
+            <span class="menu-title">[화면명]</span>
+            <div class="breadcrumb">
+              <span>[메뉴그룹]</span><span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-cur">[화면명]</span>
+            </div>
+          </div>
+          <!-- Main Container -->
+          <div class="main-container">
+            <div class="section-card">
+              <!-- Card Title Area (Type A: 60px) -->
+              <div class="card-title-area">
+                <span class="card-title">[화면명]</span>
+                <div class="title-actions">
+                  <button class="btn btn-primary" onclick="switchTab('reg',null)">+ 등록</button>
+                </div>
+              </div>
+              <!-- Filter Area — Custom Dropdown 사용 (native select 금지) -->
+              <div class="filter-area">
+                <!-- 날짜 필터 -->
+                <div class="custom-dropdown date-selector" style="position:relative;">
+                  <button class="dropdown-trigger" onclick="this.nextElementSibling.classList.toggle('open')">
+                    <span class="trigger-text">전체</span>
+                    <span class="trigger-icon">📅</span>
+                  </button>
+                </div>
+                <!-- 상태 필터 -->
+                <div class="custom-dropdown">
+                  <button class="dropdown-trigger" onclick="toggleDropdown(this)">
+                    <span class="trigger-text">상태 : 전체</span>
+                    <span class="trigger-icon">▼</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 전체')"><span class="item-text">전체</span></div>
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 사용')"><span class="item-text">사용</span></div>
+                    <div class="dropdown-item" onclick="selectFilter(this,'상태 : 사용안함')"><span class="item-text">사용안함</span></div>
+                  </div>
+                </div>
+                <!-- [PLACEHOLDER] 추가 필터 드롭다운 삽입 위치 -->
+                <!-- 검색 -->
+                <div class="search-input-wrapper">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" class="search-input" placeholder="[검색 안내문구를 입력하세요.]">
+                </div>
+              </div>
+              <!-- Grid Control -->
+              <div class="grid-control">
+                <div class="grid-info">총 <strong id="totalCount">0</strong>건</div>
+                <div class="grid-actions">
+                  <!-- 테이블 표시 선택 (Multi Check Dropdown) -->
+                  <div class="custom-dropdown">
+                    <button class="dropdown-trigger" onclick="toggleDropdown(this)" style="min-width:160px;">
+                      <span class="trigger-text">테이블 표시 선택</span>
+                      <span class="trigger-icon">▼</span>
+                    </button>
+                    <div class="dropdown-menu">
+                      <div class="dropdown-header"><a href="#" onclick="selectAllCols(event)">전체 선택</a></div>
+                      <!-- [PLACEHOLDER] 컬럼명 체크박스 행 추가 -->
+                      <label class="dropdown-item"><span class="item-text">컬럼1</span><input type="checkbox" checked data-column="col0"></label>
+                      <label class="dropdown-item"><span class="item-text">컬럼2</span><input type="checkbox" checked data-column="col1"></label>
+                    </div>
+                  </div>
+                  <button class="btn-icon excel" title="Excel 다운로드" onclick="downloadExcel()">📊</button>
+                </div>
+              </div>
+              <!-- Data Grid -->
+              <div class="data-grid-wrapper">
+                <table class="data-grid type-a" id="mainGrid">
+                  <thead>
+                    <tr>
+                      <!-- [PLACEHOLDER] 컬럼 헤더 — 모든 컬럼에 sortable 추가 -->
+                      <th class="sortable" onclick="sortGrid(0)">컬럼1<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(1)">컬럼2<span class="sort-icon none"></span></th>
+                      <!-- 상태 컬럼 예시 -->
+                      <th class="sortable" onclick="sortGrid(2)">상태<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(3)">수정자<span class="sort-icon none"></span></th>
+                      <th class="sortable" onclick="sortGrid(4)">최근수정일<span class="sort-icon none"></span></th>
+                    </tr>
+                  </thead>
+                  <tbody id="gridTbody">
+                    <!-- [PLACEHOLDER] 샘플 데이터 행 — JS renderGrid()로 동적 렌더링 권장 -->
+                    <tr onclick="switchTab('detail',null)">
+                      <td class="td-link">샘플코드001</td>
+                      <td>샘플명1</td>
+                      <td><span class="badge b-success">사용</span></td>
+                      <td>홍길동</td>
+                      <td>2026-06-01</td>
+                    </tr>
+                    <tr onclick="switchTab('detail',null)">
+                      <td class="td-link">샘플코드002</td>
+                      <td>샘플명2</td>
+                      <td><span class="badge b-info">사용안함</span></td>
+                      <td>임지현</td>
+                      <td>2026-05-30</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- Pagination -->
+              <div class="pagination-wrapper">
+                <div>
+                  <select class="page-size-sel">
+                    <option>10개씩 보기</option>
+                    <option>20개씩 보기</option>
+                    <option>50개씩 보기</option>
+                    <option>100개씩 보기</option>
+                  </select>
+                </div>
+                <div class="pagination-center">
+                  <button class="page-btn" disabled>◀</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn" disabled>▶</button>
+                </div>
+                <span style="font-size:12px;color:var(--text-muted);">1 / 1 페이지</span>
+              </div>
+            </div><!-- /section-card -->
+          </div><!-- /main-container -->
+        </div><!-- /screen-list -->
+
+        <!-- ━━━━━━━━━━━ SCREEN 2: 등록 (Type B-1) ━━━━━━━━━━━ -->
+        <div class="proto-screen" id="screen-reg">
+          <!-- Menu Title Area -->
+          <div class="menu-title-area">
+            <span class="menu-title">[화면명] 등록</span>
+            <div class="breadcrumb">
+              <span>[메뉴그룹]</span><span class="breadcrumb-sep">›</span>
+              <span>[화면명]</span><span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-cur">[화면명] 등록</span>
+            </div>
+          </div>
+          <div class="main-container">
+            <div class="section-card">
+              <!-- Card Title Area (Type B-1: 60px) -->
+              <div class="card-title-area">
+                <span class="card-title">[화면명] 등록</span>
+                <div class="title-actions">
+                  <button class="btn btn-outline" onclick="showModal('cancelModal')">취소</button>
+                  <button class="btn btn-primary" onclick="showModal('saveModal')">저장</button>
+                </div>
+              </div>
+              <!-- Form Area -->
+              <div style="padding:24px;">
+                <!-- [PLACEHOLDER] 폼 필드 추가 -->
+                <div class="form-group">
+                  <label class="form-label">항목1<span class="required">*</span></label>
+                  <input type="text" class="form-input" placeholder="값을 입력하세요.">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">항목2 (드롭다운)</label>
+                  <select class="form-select" style="width:260px;">
+                    <option>선택</option>
+                    <option>옵션1</option>
+                    <option>옵션2</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">설명</label>
+                  <textarea class="form-textarea" placeholder="설명을 입력하세요."></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /screen-reg -->
+
+        <!-- ━━━━━━━━━━━ SCREEN 3: 상세조회 (Type C-2) ━━━━━━━━━━━ -->
+        <div class="proto-screen" id="screen-detail">
+          <!-- Menu Title Area -->
+          <div class="menu-title-area">
+            <span class="menu-title">[화면명] 상세조회</span>
+            <div class="breadcrumb">
+              <span>[메뉴그룹]</span><span class="breadcrumb-sep">›</span>
+              <span>[화면명]</span><span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-cur">상세조회</span>
+            </div>
+          </div>
+          <!-- Page Header -->
+          <div class="page-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:13px;font-weight:700;color:var(--text-muted);">CODE-001</span>
+              <span style="color:var(--color-border);font-size:18px;">|</span>
+              <span class="page-title">샘플명1</span>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="switchTab('list',null)" style="height:38px;">목록</button>
+          </div>
+          <!-- Sub Title -->
+          <div class="sub-title">
+            <div class="sub-title-item">
+              <span class="sub-title-label">수정일</span>
+              <span class="sub-title-value">2026-06-01</span>
+            </div>
+            <div class="sub-title-item">
+              <span class="sub-title-label">상태</span>
+              <span class="badge badge-rect b-primary">사용</span>
+            </div>
+            <div class="sub-title-item">
+              <span class="sub-title-label">수정자</span>
+              <span class="sub-title-value">홍길동</span>
+            </div>
+          </div>
+          <!-- 2열 카드 레이아웃 -->
+          <div class="main-container" style="overflow-y:auto;">
+            <div style="display:flex;gap:24px;align-items:stretch;">
+              <!-- 좌측 카드 (1/3) -->
+              <div class="section-card" style="flex:0 0 33.333%;">
+                <div class="card-title-area h64">
+                  <span class="card-title">기본정보</span>
+                  <div class="title-actions">
+                    <button class="btn btn-outline-danger" onclick="showModal('deleteModal')">삭제</button>
+                    <button class="btn btn-primary" onclick="switchTab('reg',null)">수정</button>
+                  </div>
+                </div>
+                <div style="padding:24px;">
+                  <!-- [PLACEHOLDER] info-table 항목 추가 -->
+                  <table class="info-table">
+                    <tr><th>항목1</th><td>값1</td></tr>
+                    <tr><th>항목2</th><td>값2</td></tr>
+                    <tr><th>상태</th><td><span class="badge b-success">사용</span></td></tr>
+                  </table>
+                </div>
+              </div>
+              <!-- 우측 카드 (2/3) -->
+              <div class="section-card" style="flex:1;">
+                <div class="card-title-area h64">
+                  <span class="card-title">[우측 섹션명]</span>
+                </div>
+                <div style="padding:24px;">
+                  <!-- [PLACEHOLDER] 우측 카드 내용 -->
+                  <table class="data-grid type-bc" style="border:1px solid #CFD5E1;">
+                    <thead>
+                      <tr><th>컬럼1</th><th>컬럼2</th><th>컬럼3</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>값1</td><td>값2</td><td>값3</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /screen-detail -->
+
+      </div><!-- /proto-screens-wrap -->
+    </div><!-- /proto-viewport -->
+
+    <!-- Widget Notes Panel (공통 — 수정 금지) -->
+    <div class="lnb-desc-panel" id="notePanel">
+      <div class="lnb-desc-header">
+        <span class="lnb-desc-header-title">Description</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button onclick="saveToFile()" title="HTML 파일에 노트 저장" style="border:none;font-size:11px;padding:3px 8px;background:var(--color-primary);color:#fff;border-radius:4px;cursor:pointer;white-space:nowrap;">💾 파일저장</button>
+          <button class="note-card-btn" onclick="toggleNotes()">✕</button>
+        </div>
+      </div>
+      <div class="lnb-notes-list" id="notesList"></div>
+    </div>
+
+  </div><!-- /proto-body -->
+</div><!-- /view-proto -->
+
+</div><!-- /app-body -->
+
+<!-- ═══════════ 저장 확인 모달 ═══════════ -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span class="modal-title">저장하시겠습니까?</span>
+      <button class="modal-close" onclick="closeModal('saveModal')">✕</button>
+    </div>
+    <div class="modal-body">입력한 내용을 저장합니다.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('saveModal')">취소</button>
+      <button class="btn btn-primary" onclick="closeModal('saveModal');switchTab('list',null)">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 취소 확인 모달 ═══════════ -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span class="modal-title">취소하시겠습니까?</span>
+      <button class="modal-close" onclick="closeModal('cancelModal')">✕</button>
+    </div>
+    <div class="modal-body">입력한 내용이 저장되지 않습니다.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('cancelModal')">아니오</button>
+      <button class="btn btn-primary" onclick="closeModal('cancelModal');switchTab('list',null)">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 삭제 확인 모달 ═══════════ -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <span class="modal-title">삭제하시겠습니까?</span>
+      <button class="modal-close" onclick="closeModal('deleteModal')">✕</button>
+    </div>
+    <div class="modal-body">삭제된 데이터는 복구할 수 없습니다.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('deleteModal')">취소</button>
+      <button class="btn btn-outline-danger" onclick="closeModal('deleteModal');switchTab('list',null)">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 컨텍스트 메뉴 ═══════════ -->
+<div class="ctx-menu" id="ctxMenu" style="display:none;">
+  <div class="ctx-item" onclick="switchTab('detail',null);closeCtx()">조회</div>
+  <div class="ctx-item" onclick="switchTab('reg',null);closeCtx()">수정</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" onclick="showModal('deleteModal');closeCtx()">삭제</div>
+</div>
+<!-- 위젯 컨텍스트 메뉴 (공통 — 수정 금지) -->
+<div class="ctx-menu" id="widgetCtxMenu" style="display:none;">
+  <div class="ctx-item" id="widgetCtxAdd">Add Description</div>
+  <div class="ctx-item" id="widgetCtxEdit" style="display:none">Edit Description</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="widgetCtxDel" style="display:none">Delete Description</div>
+</div>
+
+<!-- ═══ 화면별 설정 (inline) — cbam-proto.js 로드 전에 정의 ═══ -->
+<script>
+const NOTES_STORAGE_KEY = 'cbam-notes-[SCREEN-ID]';   // ← 화면마다 고유하게 변경
+const NOTES_EMBED_ID    = 'embeddedNotes[SCREEN-ID]'; // ← 화면마다 고유하게 변경
+const SAVE_FILENAME     = 'SCR-[SCREEN-ID]_[화면명].html'; // ← 저장 파일명
+const INIT_NOTES = {
+  list:[
+    {n:1, name:'날짜 필터', body:'<ul><li>최근수정일 기준 날짜 범위 필터</li><li>기본값 : null (전체 조회)</li></ul>'},
+    {n:2, name:'상태 필터', body:'<ul><li>(D) : 전체</li><li>전체 / 사용 / 사용안함</li></ul>'},
+    {n:3, name:'검색', body:'<ul><li>안내문구 : [검색 안내문구]</li><li>기본값 : null</li></ul>'},
+    {n:4, name:'+ 등록 버튼', body:'<ul><li>클릭 이벤트 : 등록 화면으로 이동</li></ul>'},
+    {n:5, name:'등록 건수', body:'<ul><li>테이블에 등록된 개수 표시</li></ul>'},
+    {n:6, name:'데이터 그리드', body:'<ul><li>기본정렬 : [컬럼명] 내림차순</li><li>정렬기능 제공컬럼 : 모든 컬럼</li></ul>'},
+    {n:7, name:'테이블 표시 선택', body:'<ul><li>(D) : 전체</li><li>[컬럼 목록 나열]</li></ul>'},
+  ],
+  reg:[
+    {n:1, name:'[필드명1]', body:'<ul><li>필수 입력값</li><li>[설명]</li></ul>'},
+    {n:2, name:'[필드명2]', body:'<ul><li>선택 입력값</li><li>[설명]</li></ul>'},
+  ],
+  detail:[
+    {n:1, name:'삭제 버튼', body:'<ul><li>클릭 시 삭제 확인 모달 표시</li><li>삭제 후 목록 화면으로 이동</li></ul>'},
+    {n:2, name:'수정 버튼', body:'<ul><li>클릭 시 등록 화면(수정 모드)으로 이동</li></ul>'},
+  ],
+};
+const SCREEN_IDS = ['list','reg','detail']; // [PLACEHOLDER] 탭 순서에 맞춰 수정
+</script>
+<script src="../_디자인시스템/cbam-proto.js"></script>
+<script id="embeddedNotes[SCREEN-ID]" type="application/json">{}</script>
+</body>
+</html>

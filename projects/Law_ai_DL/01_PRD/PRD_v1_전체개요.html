@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD v1 전체개요 | Law.ai (DL이앤씨)</title>
+<style>
+:root {
+  --law-font-family-base: 'Pretendard', sans-serif;
+  --law-color-primary:        #2151EC;
+  --law-color-primary-active: #1739A5;
+  --law-color-secondary:      #82868B;
+  --law-color-success:        #1BC47D;
+  --law-color-danger:         #EA5455;
+  --law-color-warning:        #F0AF23;
+  --law-bg-body:               #F2F4F6;
+  --law-bg-table-header:        #F1F4F9;
+  --law-text-heading:          #11152A;
+  --law-text-body:             #2B2F3A;
+  --law-text-muted:            #626F86;
+  --law-border-color:          #CFD5E1;
+  --law-card-bg:               #FFFFFF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--law-font-family-base); background: var(--law-bg-body); color: var(--law-text-body); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+
+.sidebar { width: 240px; background: var(--law-card-bg); border-right: 1px solid var(--law-border-color); flex-shrink: 0; overflow-y: auto; padding: 20px 0; }
+.sidebar-title { padding: 0 20px 12px; font-size: 12px; font-weight: 700; color: var(--law-color-primary); letter-spacing: .04em; }
+.sidebar-meta { padding: 0 20px 16px; font-size: 11px; color: var(--law-text-muted); border-bottom: 1px solid var(--law-border-color); margin-bottom: 8px; }
+.nav-item { padding: 9px 20px; font-size: 13px; color: var(--law-text-muted); cursor: pointer; border-left: 3px solid transparent; }
+.nav-item:hover { background: var(--law-bg-table-header); color: var(--law-text-heading); }
+.nav-item.active { color: var(--law-color-primary); border-left-color: var(--law-color-primary); background: var(--law-bg-table-header); font-weight: 600; }
+
+.main { flex: 1; overflow-y: auto; padding: 40px 56px; }
+.topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+.badge-draft { background: rgba(240,175,35,.12); color: #92670B; }
+.badge-must { background: rgba(234,84,85,.1); color: #C7262A; }
+.badge-should { background: rgba(240,175,35,.12); color: #92670B; }
+
+h1 { font-size: 24px; color: var(--law-text-heading); margin-bottom: 6px; }
+.meta-line { font-size: 12px; color: var(--law-text-muted); margin-bottom: 24px; }
+h2 { font-size: 18px; color: var(--law-text-heading); margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--law-color-primary); display: inline-block; }
+h3 { font-size: 15px; color: var(--law-text-heading); margin: 20px 0 10px; }
+p { line-height: 1.7; margin-bottom: 12px; color: var(--law-text-body); }
+a { color: var(--law-color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+th { background: var(--law-bg-table-header); color: var(--law-text-heading); text-align: left; padding: 10px 12px; border: 1px solid var(--law-border-color); font-weight: 600; }
+td { padding: 10px 12px; border: 1px solid var(--law-border-color); vertical-align: top; color: var(--law-text-body); }
+code { background: var(--law-bg-table-header); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--law-color-primary-active); }
+
+.related-box { margin-top: 32px; padding: 18px 20px; background: var(--law-card-bg); border: 1px solid var(--law-border-color); border-radius: 10px; }
+.related-box h3 { margin-top: 0; font-size: 13px; color: var(--law-text-muted); text-transform: uppercase; letter-spacing: .03em; }
+.related-box ul { list-style: none; }
+.related-box li { padding: 6px 0; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-title">Law.ai (DL이앤씨) · PRD</div>
+  <div class="sidebar-meta">2026-06-30 · 🟡 초안</div>
+  <div class="nav-item active" onclick="nav('s1', this)">1. 개요</div>
+  <div class="nav-item" onclick="nav('s2', this)">2. 사용자 및 역할</div>
+  <div class="nav-item" onclick="nav('s3', this)">3. 기능 요구사항</div>
+  <div class="nav-item" onclick="nav('s4', this)">4. 비기능 요구사항</div>
+  <div class="nav-item" onclick="nav('s5', this)">5. Open Issues</div>
+  <div style="height:12px"></div>
+  <div class="nav-item" onclick="window.open('../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html')" style="color:var(--law-color-primary)">↗ SCR-LAW-001 법률자문 AI코멘트</div>
+</aside>
+
+<main class="main" id="docContent">
+
+<section id="s1" class="doc-section">
+  <div class="topbar"><span class="badge badge-draft">🟡 초안</span></div>
+  <h1>Law.ai (DL이앤씨) — 기획서 PRD v1</h1>
+  <div class="meta-line">v1 &nbsp;|&nbsp; 2026-06-30 &nbsp;|&nbsp; 작성자 백교민 &nbsp;|&nbsp; 최종수정 2026-06-30</div>
+
+  <table>
+    <tr><th width="160">서비스</th><td>Law.ai (DL이앤씨)</td></tr>
+    <tr><th>대상 화면</th><td>SCR-LAW-001</td></tr>
+    <tr><th>최종수정</th><td>2026-06-30</td></tr>
+  </table>
+
+  <h2>변경 이력</h2>
+  <table>
+    <tr><th width="80">버전</th><th width="120">날짜</th><th width="100">작성자</th><th>주요 변경 내용</th></tr>
+    <tr><td>v1</td><td>2026-06-30</td><td>백교민</td><td>최초 작성 — SCR-LAW-001(법률자문 AI코멘트) 화면 기준 이관</td></tr>
+  </table>
+
+  <h2>1. 개요</h2>
+  <h3>1.1 배경 및 목적</h3>
+  <p>Law.ai는 휴맥스아이티가 개발/운영 중인 B2B 법무관리 SaaS/On-Premise 플랫폼으로, DL이앤씨를 대상으로 고도화 작업을 진행 중입니다. 기존 운영 서비스에 신규 기능(AI 코멘트 자동 생성 등)을 추가하고 UX를 개선하는 것이 이번 프로젝트의 목적입니다.</p>
+
+  <h3>1.2 목표</h3>
+  <table>
+    <tr><td width="100"><strong>정량</strong></td><td>(추후 작성)</td></tr>
+    <tr><td><strong>정성</strong></td><td>법률자문 검토 의견 작성 시 자문 요청 내용을 동시 열람하며 작업 가능, AI 기반 코멘트 초안 생성으로 작성 시간 단축</td></tr>
+  </table>
+
+  <h3>1.3 범위 (Scope)</h3>
+  <table>
+    <tr><td width="120"><strong>In Scope</strong></td><td>법률자문 상세 조회 화면 — 코멘트 추가 UX 개선, AI 코멘트 자동 생성</td></tr>
+    <tr><td><strong>Out of Scope</strong></td><td>(추후 작성)</td></tr>
+  </table>
+</section>
+
+<section id="s2" class="doc-section">
+  <h2>2. 사용자 및 역할</h2>
+  <h3>2.1 사용자 유형</h3>
+  <table>
+    <tr><th width="160">역할</th><th>설명</th><th>주요 업무</th></tr>
+    <tr><td><strong>자문 요청자</strong></td><td>사내 법무팀에 법률 자문을 요청하는 현업 사용자</td><td>자문 요청 등록, 법무팀 의견 확인 및 회신</td></tr>
+    <tr><td><strong>법무 담당자</strong></td><td>법률 자문 검토 및 회신 담당</td><td>자문 검토, 의견(코멘트) 작성, 자문 종결 처리</td></tr>
+  </table>
+
+  <h3>2.2 사용자 스토리</h3>
+  <table>
+    <tr><th width="60">#</th><th width="120">역할</th><th>사용자 스토리</th><th width="100">우선순위</th></tr>
+    <tr><td>US-01</td><td>법무 담당자</td><td>자문 요청 내용을 보면서 동시에 코멘트를 작성하고 싶다</td><td><span class="badge badge-must">🔴 Must</span></td></tr>
+    <tr><td>US-02</td><td>법무 담당자</td><td>AI가 자문 요청 내용을 기반으로 코멘트 초안을 자동 생성해줬으면 한다</td><td><span class="badge badge-must">🔴 Must</span></td></tr>
+  </table>
+</section>
+
+<section id="s3" class="doc-section">
+  <h2>3. 기능 요구사항</h2>
+  <table>
+    <tr><th width="100">ID</th><th width="160">기능명</th><th>설명</th><th width="100">우선순위</th><th width="120">관련 화면</th></tr>
+    <tr><td><code>F-LAW-01</code></td><td>코멘트 추가 UX 개선</td><td>전체화면 팝업 대신 자문 내용과 동시 열람 가능한 구조로 변경</td><td><span class="badge badge-must">Must</span></td><td><a href="../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html" target="_blank">SCR-LAW-001</a></td></tr>
+    <tr><td><code>F-LAW-02</code></td><td>AI 코멘트 자동 생성</td><td>자문 요청 제목/본문/첨부/이전 코멘트 이력/수신자 정보 기반 초안 생성, 리치텍스트 에디터 자동 입력</td><td><span class="badge badge-must">Must</span></td><td><a href="../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html" target="_blank">SCR-LAW-001</a></td></tr>
+  </table>
+</section>
+
+<section id="s4" class="doc-section">
+  <h2>4. 비기능 요구사항</h2>
+  <p>(추후 작성)</p>
+</section>
+
+<section id="s5" class="doc-section">
+  <h2>5. Open Issues</h2>
+  <table>
+    <tr><th width="60">#</th><th>이슈 내용</th><th width="100">담당</th><th width="120">목표 해결일</th><th width="100">상태</th></tr>
+    <tr><td>1</td><td>접근 권한 정의 미확정</td><td>백교민</td><td>YYYY-MM-DD</td><td><span class="badge badge-should">🔵 확인 중</span></td></tr>
+  </table>
+
+  <div class="related-box">
+    <h3>관련 문서</h3>
+    <ul>
+      <li>🖥️ <a href="../02_기획화면/SCR-LAW-001_법률자문_ai코멘트.html" target="_blank">SCR-LAW-001_법률자문_ai코멘트.html</a> — 기획화면</li>
+      <li>🔀 <a href="../03_화면흐름도/화면흐름_LAW전체_v1.html" target="_blank">화면흐름_LAW전체_v1.html</a> — 화면흐름도</li>
+      <li>🕘 <a href="../04_히스토리/결정로그.md">결정로그.md</a> — 프로젝트 주요 의사결정 이력</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<script>
+function nav(sectionId, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(sectionId).scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>

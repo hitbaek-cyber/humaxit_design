@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCR-CBAM-003 CBAM 인증서 비용 조회 | Compli·Law</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+<style>
+/* ── 디자인 토큰 ── */
+:root {
+  --primary:      #0561a4;
+  --primary-h:    #044e8a;
+  --secondary:    #415aa9;
+  --success:      #006b56;
+  --warning:      #cea331;
+  --danger:       #ff5812;
+  --dark:         #001b3d;
+  --bg:           #f3f6f9;
+  --text:         #43474e;
+  --text-muted:   #73777f;
+  --border:       #dfe2eb;
+  --card-bg:      #ffffff;
+  --header-bg:    #f8f9fc;
+  --rgb-primary:  5,97,164;
+  --rgb-warning:  206,163,49;
+  --rgb-danger:   255,88,18;
+  --rgb-dark:     0,27,61;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','Noto Sans KR',sans-serif; font-size: 13px; color: var(--text); background: var(--bg); height: 100vh; min-height: 900px; overflow: hidden; display: flex; flex-direction: column; }
+
+/* ══ 앱 탭바 ══ */
+.app-tab-bar { height: 44px; background: var(--dark); display: flex; align-items: center; padding: 0 16px; gap: 4px; flex-shrink: 0; justify-content: space-between; }
+.app-tab-bar-left { display: flex; align-items: center; gap: 4px; }
+.app-logo { font-size: 14px; font-weight: 700; color: #fff; margin-right: 12px; white-space: nowrap; letter-spacing: -.2px; }
+.app-logo span { color: #4fc3f7; }
+.app-logo small { font-size: 10px; color: rgba(255,255,255,.35); font-weight: 400; margin-left: 5px; }
+.app-tab { height: 30px; padding: 0 14px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; color: rgba(255,255,255,.5); background: transparent; transition: all .15s; font-family: inherit; }
+.app-tab:hover { background: rgba(255,255,255,.09); color: #fff; }
+.app-tab.active { background: rgba(var(--rgb-primary),.32); color: #fff; font-weight: 600; }
+.app-tab-bar-right { display: flex; align-items: center; gap: 8px; }
+.btn-notes-toggle { height: 28px; padding: 0 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 4px; background: transparent; color: rgba(255,255,255,.65); font-size: 11px; cursor: pointer; font-family: inherit; transition: all .15s; }
+.btn-notes-toggle:hover { background: rgba(255,255,255,.09); color: #fff; }
+.btn-notes-toggle.active { background: rgba(var(--rgb-primary),.35); border-color: var(--primary); color: #fff; }
+
+/* ══ 뷰 시스템 ══ */
+.app-body { flex: 1; display: flex; overflow: hidden; }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; }
+.view.proto-view.active{display:flex;flex-direction:column;overflow:hidden;height:100%;}
+.proto-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* ══ DOC VIEW ══ */
+.doc-view { flex-direction: row; background: #fff; }
+.doc-sidebar { width: 200px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--bg); overflow-y: auto; }
+.doc-sidebar-title { padding: 14px 16px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+.doc-nav-item { padding: 10px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-left: 2px solid transparent; transition: all .1s; }
+.doc-nav-item:hover { background: rgba(0,0,0,.03); color: var(--text); }
+.doc-nav-item.active { background: rgba(var(--rgb-primary),.07); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+.doc-content { flex: 1; overflow-y: auto; padding: 36px 44px; }
+.doc-section { display: none; }
+.doc-section.active { display: block; }
+.doc-h1 { font-size: 20px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.doc-h2 { font-size: 15px; font-weight: 700; color: var(--dark); margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+.doc-h3 { font-size: 13px; font-weight: 700; color: var(--text); margin: 16px 0 8px; }
+.doc-p { font-size: 13px; line-height: 1.85; color: var(--text); margin-bottom: 10px; }
+.doc-meta { display: flex; gap: 24px; margin: 12px 0 24px; padding: 14px 18px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; flex-wrap: wrap; }
+.doc-meta-item { font-size: 12px; color: var(--text-muted); }
+.doc-meta-item strong { display: block; font-size: 13px; color: var(--text); margin-top: 3px; }
+.doc-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+.doc-table th { background: var(--header-bg); font-weight: 600; padding: 10px 13px; border: 1px solid var(--border); text-align: left; }
+.doc-table td { padding: 10px 13px; border: 1px solid var(--border); vertical-align: top; line-height: 1.65; }
+.doc-table tr:hover td { background: #fafbfc; }
+.status-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding: 10px 14px; background: rgba(var(--rgb-primary),.05); border: 1px solid rgba(var(--rgb-primary),.14); border-radius: 6px; }
+.badge-doc { display: inline-flex; align-items: center; height: 20px; padding: 0 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.badge-doc.primary { background: rgba(var(--rgb-primary),.12); color: var(--primary); }
+.badge-doc.warning { background: rgba(var(--rgb-warning),.12); color: #a07b00; }
+.doc-note { background: #f0f9ff; border-left: 3px solid var(--primary); padding: 12px 16px; border-radius: 0 5px 5px 0; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+.doc-ul { padding-left: 20px; margin: 8px 0 12px; }
+.doc-ul li { font-size: 13px; line-height: 1.85; color: var(--text); margin-bottom: 4px; }
+.doc-warn { background: #fffbea; border-left: 3px solid var(--warning); padding: 12px 16px; border-radius: 0 5px 5px 0; margin: 14px 0; font-size: 13px; line-height: 1.7; }
+.ph { background: #fffbea; border-bottom: 1px dashed #f0c000; color: #7a6000; padding: 0 3px; border-radius: 2px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; border: none; font-family: inherit; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-h); }
+
+/* ══ PROTO — LNB 3뎁스 ══ */
+.proto-menu-tree { width: 240px; background: var(--dark); flex-shrink: 0; display: flex; flex-direction: column; overflow-y: auto; }
+.proto-menu-tree-header { padding: 14px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+.proto-menu-logo { font-size: 13px; font-weight: 700; color: #fff; }
+.proto-menu-logo span { color: #4fc3f7; }
+.proto-menu-sub { font-size: 10px; color: rgba(255,255,255,.3); margin-top: 3px; }
+.proto-menu-tree-body { padding: 6px 0 20px; flex: 1; }
+.nav-d1-item { display: flex; align-items: center; gap: 9px; padding: 10px 14px 10px 16px; color: rgba(255,255,255,.65); font-size: 13px; font-weight: 500; cursor: pointer; user-select: none; transition: background .15s,color .15s; border-bottom: 1px solid rgba(255,255,255,.04); }
+.nav-d1-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+.nav-d1-item.open { color: #fff; background: rgba(255,255,255,.04); }
+.nav-d1-item .d1-icon { font-size: 16px; flex-shrink: 0; color: rgba(255,255,255,.35); }
+.nav-d1-item .d1-label { flex: 1; }
+.nav-chevron { font-size: 15px; flex-shrink: 0; color: rgba(255,255,255,.3); transition: transform .2s; }
+.nav-d1-item.open > .nav-chevron { transform: rotate(90deg); color: rgba(255,255,255,.5); }
+.nav-d1-children { display: none; background: rgba(0,0,0,.15); }
+.nav-d1-children.open { display: block; }
+.nav-d2-item { display: flex; align-items: center; gap: 8px; padding: 9px 14px 9px 32px; color: rgba(255,255,255,.5); font-size: 12px; font-weight: 500; cursor: pointer; user-select: none; transition: background .15s,color .15s; border-bottom: 1px solid rgba(255,255,255,.03); }
+.nav-d2-item:hover { background: rgba(255,255,255,.04); color: rgba(255,255,255,.85); }
+.nav-d2-item.open { color: rgba(255,255,255,.9); }
+.nav-d2-item .d2-label { flex: 1; }
+.nav-d2-item.open > .nav-chevron { transform: rotate(90deg); }
+.nav-d2-children { display: none; }
+.nav-d2-children.open { display: block; }
+.nav-d3-item { display: block; padding: 8px 14px 8px 48px; color: rgba(255,255,255,.4); font-size: 12px; text-decoration: none; transition: background .15s,color .15s; border-bottom: 1px solid rgba(255,255,255,.02); cursor: pointer; }
+.nav-d3-item:hover { background: rgba(255,255,255,.04); color: rgba(255,255,255,.75); }
+.nav-d3-item.active { color: #4fc3f7; font-weight: 600; }
+.nav-d3-item.active::before { content: '▸ '; font-size: 10px; }
+
+/* ══ PROTO — 뷰포트 ══ */
+.proto-viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.proto-screens-wrap { flex: 1; overflow-y: auto; background: #fff; display: flex; flex-direction: column; }
+
+/* ══ Widget Notes Panel ══ */
+.lnb-desc-panel { width: 0; min-width: 0; overflow: hidden; border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; transition: width .22s ease,min-width .22s ease; background: #fff; }
+.lnb-desc-panel.open { width: 280px; min-width: 280px; }
+.lnb-desc-header { min-width: 279px; height: 46px; padding: 0 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--header-bg); flex-shrink: 0; }
+.lnb-desc-header-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.lnb-notes-list { min-width: 279px; flex: 1; overflow-y: auto; padding: 10px; }
+.lnb-empty { color: #b0b8c4; font-size: 12px; text-align: center; padding: 24px 0; }
+.note-card { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; margin-bottom: 8px; }
+.note-card-header { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: var(--header-bg); border-bottom: 1px solid var(--border); gap: 6px; }
+.note-num { width: 20px; height: 20px; background: #f5c842; color: #000; border-radius: 4px; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.note-card-name-wrap { flex: 1; min-width: 0; cursor: pointer; }
+.note-card-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note-card-name-wrap:hover .note-card-name { text-decoration: underline dotted; }
+.note-name-input { width: 100%; border: none; outline: none; font-size: 12px; font-weight: 600; background: transparent; border-bottom: 1px solid var(--primary); padding: 0; }
+.note-card-body { padding: 8px 10px; font-size: 12px; color: var(--text); line-height: 1.65; min-height: 30px; }
+.note-card-btn { width: 22px; height: 22px; border: none; background: transparent; border-radius: 3px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+.note-card-btn:hover { background: var(--border); }
+.note-badge-overlay { position: absolute; width: 20px; height: 20px; background: #f5c842; color: #000; border-radius: 4px; font-size: 11px; font-weight: 800; z-index: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+/* ── 리치 에디터 ── */
+.note-editor-wrap { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 8px 8px 0; }
+.note-editor-wrap:focus-within { border-color: var(--primary); }
+.note-editor-wrap.unsaved { border-color: #f59e0b; }
+.note-toolbar { display: flex; align-items: center; gap: 1px; padding: 4px 6px; border-bottom: 1px solid var(--border); background: var(--header-bg); }
+.note-tb-btn { width: 24px; height: 24px; border: none; background: transparent; border-radius: 3px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.note-tb-btn:hover { background: var(--border); }
+.note-tb-sep { width: 1px; height: 14px; background: var(--border); margin: 0 3px; }
+.note-editor { min-height: 80px; max-height: 180px; overflow-y: auto; padding: 8px; font-size: 12px; line-height: 1.7; outline: none; }
+.note-editor:empty::before { content: attr(data-placeholder); color: #b0b8c4; }
+.note-editor ul,.note-editor ol{padding-left:20px;margin:4px 0;list-style:disc;}
+.note-editor ol{list-style:decimal;}
+.note-editor li{padding:0;margin:1px 0;}
+.note-actions { display: flex; justify-content: flex-end; gap: 6px; padding: 6px 8px; }
+
+/* ══ 탑바 (뷰포트 내) ══ */
+.topbar{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px 0 0;gap:14px;flex-shrink:0;}
+.topbar-brand{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 16px;align-self:stretch;border-right:1px solid var(--border);width:240px;min-width:240px;flex-shrink:0;}
+.topbar-brand-name{font-size:13px;font-weight:700;color:var(--dark);}
+.topbar-brand-sub{font-size:10px;color:var(--text-muted);}
+.topbar-toggle { width: 32px; height: 32px; border: none; background: none; color: var(--text-muted); font-size: 20px; cursor: pointer; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.topbar-toggle:hover { background: var(--bg); }
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--dark); flex: 1; }
+.topbar-breadcrumb { font-size: 12px; color: var(--text-muted); }
+.topbar-breadcrumb span { color: var(--primary); font-weight: 600; }
+.topbar-help { width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-muted); cursor: pointer; font-weight: 700; position: relative; }
+.topbar-help:hover { border-color: var(--primary); color: var(--primary); }
+.help-popup { position: absolute; top: 40px; right: 0; width: 240px; background: #f5f8b0; border: 1px solid #d4d900; border-radius: 6px; padding: 12px 14px; font-size: 12px; color: #3a3a00; line-height: 1.6; z-index: 500; box-shadow: 0 4px 12px rgba(0,0,0,.12); display: none; }
+.help-popup.show { display: block; }
+.help-popup p { margin: 0 0 6px; font-weight: 600; }
+.help-popup ol { margin: 0; padding-left: 16px; }
+.topbar-user { display: flex; align-items: center; gap: 8px; }
+.topbar-avatar { width: 32px; height: 32px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; }
+.topbar-user-info { font-size: 12px; line-height: 1.4; }
+.topbar-user-info .name { font-weight: 600; color: var(--text); }
+.topbar-user-info .role { color: var(--text-muted); }
+.topbar-lang{font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.04em;}
+
+/* ══ ZONE-1 ══ */
+.zone1{height:52px;padding:0 24px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.zone1-left{display:flex;align-items:center;gap:10px;}
+.zone1-right{display:flex;align-items:center;gap:8px;}
+.page-title{font-size:15px;font-weight:700;color:var(--dark);}
+.breadcrumb{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:5px;}
+.breadcrumb-sep{color:#b0b8c4;}
+.breadcrumb-cur{font-weight:600;color:var(--text);}
+
+/* ══ 페이지 콘텐츠 ══ */
+.page-content { padding: 22px 28px 60px; flex: 1; }
+
+/* 섹션 헤더 */
+.section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 18px; }
+.section-title { font-size: 18px; font-weight: 700; color: var(--dark); }
+.section-note { font-size: 12px; color: #888; }
+
+/* 필터 바 */
+.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.btn-excel { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid #1d7044; border-radius: 5px; background: #fff; color: #1d7044; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
+.btn-excel:hover { background: #1d7044; color: #fff; }
+.btn-excel i { font-size: 15px; }
+.filter-label { font-size: 13px; color: var(--text-muted); }
+.filter-select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 28px 6px 10px; font-size: 13px; color: var(--text); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%238a93a2' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 8px center; appearance: none; cursor: pointer; outline: none; min-width: 140px; }
+.filter-select:focus { border-color: var(--primary); }
+
+/* ══ 조회 기준 모드 토글 ══ */
+.mode-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 7px; border-radius: 3px; font-size: 10px; font-weight: 700; background: rgba(var(--rgb-primary),.1); color: var(--primary); margin-left: 8px; }
+
+/* 요약 카드 */
+.summary-row { display: flex; gap: 14px; margin-bottom: 20px; align-items: stretch; }
+.card-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+.card-label .help-icon { width: 16px; height: 16px; border: 1px solid var(--border); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); cursor: pointer; font-weight: 700; position: relative; }
+.card-label .help-icon .help-tooltip { display: none; position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: 230px; background: #fff; border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; font-size: 12px; font-weight: 400; color: var(--text); line-height: 1.55; white-space: normal; text-transform: none; letter-spacing: 0; box-shadow: 0 4px 14px rgba(0,0,0,.1); z-index: 300; }
+.card-label .help-icon .help-tooltip::before { content: ''; position: absolute; top: -5px; left: 50%; width: 8px; height: 8px; background: #fff; border-left: 1px solid var(--border); border-top: 1px solid var(--border); transform: translateX(-50%) rotate(45deg); }
+.card-label .help-icon:hover .help-tooltip { display: block; }
+
+/* 인증서 가격 카드 */
+.price-card { flex: 0 0 auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; }
+.price-quarters { display: flex; align-items: stretch; }
+.price-quarter { display: flex; flex-direction: column; gap: 5px; padding: 0 20px; border-right: 1px solid var(--border); }
+.price-quarter:first-child { padding-left: 0; }
+.price-quarter:last-child { border-right: none; padding-right: 0; }
+.price-quarter-label { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+.price-quarter-value { font-size: 17px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.price-quarter.has-value .price-quarter-label { color: var(--primary); }
+.price-quarter.has-value .price-quarter-value { color: var(--primary); }
+.price-quarter-value.pending { font-size: 12px; font-weight: 400; color: #c0c4cc; }
+
+/* 예상 수량 카드 */
+.cert-card { flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; }
+.cert-quarters { display: flex; align-items: stretch; }
+.cert-quarter { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 8px 16px; border-right: 1px solid var(--border); }
+.cert-quarter:first-child { padding-left: 0; }
+.cert-quarter:last-child { border-right: none; }
+.cert-quarter.total { flex: none; background: rgba(5,97,164,.06); border: 1px solid rgba(5,97,164,.18) !important; border-radius: 8px !important; padding: 8px 18px; margin-left: 10px; }
+.cert-quarter-label { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+.cert-quarter-count { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.cert-quarter-count.empty { font-size: 20px; color: #d8dce4; font-weight: 300; line-height: 1.2; }
+.cert-quarter.total .cert-quarter-count { color: var(--primary); }
+.cert-quarter-amount { font-size: 11px; color: var(--text-muted); }
+.cert-quarter.total .cert-quarter-amount { color: var(--primary); opacity: .75; }
+
+/* 데이터 테이블 */
+.table-card { background: #fff; }
+.data-table { width: 100%; border-collapse: collapse; border-top: 1px solid #cfd5e1; border-bottom: 1px solid #cfd5e1; }
+.data-table thead th { background: var(--header-bg); height: 44px; font-size: 12px; font-weight: 700; padding: 0 14px; border-bottom: 1px solid #cfd5e1; white-space: nowrap; vertical-align: middle; text-align: left; }
+.data-table tbody tr { border-bottom: 1px solid #ececec; }
+.data-table tbody tr:last-child { border-bottom: none; }
+.data-table tbody tr:hover td { background: #f8f9fb; }
+.data-table tbody td { height: auto; min-height: 50px; font-size: 13px; padding: 10px 14px; vertical-align: middle; text-align: left; }
+.data-table thead th:nth-child(n+3) { text-align: right; }
+.data-table tbody td:nth-child(n+3) { text-align: right; }
+.data-table thead th.sortable { cursor: pointer; user-select: none; }
+.data-table thead th.sortable:hover { background: #eef0f5; }
+.sort-icon { margin-left: 4px; color: #b0b8c4; font-size: 11px; display: inline-block; width: 12px; text-align: center; vertical-align: middle; }
+.sort-icon.asc::after { content: '▲'; }
+.sort-icon.desc::after { content: '▼'; }
+.sort-icon.none::after { content: '⇅'; }
+.sort-icon.asc, .sort-icon.desc { color: var(--primary); }
+.link-text { color: var(--primary); cursor: pointer; text-decoration: none; }
+.link-text:hover { text-decoration: underline; }
+
+/* ══ 출하량 현황 모달 ══ */
+.exp-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000; align-items: center; justify-content: center; }
+.exp-backdrop.open { display: flex; }
+.exp-modal { background: #fff; border-radius: 10px; width: 820px; max-width: calc(100vw - 48px); max-height: calc(100vh - 80px); display: flex; flex-direction: column; box-shadow: 0 12px 40px rgba(0,0,0,.25); overflow: hidden; }
+.exp-modal-header { background: var(--dark); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.exp-modal-title { font-size: 15px; font-weight: 700; color: #fff; }
+.exp-modal-close { width: 28px; height: 28px; border: none; background: none; color: rgba(255,255,255,.7); font-size: 16px; font-weight: 700; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+.exp-modal-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+.exp-modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.exp-info-box { background: #f3f6f9; border-radius: 8px; padding: 14px 18px; display: flex; gap: 40px; margin-bottom: 20px; }
+.exp-info-item { display: flex; flex-direction: column; gap: 5px; }
+.exp-info-label { font-size: 11px; font-weight: 700; color: var(--text); }
+.exp-info-value { font-size: 13px; color: var(--primary); font-weight: 500; }
+.exp-info-value .sep { color: var(--border); margin: 0 6px; }
+.exp-filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.exp-filter-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.exp-filter-badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; background: #e5a700; color: #fff; font-size: 11px; font-weight: 700; }
+.exp-filter-select { border: 1px solid var(--border); border-radius: 6px; padding: 5px 26px 5px 10px; font-size: 13px; color: var(--text); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%238a93a2' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 7px center; appearance: none; cursor: pointer; outline: none; }
+.exp-table { width: 100%; border-collapse: collapse; border-top: 1px solid #cfd5e1; }
+.exp-table thead th { background: var(--header-bg); height: 44px; font-size: 12px; font-weight: 700; padding: 0 14px; border-bottom: 1px solid #cfd5e1; white-space: nowrap; vertical-align: middle; text-align: left; }
+.exp-table tbody tr { border-bottom: 1px solid #ececec; }
+.exp-table tbody tr:last-child { border-bottom: none; }
+.exp-table tbody tr:hover td { background: #f8f9fb; }
+.exp-table tbody td { height: auto; min-height: 50px; font-size: 13px; padding: 10px 14px; vertical-align: middle; text-align: left; }
+.exp-table tfoot tr { background: #f3f6f9; border-top: 2px solid var(--border); }
+.exp-table tfoot td { padding: 10px 14px; font-size: 13px; font-weight: 700; color: var(--text); text-align: left; }
+.exp-table .elink { color: var(--primary); text-decoration: none; }
+.exp-table .elink:hover { text-decoration: underline; }
+.exp-table thead th:nth-child(3) { text-align: right; }
+.exp-table thead th:nth-child(n+4) { text-align: center; }
+.exp-table tbody td:nth-child(3) { text-align: right; }
+.exp-table tbody td:nth-child(n+4) { text-align: center; }
+.exp-table tfoot td:nth-child(3) { text-align: right; }
+
+/* ══ 수입업자 피커 ══ */
+.importer-picker-wrap { position: relative; display: inline-flex; align-items: center; }
+.importer-picker-field { display: flex; align-items: center; gap: 5px; height: 30px; padding: 0 8px 0 10px; border: 1px solid var(--border); border-radius: 5px; background: #fff; cursor: pointer; font-size: 13px; color: var(--text); min-width: 210px; transition: border-color .15s; user-select: none; }
+.importer-picker-field:hover { border-color: #b0b8c8; }
+.importer-picker-field.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(var(--rgb-primary),.1); }
+.importer-picker-val { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.importer-picker-val.selected { color: var(--primary); font-weight: 600; }
+.importer-clear-btn { border: none; background: none; color: var(--text-muted); cursor: pointer; padding: 0 2px; font-size: 12px; line-height: 1; flex-shrink: 0; }
+.importer-clear-btn:hover { color: var(--danger); }
+.importer-popup { position: absolute; top: calc(100% + 6px); left: 0; z-index: 600; background: #fff; border: 1px solid #d0d6e2; border-radius: 8px; box-shadow: 0 8px 28px rgba(0,0,0,.14); width: max-content; min-width: 400px; }
+.importer-popup-search { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.importer-popup-search i { font-size: 16px; color: #9ea7b8; flex-shrink: 0; }
+.importer-popup-search input { flex: 1; border: none; outline: none; font-size: 13px; color: var(--text); background: transparent; }
+.importer-popup-search input::placeholder { color: #b0b8c8; }
+.importer-popup-table-wrap { max-height: 224px; overflow-y: auto; }
+.importer-popup-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.importer-popup-tbl thead th { background: var(--header-bg); padding: 9px 12px; font-weight: 700; text-align: left; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1; font-size: 12px; color: var(--text-muted); }
+.importer-popup-tbl th.th-sel,
+.importer-popup-tbl td.td-sel { width: 40px; text-align: center; }
+.importer-popup-tbl th.th-detail,
+.importer-popup-tbl td.td-detail { width: 56px; text-align: center; }
+.importer-popup-tbl tbody tr { border-bottom: 1px solid #f0f2f5; cursor: pointer; transition: background .1s; }
+.importer-popup-tbl tbody tr:last-child { border-bottom: none; }
+.importer-popup-tbl tbody tr:hover td { background: rgba(var(--rgb-primary),.04); }
+.importer-popup-tbl tbody tr.selected td { background: rgba(var(--rgb-primary),.08); }
+.importer-popup-tbl td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; }
+.imp-radio { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
+.imp-detail-btn { font-size: 11px; padding: 2px 9px; border: 1px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; color: var(--text); font-family: inherit; }
+.imp-detail-btn:hover { background: var(--bg); }
+.importer-popup-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; justify-content: center; gap: 8px; }
+.imp-footer-btn { height: 32px; padding: 0 22px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+.imp-footer-btn.cancel { border: 1px solid var(--border); background: #fff; color: var(--text); }
+.imp-footer-btn.cancel:hover { background: var(--bg); }
+.imp-footer-btn.confirm { border: none; background: var(--primary); color: #fff; }
+.imp-footer-btn.confirm:hover { background: var(--primary-h); }
+.imp-empty { text-align: center; padding: 22px; color: #b0b8c8; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ══ 앱 탭바 ══ -->
+<div class="app-tab-bar">
+  <div class="app-tab-bar-left">
+    <span class="app-logo">Compli·<span>Law</span> <small>CBAM SaaS</small></span>
+    <button class="app-tab" onclick="switchView('doc')">📋 기획 문서</button>
+    <button class="app-tab active" onclick="switchView('proto')">🖥️ 프로토타입</button>
+  </div>
+  <div class="app-tab-bar-right">
+    <button class="btn-notes-toggle" id="notesToggleBtn" onclick="toggleNotes()">📝 Description</button>
+  </div>
+</div>
+
+<div class="app-body">
+
+<!-- ══════════════════════════════════════
+     DOC VIEW
+══════════════════════════════════════ -->
+<div class="view doc-view" id="view-doc">
+  <nav class="doc-sidebar">
+    <div class="doc-sidebar-title">문서 목차</div>
+    <div class="doc-nav-item active" onclick="docNav('sec-overview',this)">1. 서비스 개요</div>
+    <div class="doc-nav-item" onclick="docNav('sec-ia',this)">2. 화면 목록 (IA)</div>
+    <div class="doc-nav-item" onclick="docNav('sec-spec',this)">3. 화면 기능 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-data',this)">4. 데이터 명세</div>
+    <div class="doc-nav-item" onclick="docNav('sec-appendix',this)">5. 부록</div>
+  </nav>
+  <div class="doc-content">
+
+    <!-- 1. 개요 -->
+    <div class="doc-section active" id="sec-overview">
+      <div class="status-bar">
+        <span class="badge-doc primary">🔵 검토 중</span>
+        <span style="font-size:12px;color:var(--text-muted)">v0.1 &nbsp;|&nbsp; 2026-05-19 &nbsp;|&nbsp; 작성자 임지현</span>
+      </div>
+      <h1 class="doc-h1">SCR-CBAM-003 &nbsp; CBAM 인증서 비용 조회</h1>
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>서비스</strong>CBAM 산정 플랫폼</div>
+        <div class="doc-meta-item"><strong>화면 ID</strong>SCR-CBAM-003</div>
+        <div class="doc-meta-item"><strong>화면 타입</strong>대시보드형 조회</div>
+        <div class="doc-meta-item"><strong>진입 경로</strong>CBAM &gt; 데이터 관리 &gt; CBAM 인증서 비용 조회</div>
+        <div class="doc-meta-item"><strong>접근 권한</strong>로그인 사용자 전체</div>
+      </div>
+      <h2 class="doc-h2">배경 및 목적</h2>
+      <p class="doc-p">EU CBAM(탄소국경조정메커니즘) 규정에 따라 수출 기업은 수출 제품의 내재 배출량에 상응하는 CBAM 인증서를 구매해야 합니다. 본 화면은 연간 CBAM 인증서 구매 예상 비용을 분기별로 산출·조회하는 화면입니다.</p>
+      <p class="doc-p">산출 결과는 입력된 출하량·배출량 데이터를 기반으로 한 예상 수치이며, 실제 인증서 구매 시점의 가격 및 규정에 따라 변동될 수 있습니다.</p>
+      <h2 class="doc-h2">화면 구성 요약</h2>
+      <table class="doc-table">
+        <thead><tr><th>영역</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>필터</td><td>기간(분기) + 생산공장 드롭다운</td></tr>
+          <tr><td>인증서 가격 카드</td><td>2026년 분기별 EU ETS 인증서 가격 표시. 확정된 분기는 금액, 미확정은 "발표 예정"</td></tr>
+          <tr><td>예상 수량·가격 카드</td><td>필터 조건 기준 분기별 필요 인증서 수량 및 유로 환산 금액</td></tr>
+          <tr><td>데이터 테이블</td><td>제품별 출하량·배출량·필요 인증서 수량·발생 비용 상세</td></tr>
+          <tr><td>출하량 현황 모달</td><td>출하량 클릭 시 제품별 월별 수출 내역 팝업</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">변경 이력</h2>
+      <table class="doc-table">
+        <thead>
+          <tr><th style="width:72px">버전</th><th style="width:110px">날짜</th><th>주요 변경 내용</th><th style="width:100px">작성자</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>v0.1</td><td>2026-05-19</td><td>최초 작성</td><td>임지현</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px">
+        <button class="btn btn-primary" onclick="switchView('proto')">🖥️ 프로토타입 바로 보기</button>
+      </div>
+    </div>
+
+    <!-- 2. 화면 목록 (IA) -->
+    <div class="doc-section" id="sec-ia">
+      <h1 class="doc-h1">화면 목록 (IA)</h1>
+      <table class="doc-table">
+        <thead><tr><th>화면 ID</th><th>화면명</th><th>타입</th><th>진입 경로</th><th>권한</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SCR-CBAM-003</strong></td><td>CBAM 인증서 비용 조회</td><td>대시보드형 조회</td><td>CBAM &gt; 데이터 관리 &gt; CBAM 인증서 비용 조회</td><td>로그인 사용자 전체</td><td><span class="badge-doc primary">검토 중</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. 화면 기능 명세 -->
+    <div class="doc-section" id="sec-spec">
+      <h1 class="doc-h1">화면 기능 명세 — SCR-CBAM-003</h1>
+      <h2 class="doc-h2">F-01 &nbsp; 필터 조회</h2>
+      <ul class="doc-ul">
+        <li>기간(분기) 및 생산공장 드롭다운 필터 제공</li>
+        <li>필터 변경 즉시 인증서 가격 카드·수량 카드·테이블 동시 갱신</li>
+        <li>기본값: 기간 전체, 생산공장 전체</li>
+      </ul>
+      <h2 class="doc-h2">F-02 &nbsp; 인증서 가격 카드</h2>
+      <ul class="doc-ul">
+        <li>EU ETS 시장가격 기반 분기별 인증서 가격 표시</li>
+        <li>확정 분기: 금액(€) 파란색 강조 표시</li>
+        <li>미확정 분기: "발표 예정" 회색 텍스트</li>
+        <li>가격 데이터는 관리자 화면에서 수동 입력 (SCR-CBAM-010 연계, <span class="ph">미작성</span>)</li>
+      </ul>
+      <h2 class="doc-h2">F-03 &nbsp; 예상 수량·가격 카드</h2>
+      <ul class="doc-ul">
+        <li>분기별 필요 인증서 수량(개) 및 유로 환산 금액 표시</li>
+        <li>인증서 가격이 미확정인 분기는 "-" 표시</li>
+        <li>합계 박스: 전체 분기 합산 수량 및 금액</li>
+        <li>? 아이콘 호버 시 툴팁: "적용 환율: 유럽중앙은행(ECB) 전 영업일 기준 고시 환율"</li>
+      </ul>
+      <h2 class="doc-h2">F-04 &nbsp; 데이터 테이블</h2>
+      <ul class="doc-ul">
+        <li>컬럼: 생산공장 / 제품 / 출하량(t) / 고유내재배출량(tCO2e) / 무상할당량(tCO2e) / 필요 인증서 수량 / 기지불 탄소가격(₩) / 발생 비용(€)</li>
+        <li>필요 인증서 수량이 0인 경우 파란색으로 강조 표시 (구매 불필요)</li>
+        <li>제품명 클릭 → 제품 상세 화면 이동 (SCR-CBAM-002, <span class="ph">미작성</span>)</li>
+        <li>출하량 클릭 → F-05 출하량 현황 모달 팝업</li>
+      </ul>
+      <h2 class="doc-h2">F-05 &nbsp; 출하량 현황 모달</h2>
+      <ul class="doc-ul">
+        <li>제품코드/제품명, 생산공장 정보 표시</li>
+        <li>연도 드롭다운으로 연도별 조회 전환</li>
+        <li>월별 출하량(t), 수정일, 수정자 표시</li>
+        <li>출하량 합계 자동 산출하여 하단 표시</li>
+        <li>모달 외부 클릭 또는 ✕ 버튼으로 닫기</li>
+      </ul>
+    </div>
+
+    <!-- 4. 데이터 명세 -->
+    <div class="doc-section" id="sec-data">
+      <h1 class="doc-h1">데이터 명세</h1>
+      <h2 class="doc-h2">테이블 컬럼 정의</h2>
+      <table class="doc-table">
+        <thead><tr><th>컬럼명</th><th>한글명</th><th>타입</th><th>단위</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>plant_code</td><td>생산공장</td><td>VARCHAR</td><td>-</td><td>공장코드 | 공장명 형태로 표시</td></tr>
+          <tr><td>product_code</td><td>제품</td><td>VARCHAR</td><td>-</td><td>제품코드 | 제품명. 클릭 시 상세 화면 이동</td></tr>
+          <tr><td>export_qty</td><td>출하량</td><td>DECIMAL</td><td>t</td><td>해당 기간 총 출하량. 클릭 시 월별 상세 모달</td></tr>
+          <tr><td>embedded_emission</td><td>고유내재배출량</td><td>DECIMAL</td><td>tCO2e/t</td><td>제품 단위당 고유 내재 배출량</td></tr>
+          <tr><td>free_allocation</td><td>무상할당량</td><td>DECIMAL</td><td>tCO2e/t</td><td>무상할당 인수 기반 할당량</td></tr>
+          <tr><td>cert_required</td><td>필요 인증서 수량</td><td>INTEGER</td><td>개</td><td>= (내재배출량 - 무상할당량) × 출하량. 0이하는 0</td></tr>
+          <tr><td>carbon_price_paid</td><td>기지불 탄소가격</td><td>DECIMAL</td><td>₩</td><td>원산지에서 이미 지불한 탄소 비용</td></tr>
+          <tr><td>cbam_cost</td><td>발생 비용</td><td>DECIMAL</td><td>€</td><td>필요 인증서 수량 × 분기 인증서 가격 - 기지불 탄소가격 환산액</td></tr>
+        </tbody>
+      </table>
+      <h2 class="doc-h2">인증서 가격 엔티티</h2>
+      <table class="doc-table">
+        <thead><tr><th>필드</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>year</td><td>연도 (예: 2026)</td></tr>
+          <tr><td>quarter</td><td>분기 (1~4)</td></tr>
+          <tr><td>price_eur</td><td>인증서 단가 (€/개)</td></tr>
+          <tr><td>status</td><td>CONFIRMED / PENDING</td></tr>
+          <tr><td>published_at</td><td>EU 공표일</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. 부록 -->
+    <div class="doc-section" id="sec-appendix">
+      <h1 class="doc-h1">부록</h1>
+      <h2 class="doc-h2">비즈니스 규칙</h2>
+      <h3 class="doc-h3">BR-01 &nbsp; 필요 인증서 수량 산정 공식</h3>
+      <div class="doc-note">
+        <strong>필요 인증서 수량</strong> = MAX(0, (고유내재배출량 − 무상할당량) × 출하량)<br><br>
+        <strong>발생 비용(€)</strong> = 필요 인증서 수량 × 분기 인증서 가격 − (기지불 탄소가격 ÷ ECB 환율)
+      </div>
+      <h3 class="doc-h3">BR-02 &nbsp; 환율 적용 기준</h3>
+      <ul class="doc-ul">
+        <li>적용 환율: 유럽중앙은행(ECB) 전 영업일 기준 고시 환율</li>
+        <li>환율은 매 영업일 자동 업데이트 (ECB API 연동)</li>
+        <li>당일 환율 미수신 시 전전 영업일 환율 적용 후 알림 발송</li>
+      </ul>
+      <h3 class="doc-h3">BR-03 &nbsp; 무상할당 Phase-out</h3>
+      <ul class="doc-ul">
+        <li>무상할당 인수는 2026년부터 단계적 감소 (2034년 0%)</li>
+        <li>연도별 무상할당 인수는 EU 집행위 공표값 기준 시스템 반영</li>
+      </ul>
+      <h3 class="doc-h3">BR-04 &nbsp; 인증서 가격 미확정 처리</h3>
+      <ul class="doc-ul">
+        <li>인증서 가격이 미확정(PENDING)인 분기는 수량 표시, 금액은 "-" 처리</li>
+        <li>가격 확정 즉시 자동 금액 재산출 및 화면 갱신</li>
+      </ul>
+      <h2 class="doc-h2">Open Issues</h2>
+      <div class="doc-warn">
+        ⚠️ 아래 항목은 확정 전이므로 개발 착수 전 반드시 확인이 필요합니다.
+      </div>
+      <table class="doc-table" style="margin-top:16px">
+        <thead><tr><th>No</th><th>항목</th><th>내용</th><th>담당</th><th>기한</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>메뉴명 확정</td><td>"CBAM 인증서 비용 조회" vs "CBAM 인증서 시뮬레이션" 구분 기준 미확정</td><td><span class="ph">PM</span></td><td><span class="ph">미정</span></td></tr>
+          <tr><td>2</td><td>기지불 탄소가격 입력 방식</td><td>수동 입력 vs 공급사 시스템 연동 여부 미확정</td><td><span class="ph">개발팀</span></td><td><span class="ph">미정</span></td></tr>
+          <tr><td>3</td><td>출하량 데이터 연동</td><td>ERP 연동 vs 수동 입력 방식 결정 필요</td><td><span class="ph">개발팀</span></td><td><span class="ph">미정</span></td></tr>
+          <tr><td>4</td><td>ECB 환율 API 연동</td><td>실시간 연동 범위 및 오류 처리 정책 협의 필요</td><td><span class="ph">개발팀</span></td><td><span class="ph">미정</span></td></tr>
+          <tr><td>5</td><td>엑셀 다운로드</td><td>테이블 데이터 엑셀 내보내기 기능 포함 여부</td><td><span class="ph">PM</span></td><td><span class="ph">미정</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /doc-content -->
+</div><!-- /view-doc -->
+
+
+<!-- ══════════════════════════════════════
+     PROTO VIEW
+══════════════════════════════════════ -->
+<div class="view proto-view active" id="view-proto">
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-brand-name">CBAM 산정 플랫폼</div>
+      <div class="topbar-brand-sub">Carbon Border Adjustment</div>
+    </div>
+    <button class="topbar-toggle"><i class="bx bx-menu"></i></button>
+    <div style="flex:1;padding:0 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;">
+      <div style="font-size:15px;font-weight:700;color:var(--dark);">CBAM 인증서 비용 조회</div>
+      <div style="font-size:12px;color:var(--text-muted);">CBAM <span style="color:#b0b8c4;">›</span> <span style="font-weight:600;color:var(--text);">CBAM 인증서 비용 조회</span></div>
+    </div>
+    <div class="topbar-help" id="helpBtn" onclick="toggleHelp()">?
+      <div class="help-popup" id="helpPopup">
+        <p>CBAM 인증서 구매 예상 비용을 산정하는 메뉴로서, 메뉴명 확정 필요</p>
+        <ol>
+          <li>CBAM 인증서 비용 조회</li>
+          <li>CBAM 인증서 시뮬레이션</li>
+        </ol>
+      </div>
+    </div>
+    <span class="topbar-lang">KR</span>
+    <div class="topbar-user">
+      <div class="topbar-avatar">임</div>
+      <div class="topbar-user-info">
+        <div class="name">임지현 관리자</div>
+        <div class="role">NUVX_TEST 본사</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="proto-body">
+
+  <!-- LNB 3뎁스 -->
+  <nav class="proto-menu-tree">
+    <div class="proto-menu-tree-body">
+
+      <!-- OCF -->
+      <div class="nav-d1-item" onclick="toggleD1(this)">
+        <i class="bx bx-folder d1-icon"></i>
+        <span class="d1-label">OCF</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children">
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">OCF 제품 마스터</span>
+        </div>
+      </div>
+
+      <!-- PCF -->
+      <div class="nav-d1-item" onclick="toggleD1(this)">
+        <i class="bx bx-folder d1-icon"></i>
+        <span class="d1-label">PCF</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children">
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">BOM 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">배출량 산정</span>
+        </div>
+      </div>
+
+      <!-- CBAM (열림) -->
+      <div class="nav-d1-item open" onclick="toggleD1(this)">
+        <i class="bx bx-folder-open d1-icon"></i>
+        <span class="d1-label">CBAM</span>
+        <i class="bx bx-chevron-right nav-chevron"></i>
+      </div>
+      <div class="nav-d1-children open">
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">기준정보</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="window.location.href='../../컴플라이로_PCF프로젝트/02_기획화면/SCR-001_CBAM제품마스터.html'">CBAM 제품 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">공급사 마스터</span>
+          <span class="nav-d3-item" onclick="alert('준비 중')">검증기관 마스터</span>
+          <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-001_벤치마크.html'">CBAM 벤치마크</span>
+        </div>
+        <div class="nav-d2-item open" onclick="toggleD2(this)">
+          <span class="d2-label">데이터 관리</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children open">
+          <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 내재배출량 관리</span>
+          <span class="nav-d3-item" onclick="window.location.href='SCR-CBAM-002_출하데이터수집관리.html'">출하 데이터 수집/관리</span>
+          <span class="nav-d3-item active">CBAM 인증서 비용 조회</span>
+        </div>
+        <div class="nav-d2-item" onclick="toggleD2(this)">
+          <span class="d2-label">리포트/분석</span>
+          <i class="bx bx-chevron-right nav-chevron"></i>
+        </div>
+        <div class="nav-d2-children">
+          <span class="nav-d3-item" onclick="alert('준비 중')">CBAM 리포트</span>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- 뷰포트 -->
+  <div class="proto-viewport">
+
+
+    <!-- 화면 내용 -->
+    <div class="proto-screens-wrap">
+      <div class="page-content">
+
+        <!-- 섹션 헤더 -->
+        <div class="section-header">
+          <div class="section-title">인증서 비용 조회</div>
+          <div class="section-note">(본 화면의 산출 결과는 입력된 데이터를 기반으로 한 예상 수치이며, 실제 인증서 구매 시점의 가격 및 규정에 따라 변동될 수 있습니다.)</div>
+        </div>
+
+        <!-- 필터 바 -->
+        <div class="filter-bar">
+          <span class="filter-label">기간 :</span>
+          <select class="filter-select" id="periodFilter" onchange="filterPeriod(this.value)">
+            <option value="전체">전체</option>
+            <option value="2026년 1분기">2026년 1분기</option>
+            <option value="2026년 2분기">2026년 2분기</option>
+            <option value="2026년 3분기">2026년 3분기</option>
+            <option value="2026년 4분기">2026년 4분기</option>
+          </select>
+          <span class="filter-label" style="margin-left:8px;" id="factoryFilterLabel">생산 공장 :</span>
+          <select class="filter-select" id="factoryFilter" onchange="filterFactory(this.value)">
+            <option value="전체">전체</option>
+            <option value="P001">P001 | 용인공장</option>
+            <option value="P002">P002 | 성남공장</option>
+          </select>
+          <span class="filter-label" style="margin-left:8px;">수입업자 :</span>
+          <div class="importer-picker-wrap" id="importerPickerWrap">
+            <div class="importer-picker-field" id="importerPickerField" onclick="toggleImporterPicker(event)">
+              <i class="bx bx-search" style="font-size:14px;color:#9ea7b8;flex-shrink:0;"></i>
+              <span class="importer-picker-val" id="importerPickerVal">전체</span>
+              <button class="importer-clear-btn" id="importerClearBtn" onclick="clearImporterFilter(event)" style="display:none;" title="선택 해제">✕</button>
+            </div>
+            <!-- 피커 팝업 -->
+            <div class="importer-popup" id="importerPopup" style="display:none;">
+              <div class="importer-popup-search">
+                <i class="bx bx-search"></i>
+                <input type="text" id="importerSearchInput" placeholder="국가 또는 수입업자명 검색..." oninput="renderImporterPopup(this.value)">
+              </div>
+              <div class="importer-popup-table-wrap">
+                <table class="importer-popup-tbl">
+                  <thead>
+                    <tr>
+                      <th class="th-sel">선택</th>
+                      <th>국가</th>
+                      <th>회사 정보</th>
+                      <th class="th-detail">상세</th>
+                    </tr>
+                  </thead>
+                  <tbody id="importerPopupBody"></tbody>
+                </table>
+              </div>
+              <div class="importer-popup-footer">
+                <button class="imp-footer-btn cancel" onclick="cancelImporterPicker()">취소</button>
+                <button class="imp-footer-btn confirm" onclick="applyImporterFilter()">적용</button>
+              </div>
+            </div>
+          </div>
+          <button class="btn-excel" onclick="alert('엑셀 다운로드 기능은 개발 연동 후 사용 가능합니다.')">
+            <i class="bx bx-file"></i> 엑셀 다운로드
+          </button>
+        </div>
+
+        <!-- 요약 카드 행 -->
+        <div class="summary-row">
+          <!-- 인증서 가격 카드 -->
+          <div class="price-card">
+            <div class="card-label">2026년 인증서 가격</div>
+            <div class="price-quarters">
+              <div class="price-quarter has-value">
+                <span class="price-quarter-label">1분기</span>
+                <span class="price-quarter-value">€75.36</span>
+              </div>
+              <div class="price-quarter">
+                <span class="price-quarter-label">2분기</span>
+                <span class="price-quarter-value pending">발표 예정</span>
+              </div>
+              <div class="price-quarter">
+                <span class="price-quarter-label">3분기</span>
+                <span class="price-quarter-value pending">발표 예정</span>
+              </div>
+              <div class="price-quarter">
+                <span class="price-quarter-label">4분기</span>
+                <span class="price-quarter-value pending">발표 예정</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 예상 수량·가격 카드 -->
+          <div class="cert-card">
+            <div class="card-label">
+              예상 필요 인증서 수량 및 가격
+              <span class="help-icon">?
+                <div class="help-tooltip">적용 환율: 유럽중앙은행(ECB) 전 영업일 기준 고시 환율</div>
+              </span>
+            </div>
+            <div class="cert-quarters">
+              <div class="cert-quarter">
+                <div class="cert-quarter-label">1분기</div>
+                <div class="cert-quarter-count">2,888개</div>
+                <div class="cert-quarter-amount">(€217,314)</div>
+              </div>
+              <div class="cert-quarter">
+                <div class="cert-quarter-label">2분기</div>
+                <div class="cert-quarter-count empty">-</div>
+                <div class="cert-quarter-amount" style="display:none"></div>
+              </div>
+              <div class="cert-quarter">
+                <div class="cert-quarter-label">3분기</div>
+                <div class="cert-quarter-count empty">-</div>
+                <div class="cert-quarter-amount" style="display:none"></div>
+              </div>
+              <div class="cert-quarter">
+                <div class="cert-quarter-label">4분기</div>
+                <div class="cert-quarter-count empty">-</div>
+                <div class="cert-quarter-amount" style="display:none"></div>
+              </div>
+              <div class="cert-quarter total">
+                <div class="cert-quarter-label">합계</div>
+                <div class="cert-quarter-count">2,888개</div>
+                <div class="cert-quarter-amount">(€217,314)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 데이터 테이블 -->
+        <div class="table-card" id="exporterTableCard">
+          <table class="data-table">
+            <colgroup>
+              <col style="width:140px">
+              <col style="width:140px">
+              <col style="width:90px">
+              <col style="width:110px">
+              <col style="width:100px">
+              <col style="width:110px">
+              <col style="width:90px">
+              <col style="width:120px">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="sortable" onclick="sortTable003(0)">생산 공장<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(1)">제품<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(2)">출하량 (t)<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(3)">고유내재배출량<br>(tCO2e)<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(4)">무상할당량<br>(tCO2e)<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(5)">필요 인증서 수량<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(6)">기지불 탄소가격 (₩)<span class="sort-icon none"></span></th>
+                <th class="sortable" onclick="sortTable003(7)">발생 비용 (€)<span class="sort-icon none"></span></th>
+              </tr>
+            </thead>
+            <tbody id="mainTableBody">
+              <tr data-factory="P001" data-code="FE001" data-importer="IMP001">
+                <td>P001 | 용인공장</td>
+                <td>FE001 | 제품A</td>
+                <td><a class="link-text" id="qty-FE001" href="#" onclick="openExpModal('FE001','제품A','P001','용인공장');return false;">3,200</a></td>
+                <td>1.856</td><td>1.328</td><td>1,690</td><td>-</td><td>127,358.40</td>
+              </tr>
+              <tr data-factory="P001" data-code="FE002" data-importer="IMP002">
+                <td>P001 | 용인공장</td>
+                <td>FE002 | 제품B</td>
+                <td><a class="link-text" id="qty-FE002" href="#" onclick="openExpModal('FE002','제품B','P001','용인공장');return false;">1,850</a></td>
+                <td>1.601</td><td>1.328</td><td>505</td><td>-</td><td>38,056.80</td>
+              </tr>
+              <tr data-factory="P001" data-code="FE003" data-importer="IMP002">
+                <td>P001 | 용인공장</td>
+                <td>FE003 | 제품C</td>
+                <td><a class="link-text" id="qty-FE003" href="#" onclick="openExpModal('FE003','제품C','P001','용인공장');return false;">920</a></td>
+                <td>2.104</td><td>1.328</td><td>714</td><td>-</td><td>53,807.04</td>
+              </tr>
+              <tr data-factory="P002" data-code="FE004" data-importer="IMP003">
+                <td>P002 | 성남공장</td>
+                <td>FE004 | 제품D</td>
+                <td><a class="link-text" id="qty-FE004" href="#" onclick="openExpModal('FE004','제품D','P002','성남공장');return false;">4,600</a></td>
+                <td>1.743</td><td>1.328</td><td>1,909</td><td>850,000</td><td>143,260.02</td>
+              </tr>
+              <tr data-factory="P002" data-code="FE005" data-importer="IMP001">
+                <td>P002 | 성남공장</td>
+                <td>FE005 | 제품E</td>
+                <td><a class="link-text" id="qty-FE005" href="#" onclick="openExpModal('FE005','제품E','P002','성남공장');return false;">2,100</a></td>
+                <td>1.512</td><td>1.623</td><td>0</td><td>-</td><td>0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /page-content -->
+    </div><!-- /proto-screens-wrap -->
+  </div><!-- /proto-viewport -->
+
+  <!-- Widget Notes Panel -->
+  <div class="lnb-desc-panel" id="notesPanel">
+    <div class="lnb-desc-header">
+      <span class="lnb-desc-header-title">📝 Description</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button onclick="saveToFile003()" title="HTML 파일에 노트 저장" style="border:none;font-size:11px;padding:3px 8px;background:#0561A4;color:#fff;border-radius:4px;cursor:pointer;white-space:nowrap;">💾 파일저장</button>
+        <button class="note-card-btn" onclick="toggleNotes()" title="닫기">✕</button>
+      </div>
+    </div>
+    <div class="lnb-notes-list" id="notesList003">
+      <div class="lnb-empty" id="notesEmpty003" style="display:none">우클릭하여 요소에 설명을 추가하세요</div>
+    </div>
+  </div>
+
+  </div><!-- /proto-body -->
+
+</div><!-- /view-proto -->
+</div><!-- /app-body -->
+
+
+<!-- ══ 출하량 현황 모달 ══ -->
+<div class="exp-backdrop" id="expBackdrop" onclick="closeExpModal(event)">
+  <div class="exp-modal" onclick="event.stopPropagation()">
+    <div class="exp-modal-header">
+      <span class="exp-modal-title">출하량 현황</span>
+      <button class="exp-modal-close" onclick="closeExpModal()">✕</button>
+    </div>
+    <div class="exp-modal-body">
+      <div class="exp-info-box">
+        <div class="exp-info-item">
+          <span class="exp-info-label">제품코드/제품명</span>
+          <span class="exp-info-value" id="expProduct"></span>
+        </div>
+        <div class="exp-info-item">
+          <span class="exp-info-label">생산공장</span>
+          <span class="exp-info-value" id="expFactory"></span>
+        </div>
+      </div>
+      <div class="exp-filter-row">
+        <span class="exp-filter-label">출하량 현황</span>
+        <span id="expPeriodLabel" style="font-size:12px;color:var(--text-muted,#6c757d);margin-left:8px">전체 기간</span>
+      </div>
+      <table class="exp-table">
+        <thead>
+          <tr>
+            <th>수출 기간</th>
+            <th>수입업자</th>
+            <th>출하량 (단위 : t)</th>
+            <th>수정일</th>
+            <th>수정자</th>
+          </tr>
+        </thead>
+        <tbody id="expTableBody"></tbody>
+        <tfoot>
+          <tr>
+            <td>출하량 합계</td>
+            <td></td>
+            <td id="expTotal"></td>
+            <td></td><td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- 위젯 주석 컨텍스트 메뉴 -->
+<div class="ctx-menu" id="widgetCtxMenu003" style="display:none;position:fixed;z-index:9000;">
+  <div class="ctx-item" id="wCtxAdd003">Add Description</div>
+  <div class="ctx-item" id="wCtxEdit003" style="display:none">Edit Description</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="wCtxDel003" style="display:none">Delete Description</div>
+</div>
+
+<!-- 노트 임베드 저장소: 💾 파일저장 클릭 시 이 태그에 노트 데이터가 기록됨 -->
+<script id="embeddedNotes003" type="application/json">{"s003::init1":{"num":1,"title":"인증서 가격 카드","text":"<ul><li>1분기만 확정 가격(€75.36) 표시.</li><li>2~4분기는 \"발표 예정\" 표기.</li><li>가격 확정 시 자동 갱신 여부 개발팀 확인 필요.</li></ul>","selector":".price-card"},"s003::init2":{"num":2,"title":"? 툴팁 — 환율 기준","text":"<ul><li>카드 제목 우측 ? 아이콘 호버 시 적용 환율 툴팁 노출.</li><li>적용 환율 기준: 유럽중앙은행(ECB) 전 영업일 기준 고시 환율.</li></ul>","selector":".cert-card .help-icon"},"s003::init3":{"num":3,"title":"출하량 클릭 → 모달","text":"<ul><li>테이블 출하량 숫자 클릭 시 \"출하량 현황\" 팝업.</li><li>제품별 월별 내역 + 합계 자동 계산.</li><li>모달 외부 클릭으로 닫기.</li></ul>","selector":"#qty-FE001"},"s003::init4":{"num":4,"title":"0값 강조","text":"<ul><li>필요 인증서 수량 및 발생 비용이 0인 경우 파란색 강조.</li><li>무상할당량 ≥ 내재배출량인 경우 구매 불필요 의미.</li></ul>","selector":"#mainTableBody"},"s003::init5":{"num":5,"title":"메뉴명 미확정","text":"<ul><li>상단 탭바 제목 \"CBAM 인증서 조회 / 시뮬레이션\" — ? 버튼 참조.</li><li>최종 메뉴명 PM 확정 후 반영 필요.</li></ul>","selector":"#helpBtn"}}</script>
+
+<script>
+/* ── 뷰 전환 ── */
+function switchView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+/* ── DOC 목차 ── */
+function docNav(secId, el) {
+  document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(secId).classList.add('active');
+  document.querySelectorAll('.doc-nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── Widget Notes (리치 에디터) ── */
+const descStore003={};
+let wCtx003El=null,wCtx003Key=null;
+
+const NOTES_STORAGE_KEY_003='cbam-notes-003';
+const NOTES_EMBED_ID_003='embeddedNotes003';
+let _fileHandle003=null;
+
+function getSelector003(el){
+  if(!el)return null;
+  try{
+    if(el.id)return'#'+el.id;
+    const root=document.querySelector('.proto-screens-wrap')||document.body;
+    const parts=[];let node=el;
+    while(node&&node!==root){
+      if(node.id){parts.unshift('#'+node.id);break;}
+      let p=node.tagName.toLowerCase();
+      const cls=[...node.classList].filter(c=>!/^(active|open|hover|focus|show|selected)$/.test(c)).slice(0,2);
+      if(cls.length)p+='.'+cls.join('.');
+      const par=node.parentElement;
+      if(par){const st=[...par.children].filter(c=>c.tagName===node.tagName);
+        if(st.length>1)p+=':nth-of-type('+(st.indexOf(node)+1)+')';}
+      parts.unshift(p);node=node.parentElement;
+    }
+    return parts.length?parts.join('>'):null;
+  }catch(e){return null;}
+}
+function saveNotes003(){
+  const s={};Object.entries(descStore003).forEach(([k,n])=>{s[k]={num:n.num,title:n.title,text:n.text,selector:n.selector||null};});
+  const json=JSON.stringify(s);
+  const embed=document.getElementById(NOTES_EMBED_ID_003);if(embed)embed.textContent=json;
+  try{localStorage.setItem(NOTES_STORAGE_KEY_003,json);}catch(e){}
+}
+function loadNotes003(){
+  try{
+    const embed=document.getElementById(NOTES_EMBED_ID_003);
+    if(embed){const d=JSON.parse(embed.textContent||'{}');
+      if(Object.keys(d).length>0){Object.entries(d).forEach(([k,n])=>{descStore003[k]={...n,el:null};});return true;}}
+  }catch(e){}
+  try{const raw=localStorage.getItem(NOTES_STORAGE_KEY_003);if(!raw)return false;
+    const d=JSON.parse(raw);if(Object.keys(d).length===0)return false;
+    Object.entries(d).forEach(([k,n])=>{descStore003[k]={...n,el:null};});return true;}
+  catch(e){return false;}
+}
+async function saveToFile003(){
+  saveNotes003();
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  try{
+    if(window.showSaveFilePicker){
+      if(!_fileHandle003){
+        _fileHandle003=await window.showSaveFilePicker({
+          suggestedName:'SCR-CBAM-003_인증서비용조회.html',
+          types:[{description:'HTML File',accept:{'text/html':['.html']}}]
+        });
+      }
+      const w=await _fileHandle003.createWritable();await w.write(html);await w.close();
+      showSaveToast003('파일에 저장되었습니다 ✓');return;
+    }
+  }catch(e){if(e.name==='AbortError')return;}
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='SCR-CBAM-003_인증서비용조회.html';a.click();
+  URL.revokeObjectURL(url);
+  showSaveToast003('다운로드 완료. 기존 파일을 교체하세요.');
+}
+function showSaveToast003(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;right:20px;background:#0561A4;color:#fff;padding:10px 16px;border-radius:6px;font-size:13px;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.2)';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+
+function toggleNotes(){
+  const panel=document.getElementById('notesPanel'),btn=document.getElementById('notesToggleBtn');
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('active',open);
+  if(open)renderNoteBadges003();else document.querySelectorAll('.note-badge-overlay').forEach(el=>el.remove());
+}
+function hideWidgetCtx003(){document.getElementById('widgetCtxMenu003').style.display='none';}
+
+// 우클릭 주석 시스템
+document.querySelector('.proto-screens-wrap').addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  const target=e.target.closest('[data-widget]')||e.target;
+  const wid=target.dataset.widget||('w'+Math.random().toString(36).slice(2,8));
+  if(!target.dataset.widget)target.dataset.widget=wid;
+  const key='s003::'+wid;
+  wCtx003El=target;wCtx003Key=key;
+  const exists=!!descStore003[key];
+  document.getElementById('wCtxAdd003').style.display=exists?'none':'block';
+  document.getElementById('wCtxEdit003').style.display=exists?'block':'none';
+  document.getElementById('wCtxDel003').style.display=exists?'block':'none';
+  const menu=document.getElementById('widgetCtxMenu003');
+  menu.style.cssText=`display:block;left:${Math.min(e.clientX,window.innerWidth-170)}px;top:${Math.min(e.clientY,window.innerHeight-100)}px`;
+});
+document.getElementById('wCtxAdd003').addEventListener('click',()=>{
+  const num=Object.keys(descStore003).length+1;
+  descStore003[wCtx003Key]={num,title:'새 노트',text:'',el:wCtx003El,selector:getSelector003(wCtx003El)};
+  saveNotes003();renderNotesList003();renderNoteBadges003();
+  if(!document.getElementById('notesPanel').classList.contains('open'))toggleNotes();
+  setTimeout(()=>editNote003(wCtx003Key),30);
+  hideWidgetCtx003();
+});
+document.getElementById('wCtxEdit003').addEventListener('click',()=>{
+  if(!document.getElementById('notesPanel').classList.contains('open'))toggleNotes();
+  setTimeout(()=>editNote003(wCtx003Key),30);
+  hideWidgetCtx003();
+});
+document.getElementById('wCtxDel003').addEventListener('click',()=>{
+  const n=descStore003[wCtx003Key];
+  if(n&&n.el)n.el.removeAttribute('data-widget');
+  delete descStore003[wCtx003Key];
+  renumberNotes003();saveNotes003();renderNotesList003();renderNoteBadges003();
+  hideWidgetCtx003();
+});
+
+function renumberNotes003(){let i=1;Object.values(descStore003).forEach(n=>n.num=i++);}
+
+function renderNotesList003(){
+  const list=document.getElementById('notesList003'),em=document.getElementById('notesEmpty003');
+  const entries=Object.entries(descStore003);
+  em.style.display=entries.length?'none':'';
+  list.querySelectorAll('.note-card').forEach(el=>el.remove());
+  entries.forEach(([key,n])=>{
+    const c=document.createElement('div');c.className='note-card';c.dataset.noteKey=key;
+    c.innerHTML=`<div class="note-card-header">
+      <div class="note-num">${n.num}</div>
+      <div class="note-card-name-wrap"><div class="note-card-name">${n.title}</div></div>
+      <button class="note-card-btn" title="편집">✏️</button>
+      <button class="note-card-btn" title="삭제">🗑</button>
+    </div>
+    <div class="note-card-body">${n.text||'<span style="color:#b0b8c4">(내용 없음)</span>'}</div>`;
+    c.querySelector('.note-card-name-wrap').addEventListener('click',()=>startNameEdit003(key,c));
+    c.querySelectorAll('.note-card-btn')[0].addEventListener('click',()=>editNote003(key));
+    c.querySelectorAll('.note-card-btn')[1].addEventListener('click',()=>{
+      const nd=descStore003[key];if(nd&&nd.el)nd.el.removeAttribute('data-widget');
+      delete descStore003[key];renumberNotes003();saveNotes003();renderNotesList003();renderNoteBadges003();
+    });
+    list.appendChild(c);
+  });
+}
+
+function editNote003(key){
+  const n=descStore003[key];if(!n)return;
+  const card=[...document.querySelectorAll('.note-card')].find(c=>c.dataset.noteKey===key);
+  if(!card)return;
+  const body=card.querySelector('.note-card-body');
+  body.innerHTML=`<div class="note-editor-wrap unsaved">
+    <div class="note-toolbar">
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('bold')"><b>B</b></button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('italic')"><i>I</i></button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('underline')"><u>U</u></button>
+      <div class="note-tb-sep"></div>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('justifyLeft')" title="좌측 정렬">≡</button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('justifyCenter')" title="가운데 정렬">☰</button>
+      <button class="note-tb-btn" onmousedown="event.preventDefault();document.execCommand('insertUnorderedList')" title="불릿 목록">•</button>
+    </div>
+    <div class="note-editor" contenteditable="true" data-placeholder="내용을 입력하세요...">${n.text}</div>
+  </div>
+  <div class="note-actions">
+    <button class="btn btn-sm btn-outline">취소</button>
+    <button class="btn btn-sm btn-primary">저장</button>
+  </div>`;
+  const ew=body.querySelector('.note-editor-wrap');
+  const editor=body.querySelector('.note-editor');
+  editor.addEventListener('input',()=>ew.classList.add('unsaved'));
+  body.querySelector('.note-actions .btn-outline').addEventListener('click',()=>renderNotesList003());
+  body.querySelector('.note-actions .btn-primary').addEventListener('click',()=>{
+    n.text=editor.innerHTML;saveNotes003();renderNotesList003();renderNoteBadges003();
+  });
+  editor.focus();
+}
+
+function startNameEdit003(key,card){
+  const wrap=card.querySelector('.note-card-name-wrap');
+  const nameDiv=wrap.querySelector('.note-card-name');if(!nameDiv)return;
+  const orig=nameDiv.textContent;
+  const input=document.createElement('input');
+  input.className='note-name-input';input.value=orig;
+  wrap.replaceChild(input,nameDiv);input.focus();input.select();
+  const save=()=>{
+    const val=input.value.trim()||orig;
+    descStore003[key].title=val;saveNotes003();
+    const d=document.createElement('div');d.className='note-card-name';d.textContent=val;
+    if(input.parentNode===wrap)wrap.replaceChild(d,input);
+  };
+  input.addEventListener('blur',save);
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();save();}
+    if(e.key==='Escape'){const d=document.createElement('div');d.className='note-card-name';d.textContent=orig;if(input.parentNode===wrap)wrap.replaceChild(d,input);}
+  });
+}
+
+function renderNoteBadges003(){
+  document.querySelectorAll('.note-badge-overlay').forEach(el=>el.remove());
+  if(!document.getElementById('notesPanel').classList.contains('open'))return;
+  const wrap=document.querySelector('.proto-screens-wrap');
+  wrap.style.position='relative';
+  const wrapRect=wrap.getBoundingClientRect();
+  Object.entries(descStore003).forEach(([key,n])=>{
+    const wid=key.split('::')[1];
+    let target=document.querySelector(`[data-widget="${wid}"]`)||(n.el&&n.el.isConnected?n.el:null);
+    if(!target&&n.selector){try{target=document.querySelector(n.selector);}catch(e){}}
+    if(target&&!target.dataset.widget)target.dataset.widget=wid;
+    if(!target)return;
+    const r=target.getBoundingClientRect();
+    const badge=document.createElement('div');
+    badge.className='note-badge-overlay';badge.textContent=n.num;
+    badge.style.left=(r.left-wrapRect.left+r.width-6)+'px';
+    badge.style.top=(r.top-wrapRect.top-6)+'px';
+    badge.onclick=()=>{
+      if(!document.getElementById('notesPanel').classList.contains('open'))toggleNotes();
+      const card=[...document.querySelectorAll('.note-card')].find(c=>c.dataset.noteKey===key);
+      if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});
+    };
+    wrap.appendChild(badge);
+  });
+}
+
+// 클릭 외부 시 컨텍스트 메뉴 닫기
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#widgetCtxMenu003'))hideWidgetCtx003();
+});
+
+/* ── 컬럼 정렬 ── */
+let sortState003={col:-1,dir:1};
+function sortTable003(i){
+  if(sortState003.col===i){sortState003.dir*=-1;}else{sortState003.col=i;sortState003.dir=1;}
+  const tbody=document.getElementById('mainTableBody');
+  Array.from(tbody.querySelectorAll('tr')).sort((a,b)=>{
+    const at=a.cells[i]?.textContent.trim()||'',bt=b.cells[i]?.textContent.trim()||'';
+    const an=parseFloat(at.replace(/,/g,'').replace(/[^0-9.-]/g,'')),bn=parseFloat(bt.replace(/,/g,'').replace(/[^0-9.-]/g,''));
+    if(!isNaN(an)&&!isNaN(bn)) return sortState003.dir*(an-bn);
+    if(!isNaN(an)) return -sortState003.dir;
+    if(!isNaN(bn)) return sortState003.dir;
+    return sortState003.dir*at.localeCompare(bt,'ko');
+  }).forEach(r=>tbody.appendChild(r));
+  updateSortIcons003();
+}
+function updateSortIcons003(){
+  document.querySelectorAll('.data-table thead th .sort-icon').forEach((icon,i)=>{
+    icon.className='sort-icon '+(sortState003.col===i?(sortState003.dir===1?'asc':'desc'):'none');
+  });
+}
+
+// 초기 렌더링: localStorage 우선, 없으면 기본 데이터
+if(!loadNotes003()){
+  [
+    {num:1,title:'인증서 가격 카드',text:'1분기만 확정 가격(€75.36) 표시, 2~4분기는 "발표 예정". 가격 확정 시 자동 갱신 여부 개발팀 확인 필요.'},
+    {num:2,title:'? 툴팁 — 환율 기준',text:'카드 제목 우측 ? 아이콘 호버 시 "적용 환율: 유럽중앙은행(ECB) 전 영업일 기준 고시 환율" 툴팁 노출.'},
+    {num:3,title:'출하량 클릭 → 모달',text:'테이블 출하량 숫자 클릭 시 "출하량 현황" 팝업. 제품별 월별 내역 + 합계 자동 계산. 모달 외부 클릭으로 닫기.'},
+    {num:4,title:'0값 강조',text:'필요 인증서 수량 및 발생 비용이 0인 경우 파란색 강조. 무상할당량 ≥ 내재배출량인 경우 구매 불필요 의미.'},
+    {num:5,title:'메뉴명 미확정',text:'상단 탭바 제목 "CBAM 인증서 조회 / 시뮬레이션" — ? 버튼 참조. 최종 메뉴명 PM 확정 후 반영 필요.'},
+  ].forEach(n=>{descStore003['s003::init'+n.num]={num:n.num,title:n.title,text:n.text,el:null};});
+}
+renderNotesList003();
+
+/* ── 도움말 팝업 ── */
+function toggleHelp() {
+  const popup = document.getElementById('helpPopup');
+  popup.classList.toggle('show');
+  if (popup.classList.contains('show')) {
+    setTimeout(() => document.addEventListener('click', closeHelp), 0);
+  }
+}
+function closeHelp(e) {
+  const btn = document.getElementById('helpBtn');
+  if (!btn.contains(e.target)) {
+    document.getElementById('helpPopup').classList.remove('show');
+    document.removeEventListener('click', closeHelp);
+  }
+}
+
+/* ── LNB 토글 ── */
+function toggleD1(el) {
+  const children = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open');
+  children.classList.toggle('open');
+  const icon = el.querySelector('.d1-icon');
+  if (icon) icon.className = isOpen ? 'bx bx-folder d1-icon' : 'bx bx-folder-open d1-icon';
+}
+function toggleD2(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+
+/* ── 출하량 데이터 (월별, 숫자 qty) ── */
+const expData = {
+  /* FE001 합계 3,200t = 600+550+750+480+300+320+200 */
+  FE001: [
+    {month:1, period:'2026년 1월', importer:'IMP001 | EuroSteel GmbH',          qty: 600, modDate:'2026-02-03', modifier:'홍길동'},
+    {month:2, period:'2026년 2월', importer:'IMP001 | EuroSteel GmbH',          qty: 550, modDate:'2026-03-04', modifier:'홍길동'},
+    {month:3, period:'2026년 3월', importer:'IMP001 | EuroSteel GmbH',          qty: 750, modDate:'2026-04-02', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP001 | EuroSteel GmbH',          qty: 480, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP002 | Société Métallurgique',   qty: 300, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP001 | EuroSteel GmbH',          qty: 320, modDate:'2026-06-04', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP002 | Société Métallurgique',   qty: 200, modDate:'2026-06-04', modifier:'홍길동'},
+  ],
+  /* FE002 합계 1,850t = 350+380+420+390+310 */
+  FE002: [
+    {month:1, period:'2026년 1월', importer:'IMP002 | Société Métallurgique',   qty: 350, modDate:'2026-02-03', modifier:'홍길동'},
+    {month:2, period:'2026년 2월', importer:'IMP002 | Société Métallurgique',   qty: 380, modDate:'2026-03-04', modifier:'홍길동'},
+    {month:3, period:'2026년 3월', importer:'IMP002 | Société Métallurgique',   qty: 420, modDate:'2026-04-02', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP002 | Société Métallurgique',   qty: 390, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP002 | Société Métallurgique',   qty: 310, modDate:'2026-06-04', modifier:'홍길동'},
+  ],
+  /* FE003 합계 920t = 180+190+210+185+155 */
+  FE003: [
+    {month:1, period:'2026년 1월', importer:'IMP002 | Société Métallurgique',   qty: 180, modDate:'2026-02-03', modifier:'홍길동'},
+    {month:2, period:'2026년 2월', importer:'IMP002 | Société Métallurgique',   qty: 190, modDate:'2026-03-04', modifier:'홍길동'},
+    {month:3, period:'2026년 3월', importer:'IMP002 | Société Métallurgique',   qty: 210, modDate:'2026-04-02', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP002 | Société Métallurgique',   qty: 185, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP002 | Société Métallurgique',   qty: 155, modDate:'2026-06-04', modifier:'홍길동'},
+  ],
+  /* FE004 합계 4,600t = 900+950+850+1000+900 */
+  FE004: [
+    {month:1, period:'2026년 1월', importer:'IMP003 | Italia Acciai S.p.A.',    qty: 900, modDate:'2026-02-03', modifier:'홍길동'},
+    {month:2, period:'2026년 2월', importer:'IMP003 | Italia Acciai S.p.A.',    qty: 950, modDate:'2026-03-04', modifier:'홍길동'},
+    {month:3, period:'2026년 3월', importer:'IMP003 | Italia Acciai S.p.A.',    qty: 850, modDate:'2026-04-02', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP003 | Italia Acciai S.p.A.',    qty:1000, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP003 | Italia Acciai S.p.A.',    qty: 900, modDate:'2026-06-04', modifier:'홍길동'},
+  ],
+  /* FE005 합계 2,100t = 400+420+380+460+440 */
+  FE005: [
+    {month:1, period:'2026년 1월', importer:'IMP001 | EuroSteel GmbH',          qty: 400, modDate:'2026-02-03', modifier:'홍길동'},
+    {month:2, period:'2026년 2월', importer:'IMP001 | EuroSteel GmbH',          qty: 420, modDate:'2026-03-04', modifier:'홍길동'},
+    {month:3, period:'2026년 3월', importer:'IMP001 | EuroSteel GmbH',          qty: 380, modDate:'2026-04-02', modifier:'홍길동'},
+    {month:4, period:'2026년 4월', importer:'IMP001 | EuroSteel GmbH',          qty: 460, modDate:'2026-05-07', modifier:'홍길동'},
+    {month:5, period:'2026년 5월', importer:'IMP001 | EuroSteel GmbH',          qty: 440, modDate:'2026-06-04', modifier:'홍길동'},
+  ],
+};
+
+/* ── 제품 메타데이터 (인증서 수량·비용 동적 계산용) ── */
+const ECB_RATE = 1485; // ₩/€
+const CERT_PRICE_Q = {
+  '2026년 1분기': 75.36,
+  '2026년 2분기': null,
+  '2026년 3분기': null,
+  '2026년 4분기': null,
+};
+const QUARTERS = ['2026년 1분기','2026년 2분기','2026년 3분기','2026년 4분기'];
+const productMeta = {
+  FE001: { embedded:1.856, freeAlloc:1.328, carbonPaid:0 },
+  FE002: { embedded:1.601, freeAlloc:1.328, carbonPaid:0 },
+  FE003: { embedded:2.104, freeAlloc:1.328, carbonPaid:0 },
+  FE004: { embedded:1.743, freeAlloc:1.328, carbonPaid:850000 },
+  FE005: { embedded:1.512, freeAlloc:1.623, carbonPaid:0 },
+};
+
+/* 기간 → 해당 월 배열 */
+const periodMonths = {
+  '전체':        [1,2,3,4,5,6,7,8,9,10,11,12],
+  '2026년 1분기': [1,2,3],
+  '2026년 2분기': [4,5,6],
+  '2026년 3분기': [7,8,9],
+  '2026년 4분기': [10,11,12],
+};
+
+let currentPeriod   = '전체';
+let currentFactory  = '전체';
+let currentImporter = '전체';
+
+/* 기간·공장·수입업자 필터 통합 적용 */
+function applyFilters() {
+  const months = periodMonths[currentPeriod] || periodMonths['전체'];
+  document.querySelectorAll('#mainTableBody tr[data-factory]').forEach(row => {
+    const factory  = row.getAttribute('data-factory');
+    const importer = row.getAttribute('data-importer');
+    const code     = row.getAttribute('data-code');
+    const visible  = (currentFactory  === '전체' || currentFactory  === factory)
+                  && (currentImporter === '전체' || currentImporter === importer);
+    row.style.display = visible ? '' : 'none';
+    if (!visible) return;
+    const filtered = (expData[code] || []).filter(r => months.includes(r.month));
+    const total    = filtered.reduce((s, r) => s + r.qty, 0);
+    const el = document.getElementById('qty-' + code);
+    if (el) el.textContent = total > 0 ? total.toLocaleString() : '0';
+  });
+  updateCertCard();
+}
+
+function filterPeriod(val)   { currentPeriod   = val; applyFilters(); }
+function filterFactory(val)  { currentFactory  = val; applyFilters(); }
+function filterImporter(val) { currentImporter = val; applyFilters(); }
+
+/* ── 예상 인증서 수량·가격 카드 동적 업데이트 ── */
+function getVisibleCodes() {
+  return [...document.querySelectorAll('#mainTableBody tr[data-code]')]
+    .filter(r => r.style.display !== 'none')
+    .map(r => r.getAttribute('data-code'));
+}
+
+function updateCertCard() {
+  const visibleCodes = getVisibleCodes();
+  const qEls = document.querySelectorAll('.cert-quarters .cert-quarter:not(.total)');
+  let totalCert = 0, totalCost = 0, totalHasPrice = false;
+
+  QUARTERS.forEach((q, i) => {
+    const inScope = currentPeriod === '전체' || currentPeriod === q;
+    const price   = CERT_PRICE_Q[q];
+    const months  = periodMonths[q];
+    const countEl  = qEls[i].querySelector('.cert-quarter-count');
+    const amountEl = qEls[i].querySelector('.cert-quarter-amount');
+
+    if (!inScope) {
+      countEl.textContent = '-';
+      countEl.className   = 'cert-quarter-count empty';
+      if (amountEl) amountEl.style.display = 'none';
+      return;
+    }
+
+    let qCert = 0, qCost = 0;
+    visibleCodes.forEach(code => {
+      const meta = productMeta[code];
+      if (!meta) return;
+      const allRows   = expData[code] || [];
+      const qRows     = allRows.filter(r => months.includes(r.month));
+      const qQty      = qRows.reduce((s, r) => s + r.qty, 0);
+      const totalQty  = allRows.reduce((s, r) => s + r.qty, 0);
+      const cert      = Math.max(0, Math.round((meta.embedded - meta.freeAlloc) * qQty));
+      qCert += cert;
+      if (price !== null) {
+        /* 기지불 탄소가격은 출하량 비례 안분 */
+        const proratedCarbon = totalQty > 0 ? meta.carbonPaid * (qQty / totalQty) : 0;
+        qCost += Math.max(0, cert * price - proratedCarbon / ECB_RATE);
+      }
+    });
+
+    countEl.textContent = qCert.toLocaleString() + '개';
+    countEl.className   = 'cert-quarter-count';
+    if (amountEl) {
+      if (price !== null) {
+        amountEl.textContent  = `(€${Math.round(qCost).toLocaleString()})`;
+        amountEl.style.display = '';
+        totalCost += qCost;
+        totalHasPrice = true;
+      } else {
+        amountEl.style.display = 'none';
+      }
+    }
+    totalCert += qCert;
+  });
+
+  /* 합계 행 업데이트 */
+  const totEl       = document.querySelector('.cert-quarter.total');
+  const totCountEl  = totEl.querySelector('.cert-quarter-count');
+  const totAmountEl = totEl.querySelector('.cert-quarter-amount');
+  totCountEl.textContent = totalCert.toLocaleString() + '개';
+  if (totalHasPrice) {
+    totAmountEl.textContent  = `(€${Math.round(totalCost).toLocaleString()})`;
+    totAmountEl.style.display = '';
+  } else {
+    totAmountEl.style.display = 'none';
+  }
+}
+
+/* ── 수입업자 피커 ── */
+const importerList = [
+  { code:'IMP001', country:'독일',      name:'EuroSteel GmbH' },
+  { code:'IMP002', country:'프랑스',    name:'Société Métallurgique' },
+  { code:'IMP003', country:'이탈리아',  name:'Italia Acciai S.p.A.' },
+  { code:'IMP004', country:'스페인',    name:'Iberia Construcción S.A.' },
+  { code:'IMP005', country:'폴란드',    name:'Polska Stal Sp. z o.o.' },
+  { code:'IMP006', country:'네덜란드',  name:'Rotterdam Cement Logistiek B.V.' },
+  { code:'IMP007', country:'벨기에',    name:'Belgian Metals N.V.' },
+  { code:'IMP008', country:'오스트리아',name:'Wien Stahl AG' },
+  { code:'IMP009', country:'체코',      name:'Praha Ocel s.r.o.' },
+  { code:'IMP010', country:'스웨덴',    name:'Nordic Iron AB' },
+];
+let pickerTempCode = '전체';
+
+function toggleImporterPicker(e) {
+  e.stopPropagation();
+  const popup = document.getElementById('importerPopup');
+  const isOpen = popup.style.display !== 'none';
+  if (isOpen) { closeImporterPicker(); return; }
+  pickerTempCode = currentImporter;
+  document.getElementById('importerSearchInput').value = '';
+  renderImporterPopup('');
+  popup.style.display = 'block';
+  document.getElementById('importerPickerField').classList.add('active');
+  setTimeout(() => document.addEventListener('click', _outsideImporterClick), 0);
+}
+function _outsideImporterClick(e) {
+  if (!document.getElementById('importerPickerWrap').contains(e.target)) closeImporterPicker();
+}
+function closeImporterPicker() {
+  document.getElementById('importerPopup').style.display = 'none';
+  document.getElementById('importerPickerField').classList.remove('active');
+  document.removeEventListener('click', _outsideImporterClick);
+}
+function renderImporterPopup(q) {
+  const kw = q.toLowerCase();
+  const list = importerList.filter(i =>
+    !kw || i.name.toLowerCase().includes(kw) || i.country.includes(kw) || i.code.toLowerCase().includes(kw)
+  );
+  const tbody = document.getElementById('importerPopupBody');
+  tbody.innerHTML = list.length
+    ? list.map(i => `
+        <tr class="${pickerTempCode === i.code ? 'selected' : ''}" onclick="selectImporterRow('${i.code}')">
+          <td class="td-sel"><input type="radio" class="imp-radio" name="impRadio" ${pickerTempCode === i.code ? 'checked' : ''} onclick="event.stopPropagation();selectImporterRow('${i.code}')"></td>
+          <td>${i.country}</td>
+          <td>${i.code} | ${i.name}</td>
+          <td class="td-detail"><button class="imp-detail-btn" onclick="event.stopPropagation()">보기</button></td>
+        </tr>`).join('')
+    : `<tr><td colspan="4" class="imp-empty">검색 결과가 없습니다</td></tr>`;
+}
+function selectImporterRow(code) {
+  pickerTempCode = code;
+  renderImporterPopup(document.getElementById('importerSearchInput').value);
+}
+function applyImporterFilter() {
+  currentImporter = pickerTempCode;
+  const sel = importerList.find(i => i.code === currentImporter);
+  const valEl   = document.getElementById('importerPickerVal');
+  const clearBtn = document.getElementById('importerClearBtn');
+  if (!sel) {
+    valEl.textContent = '전체';
+    valEl.classList.remove('selected');
+    clearBtn.style.display = 'none';
+  } else {
+    valEl.textContent = `${sel.code} | ${sel.name}`;
+    valEl.classList.add('selected');
+    clearBtn.style.display = '';
+  }
+  closeImporterPicker();
+  applyFilters();
+}
+function cancelImporterPicker() { closeImporterPicker(); }
+function clearImporterFilter(e) {
+  e.stopPropagation();
+  currentImporter = '전체';
+  pickerTempCode  = '전체';
+  const valEl = document.getElementById('importerPickerVal');
+  valEl.textContent = '전체';
+  valEl.classList.remove('selected');
+  document.getElementById('importerClearBtn').style.display = 'none';
+  applyFilters();
+}
+
+/* 출하량 현황 모달 */
+function openExpModal(code, name, plantCode, plantName) {
+  document.getElementById('expProduct').innerHTML = `${code}<span style="color:#dfe2eb;margin:0 6px">|</span>${name}`;
+  document.getElementById('expFactory').innerHTML = `${plantCode}<span style="color:#dfe2eb;margin:0 6px">|</span>${plantName}`;
+
+  const months = periodMonths[currentPeriod] || periodMonths['전체'];
+  const rows = (expData[code] || []).filter(r => months.includes(r.month));
+
+  document.getElementById('expTableBody').innerHTML = rows.length
+    ? rows.map(r =>
+        `<tr>
+          <td>${r.period}</td>
+          <td style="white-space:nowrap">${r.importer || '-'}</td>
+          <td><a class="elink" href="#">${r.qty.toLocaleString()}</a></td>
+          <td>${r.modDate}</td>
+          <td>${r.modifier}</td>
+        </tr>`).join('')
+    : `<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ea7b8">해당 기간 수출 데이터가 없습니다.</td></tr>`;
+
+  const total = rows.reduce((s, r) => s + r.qty, 0);
+  document.getElementById('expTotal').textContent = total > 0 ? total.toLocaleString() : '-';
+  document.getElementById('expPeriodLabel').textContent =
+    currentPeriod === '전체' ? '전체 기간' : currentPeriod;
+
+  document.getElementById('expBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeExpModal(e) {
+  if (e && e.target !== document.getElementById('expBackdrop')) return;
+  document.getElementById('expBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
